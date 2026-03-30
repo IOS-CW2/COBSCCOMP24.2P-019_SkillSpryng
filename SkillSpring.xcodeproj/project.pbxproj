@@ -6,8 +6,27 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		6227C2462F7A9AF600E964BB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6227C2222F7A96D200E964BB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6227C2292F7A96D200E964BB;
+			remoteInfo = SkillSpring;
+		};
+		6227C2552F7A9B1D00E964BB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6227C2222F7A96D200E964BB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6227C2292F7A96D200E964BB;
+			remoteInfo = SkillSpring;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		6227C22A2F7A96D200E964BB /* SkillSpring.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkillSpring.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6227C2422F7A9AF600E964BB /* SkillSpringTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkillSpringTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6227C24F2F7A9B1D00E964BB /* SkillSpringUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkillSpringUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -16,10 +35,34 @@
 			path = SkillSpring;
 			sourceTree = "<group>";
 		};
+		6227C2432F7A9AF600E964BB /* SkillSpringTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SkillSpringTests;
+			sourceTree = "<group>";
+		};
+		6227C2502F7A9B1D00E964BB /* SkillSpringUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SkillSpringUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		6227C2272F7A96D200E964BB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6227C23F2F7A9AF600E964BB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6227C24C2F7A9B1D00E964BB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +76,8 @@
 			isa = PBXGroup;
 			children = (
 				6227C22C2F7A96D200E964BB /* SkillSpring */,
+				6227C2432F7A9AF600E964BB /* SkillSpringTests */,
+				6227C2502F7A9B1D00E964BB /* SkillSpringUITests */,
 				6227C22B2F7A96D200E964BB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +86,8 @@
 			isa = PBXGroup;
 			children = (
 				6227C22A2F7A96D200E964BB /* SkillSpring.app */,
+				6227C2422F7A9AF600E964BB /* SkillSpringTests.xctest */,
+				6227C24F2F7A9B1D00E964BB /* SkillSpringUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +117,52 @@
 			productReference = 6227C22A2F7A96D200E964BB /* SkillSpring.app */;
 			productType = "com.apple.product-type.application";
 		};
+		6227C2412F7A9AF600E964BB /* SkillSpringTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6227C24A2F7A9AF600E964BB /* Build configuration list for PBXNativeTarget "SkillSpringTests" */;
+			buildPhases = (
+				6227C23E2F7A9AF600E964BB /* Sources */,
+				6227C23F2F7A9AF600E964BB /* Frameworks */,
+				6227C2402F7A9AF600E964BB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6227C2472F7A9AF600E964BB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6227C2432F7A9AF600E964BB /* SkillSpringTests */,
+			);
+			name = SkillSpringTests;
+			packageProductDependencies = (
+			);
+			productName = SkillSpringTests;
+			productReference = 6227C2422F7A9AF600E964BB /* SkillSpringTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6227C24E2F7A9B1D00E964BB /* SkillSpringUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6227C2572F7A9B1D00E964BB /* Build configuration list for PBXNativeTarget "SkillSpringUITests" */;
+			buildPhases = (
+				6227C24B2F7A9B1D00E964BB /* Sources */,
+				6227C24C2F7A9B1D00E964BB /* Frameworks */,
+				6227C24D2F7A9B1D00E964BB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6227C2562F7A9B1D00E964BB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6227C2502F7A9B1D00E964BB /* SkillSpringUITests */,
+			);
+			name = SkillSpringUITests;
+			packageProductDependencies = (
+			);
+			productName = SkillSpringUITests;
+			productReference = 6227C24F2F7A9B1D00E964BB /* SkillSpringUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -82,6 +175,14 @@
 				TargetAttributes = {
 					6227C2292F7A96D200E964BB = {
 						CreatedOnToolsVersion = 26.2;
+					};
+					6227C2412F7A9AF600E964BB = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 6227C2292F7A96D200E964BB;
+					};
+					6227C24E2F7A9B1D00E964BB = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 6227C2292F7A96D200E964BB;
 					};
 				};
 			};
@@ -100,12 +201,28 @@
 			projectRoot = "";
 			targets = (
 				6227C2292F7A96D200E964BB /* SkillSpring */,
+				6227C2412F7A9AF600E964BB /* SkillSpringTests */,
+				6227C24E2F7A9B1D00E964BB /* SkillSpringUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		6227C2282F7A96D200E964BB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6227C2402F7A9AF600E964BB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6227C24D2F7A9B1D00E964BB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +239,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6227C23E2F7A9AF600E964BB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6227C24B2F7A9B1D00E964BB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6227C2472F7A9AF600E964BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6227C2292F7A96D200E964BB /* SkillSpring */;
+			targetProxy = 6227C2462F7A9AF600E964BB /* PBXContainerItemProxy */;
+		};
+		6227C2562F7A9B1D00E964BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6227C2292F7A96D200E964BB /* SkillSpring */;
+			targetProxy = 6227C2552F7A9B1D00E964BB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		6227C2332F7A96D300E964BB /* Debug */ = {
@@ -306,6 +450,84 @@
 			};
 			name = Release;
 		};
+		6227C2482F7A9AF600E964BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "-19.SkillSpringTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SkillSpring.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SkillSpring";
+			};
+			name = Debug;
+		};
+		6227C2492F7A9AF600E964BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "-19.SkillSpringTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SkillSpring.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SkillSpring";
+			};
+			name = Release;
+		};
+		6227C2582F7A9B1D00E964BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "-19.SkillSpringUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SkillSpring;
+			};
+			name = Debug;
+		};
+		6227C2592F7A9B1D00E964BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "-19.SkillSpringUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SkillSpring;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -323,6 +545,24 @@
 			buildConfigurations = (
 				6227C2362F7A96D300E964BB /* Debug */,
 				6227C2372F7A96D300E964BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6227C24A2F7A9AF600E964BB /* Build configuration list for PBXNativeTarget "SkillSpringTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6227C2482F7A9AF600E964BB /* Debug */,
+				6227C2492F7A9AF600E964BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6227C2572F7A9B1D00E964BB /* Build configuration list for PBXNativeTarget "SkillSpringUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6227C2582F7A9B1D00E964BB /* Debug */,
+				6227C2592F7A9B1D00E964BB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
