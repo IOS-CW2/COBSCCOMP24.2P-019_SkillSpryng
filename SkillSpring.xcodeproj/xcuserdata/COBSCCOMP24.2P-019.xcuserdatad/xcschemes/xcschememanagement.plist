@@ -4,10 +4,33 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Promises (Playground).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>SkillSpring.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>6227C2292F7A96D200E964BB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6227C2412F7A9AF600E964BB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6227C24E2F7A9B1D00E964BB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
