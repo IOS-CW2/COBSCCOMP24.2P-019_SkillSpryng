@@ -7,142 +7,143 @@ struct SkillSetupView: View {
     var phoneNumber: String
     
     @State private var navigateToMainApp = false
+    @State private var navigateToProfileSetup = false
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        navigateToMainApp = true
-                    }) {
-                        Text("Skip")
-                            .foregroundColor(.gray)
-                    }
-                }
-                
-                Text("What are you here for?")
-                    .font(.largeTitle)
-                    .bold()
-                
-                Text("Select your primary path to personalize your growth journey")
-                    .font(.body)
-                    .foregroundColor(.gray)
-                    .padding(.bottom, 10)
-                
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Skills to Teach")
-                            .font(.headline)
-                        Spacer()
-                        Image(systemName: "checkmark.shield.fill")
-                            .foregroundColor(.green)
-                    }
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
                     
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(viewModel.availableTeachSkills, id: \.self) { skill in
-                                SkillChip(title: skill, isSelected: viewModel.selectedTeachSkills.contains(skill)) {
-                                    viewModel.toggleTeachSkill(skill)
-                                }
-                            }
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            navigateToMainApp = true
+                        }) {
+                            Text("Skip")
+                                .foregroundColor(.gray)
                         }
                     }
                     
-                    Button(action: { /* Add custom skill */ }) {
-                        Text("+ Add Skill")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(RoundedRectangle(cornerRadius: 16).stroke(Color.gray.opacity(0.3)))
-                    }
-                }
-                
-                Divider()
-                
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Skills to Learn")
-                            .font(.headline)
-                        Spacer()
-                        Image(systemName: "book.fill")
-                            .foregroundColor(.blue)
-                    }
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(viewModel.availableLearnSkills, id: \.self) { skill in
-                                SkillChip(title: skill, isSelected: viewModel.selectedLearnSkills.contains(skill)) {
-                                    viewModel.toggleLearnSkill(skill)
-                                }
-                            }
-                        }
-                    }
-                    
-                    Button(action: { /* Add custom skill */ }) {
-                        Text("+ Add Skill")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(RoundedRectangle(cornerRadius: 16).stroke(Color.gray.opacity(0.3)))
-                    }
-                }
-                
-                Divider()
-                
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("OVERALL EXPERIENCE LEVEL")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    Text("What are you here for?")
+                        .font(.largeTitle)
                         .bold()
                     
-                    HStack(spacing: 8) {
-                        ForEach(SkillSetupViewModel.ExperienceLevel.allCases) { level in
-                            Button(action: {
-                                viewModel.experienceLevel = level
-                            }) {
-                                Text(level.rawValue)
-                                    .font(.subheadline)
-                                    .foregroundColor(viewModel.experienceLevel == level ? .green : .gray)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .stroke(viewModel.experienceLevel == level ? Color.green : Color.gray.opacity(0.3), lineWidth: viewModel.experienceLevel == level ? 2 : 1)
-                                    )
+                    Text("Select your primary path to personalize your growth journey")
+                        .font(.body)
+                        .foregroundColor(.gray)
+                        .padding(.bottom, 10)
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Skills to Teach")
+                                .font(.headline)
+                            Spacer()
+                            Image(systemName: "checkmark.shield.fill")
+                                .foregroundColor(.green)
+                        }
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(viewModel.availableTeachSkills, id: \.self) { skill in
+                                    SkillChip(title: skill, isSelected: viewModel.selectedTeachSkills.contains(skill)) {
+                                        viewModel.toggleTeachSkill(skill)
+                                    }
+                                }
                             }
                         }
+                        
+                        Button(action: { /* Add custom skill */ }) {
+                            Text("+ Add Skill")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(RoundedRectangle(cornerRadius: 16).stroke(Color.gray.opacity(0.3)))
+                        }
                     }
-                }
-                
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Location")
+                    
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Skills to Learn")
+                                .font(.headline)
+                            Spacer()
+                            Image(systemName: "book.fill")
+                                .foregroundColor(.blue)
+                        }
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(viewModel.availableLearnSkills, id: \.self) { skill in
+                                    SkillChip(title: skill, isSelected: viewModel.selectedLearnSkills.contains(skill)) {
+                                        viewModel.toggleLearnSkill(skill)
+                                    }
+                                }
+                            }
+                        }
+                        
+                        Button(action: { /* Add custom skill */ }) {
+                            Text("+ Add Skill")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(RoundedRectangle(cornerRadius: 16).stroke(Color.gray.opacity(0.3)))
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("OVERALL EXPERIENCE LEVEL")
                             .font(.caption)
                             .foregroundColor(.gray)
                             .bold()
-                        Spacer()
-                        Toggle("", isOn: .constant(true)).labelsHidden()
+                        
+                        HStack(spacing: 8) {
+                            ForEach(SkillSetupViewModel.ExperienceLevel.allCases) { level in
+                                Button(action: {
+                                    viewModel.experienceLevel = level
+                                }) {
+                                    Text(level.rawValue)
+                                        .font(.subheadline)
+                                        .foregroundColor(viewModel.experienceLevel == level ? .green : .gray)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(viewModel.experienceLevel == level ? Color.green : Color.gray.opacity(0.3), lineWidth: viewModel.experienceLevel == level ? 2 : 1)
+                                        )
+                                }
+                            }
+                        }
                     }
                     
-                    HStack {
-                        Image(systemName: "mappin.and.ellipse")
-                            .foregroundColor(.gray)
-                        TextField("e.g. San Francisco, CA", text: $viewModel.location)
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Location")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .bold()
+                            Spacer()
+                            Toggle("", isOn: .constant(true)).labelsHidden()
+                        }
+                        
+                        HStack {
+                            Image(systemName: "mappin.and.ellipse")
+                                .foregroundColor(.gray)
+                            TextField("e.g. San Francisco, CA", text: $viewModel.location)
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
                 }
-                
-                PrimaryButton(title: "Continue ->", action: {
-                    viewModel.saveProfile(fullName: fullName, phoneNumber: phoneNumber)
-                }, isLoading: viewModel.isLoading)
-                .padding(.top, 20)
-                
+                .padding(24)
+            }
+            
+            VStack(spacing: 12) {
                 if let error = viewModel.errorMessage {
                     Text(error)
                         .foregroundColor(.red)
@@ -150,11 +151,20 @@ struct SkillSetupView: View {
                         .multilineTextAlignment(.center)
                 }
                 
+                PrimaryButton(title: "Continue ->", action: {
+                    navigateToProfileSetup = true
+                }, isLoading: viewModel.isLoading)
+                
+                NavigationLink(destination: ProfileSetupView(viewModel: viewModel, fullName: fullName, phoneNumber: phoneNumber), isActive: $navigateToProfileSetup) {
+                    EmptyView()
+                }
+
                 NavigationLink(destination: Text("Main App Dashboard").font(.largeTitle), isActive: isSetupCompleteOrSkipped) {
                     EmptyView()
                 }
             }
             .padding(24)
+            .background(Color.white.shadow(color: .black.opacity(0.05), radius: 8, y: -5))
         }
         .navigationBarHidden(true)
     }

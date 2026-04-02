@@ -9,5 +9,7 @@ struct User: Identifiable, Codable {
     var skillsToLearn: [String] = []
     var experienceLevel: String = ""
     var location: String = ""
+    var bio: String = ""
+    var profileImageURL: String = ""
     var createdAt: Date = Date()
 }

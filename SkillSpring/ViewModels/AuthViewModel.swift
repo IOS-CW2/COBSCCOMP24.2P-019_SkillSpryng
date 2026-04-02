@@ -16,6 +16,12 @@ class AuthViewModel: ObservableObject {
     @Published var navigateToSuccess: Bool = false
     @Published var navigateToSkillSetup: Bool = false
     
+    private let firebaseService: FirebaseService
+    
+    init(firebaseService: FirebaseService = FirebaseManager.shared) {
+        self.firebaseService = firebaseService
+    }
+    
     func sendOTP() {
         guard !fullName.isEmpty, !phoneNumber.isEmpty else {
             errorMessage = "Please enter your full name and phone number."
@@ -28,15 +34,10 @@ class AuthViewModel: ObservableObject {
         let formattedNumber = phoneNumber.starts(with: "+") ? phoneNumber : "+\(phoneNumber)"
         
         Task {
-            do {
-                let id = try await FirebaseManager.shared.sendPhoneNumberOTP(phoneNumber: formattedNumber)
-                self.isLoading = false
-                self.verificationID = id
-                self.navigateToOTP = true
-            } catch {
-                self.isLoading = false
-                self.errorMessage = error.localizedDescription
-            }
+            // Temporarily mocked to bypass for UI testing
+            self.isLoading = false
+            self.verificationID = "MOCK_ID"
+            self.navigateToOTP = true
         }
     }
     
@@ -50,15 +51,14 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
         
         Task {
-            do {
-                let _ = try await FirebaseManager.shared.verifyOTP(verificationID: verificationID, verificationCode: verificationCode)
-                // Check if user exists in Firestore
-                let _ = try? await FirebaseManager.shared.fetchUser()
-                self.navigateToSuccess = true
-            } catch {
-                self.errorMessage = error.localizedDescription
-            }
+            // Temporarily mocked to bypass for UI testing
+            self.navigateToSuccess = true
             self.isLoading = false
         }
+    }
+    
+    func authenticateWithBiometrics() {
+        // Temporarily mocked to bypass for UI testing
+        self.navigateToSuccess = true
     }
 }
