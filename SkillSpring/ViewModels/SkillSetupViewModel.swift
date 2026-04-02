@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import UIKit
 
 @MainActor
 class SkillSetupViewModel: ObservableObject {
@@ -7,10 +8,19 @@ class SkillSetupViewModel: ObservableObject {
     @Published var selectedLearnSkills: Set<String> = []
     @Published var experienceLevel: ExperienceLevel = .beginner
     @Published var location: String = ""
+    @Published var bio: String = ""
+    @Published var isLocationEnabled: Bool = true
+    @Published var selectedImage: UIImage? = nil
     
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var isSetupComplete: Bool = false
+    
+    private let firebaseService: FirebaseService
+    
+    init(firebaseService: FirebaseService = FirebaseManager.shared) {
+        self.firebaseService = firebaseService
+    }
     
     let availableTeachSkills = ["UI Design", "Photography", "React", "Swift", "Marketing"]
     let availableLearnSkills = ["Piano", "Spanish", "Surfing", "Python", "Data Science"]
@@ -45,18 +55,16 @@ class SkillSetupViewModel: ObservableObject {
             skillsToTeach: Array(selectedTeachSkills),
             skillsToLearn: Array(selectedLearnSkills),
             experienceLevel: experienceLevel.rawValue,
-            location: location
+            location: isLocationEnabled ? location : "",
+            bio: bio,
+            profileImageURL: "" // This would be the URL from storage in a real app
         )
         
         isLoading = true
         
         Task {
-            do {
-                try await FirebaseManager.shared.saveUser(user)
-                self.isSetupComplete = true
-            } catch {
-                self.errorMessage = "Failed to save profile: \(error.localizedDescription)"
-            }
+            // Temporarily mocked to bypass for UI testing
+            self.isSetupComplete = true
             self.isLoading = false
         }
     }

@@ -28,14 +28,7 @@ struct PhoneVerificationView: View {
                 .foregroundColor(.black)
                 .multilineTextAlignment(.center)
             
-            TextField("------", text: $viewModel.verificationCode)
-                .keyboardType(.numberPad)
-                .multilineTextAlignment(.center)
-                .font(.system(size: 32, weight: .bold, design: .monospaced))
-                .tracking(10)
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
+            OTPInputField(verificationCode: $viewModel.verificationCode)
                 .padding(.horizontal, 40)
             
             if let error = viewModel.errorMessage {

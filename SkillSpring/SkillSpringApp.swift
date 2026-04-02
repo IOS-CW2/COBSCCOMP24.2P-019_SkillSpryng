@@ -1,16 +1,22 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseAuth
+import CoreData
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         // Initialize Firebase
         FirebaseApp.configure()
-        // Force-initialize FirebaseManager so Auth is ready
+        
+        // Force-initialize FirebaseManager
         let manager = FirebaseManager.shared
-        // Disable APNs requirement on Simulator — uses Firebase Console test numbers instead
+        // Disable APNs requirement on Simulator
         manager.auth.settings?.isAppVerificationDisabledForTesting = true
+        
+        // Request Push Notification authorization
+        NotificationManager.shared.requestAuthorization()
+        
         return true
     }
     
@@ -25,10 +31,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct SkillSpringApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    let persistenceController = PersistenceController.shared
     
     var body: some Scene {
         WindowGroup {
             LaunchView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }

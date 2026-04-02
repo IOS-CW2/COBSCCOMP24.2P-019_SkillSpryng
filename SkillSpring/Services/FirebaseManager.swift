@@ -2,6 +2,8 @@ import Foundation
 import FirebaseAuth
 import FirebaseFirestore
 import UIKit
+import CoreData
+import Combine
 
 class PhoneAuthUIDelegate: NSObject, AuthUIDelegate {
     private func topViewController() -> UIViewController? {
@@ -29,16 +31,21 @@ class PhoneAuthUIDelegate: NSObject, AuthUIDelegate {
     }
 }
 
-class FirebaseManager {
+class FirebaseManager: FirebaseService {
     static let shared = FirebaseManager()
     
-    let auth: Auth
-    let firestore: Firestore
-    private let authUIDelegate = PhoneAuthUIDelegate()
+    lazy var auth: Auth = Auth.auth()
+    lazy var firestore: Firestore = Firestore.firestore()
+    private var _authUIDelegate: PhoneAuthUIDelegate?
+    private var authUIDelegate: PhoneAuthUIDelegate {
+        if _authUIDelegate == nil {
+            _authUIDelegate = PhoneAuthUIDelegate()
+        }
+        return _authUIDelegate!
+    }
     
     private init() {
-        self.auth = Auth.auth()
-        self.firestore = Firestore.firestore()
+        // Initializer is now empty as properties are lazy
     }
     
     // MARK: - Phone Authentication
@@ -83,6 +90,52 @@ class FirebaseManager {
         guard snapshot.exists else { return nil }
         var user = try snapshot.data(as: User.self)
         user.id = snapshot.documentID
+        
+        // Cache to Core Data
+        saveUserLocally(user)
+        
         return user
+    }
+    
+    // MARK: - Core Data Persistence
+    
+    private func saveUserLocally(_ user: User) {
+        let context = PersistenceController.shared.container.viewContext
+        
+        // Check if user already exists
+        let fetchRequest: NSFetchRequest<LocalUser> = NSFetchRequest<LocalUser>(entityName: "LocalUser")
+        fetchRequest.predicate = NSPredicate(format: "id == %@", user.id ?? "")
+        
+        context.perform {
+            do {
+                let results = try context.fetch(fetchRequest)
+                let localUser = results.first ?? LocalUser(context: context)
+                
+                localUser.id = user.id
+                localUser.fullName = user.fullName
+                localUser.phoneNumber = user.phoneNumber
+                localUser.experienceLevel = user.experienceLevel
+                localUser.location = user.location
+                localUser.bio = user.bio
+                localUser.profileImageURL = user.profileImageURL
+                
+                try context.save()
+            } catch {
+                print("Failed to save user to Core Data: \(error)")
+            }
+        }
+    }
+    
+    func fetchLocalUser() -> LocalUser? {
+        let context = PersistenceController.shared.container.viewContext
+        let fetchRequest: NSFetchRequest<LocalUser> = NSFetchRequest<LocalUser>(entityName: "LocalUser")
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            return results.first
+        } catch {
+            print("Failed to fetch local user: \(error)")
+            return nil
+        }
     }
 }

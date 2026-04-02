@@ -16,9 +16,13 @@ struct CustomTextField: View {
                 .keyboardType(keyboardType)
                 .foregroundColor(.black)
                 .font(.body)
+                .accessibilityLabel(placeholder)
+                .accessibilityValue(text)
         }
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(12)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint("Enter your \(placeholder)")
     }
 }

@@ -81,7 +81,9 @@ struct SignInView: View {
                 }
             }
             
-            Button(action: { /* Face ID Placeholder */ }) {
+            Button(action: { 
+                viewModel.authenticateWithBiometrics() 
+            }) {
                 HStack {
                     Image(systemName: "faceid")
                         .foregroundColor(.green)
@@ -95,6 +97,11 @@ struct SignInView: View {
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.green, lineWidth: 1))
             }
             .padding(.horizontal, 24)
+            
+            // Navigate to success if biometrics pass
+            NavigationLink(destination: VerificationSuccessView(viewModel: viewModel), isActive: $viewModel.navigateToSuccess) {
+                EmptyView()
+            }
             
             Spacer()
             
