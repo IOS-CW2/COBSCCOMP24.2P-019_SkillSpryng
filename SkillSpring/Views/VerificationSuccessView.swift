@@ -13,7 +13,7 @@ struct VerificationSuccessView: View {
             // Success Icon matching mockup
             ZStack {
                 Circle()
-                    .fill(Color(hex: "3AC45A")) // Emerald Green from mockup
+                    .fill(AppTheme.Colors.primaryLight)
                     .frame(width: 120, height: 120)
                 
                 Image(systemName: "checkmark")
@@ -35,13 +35,13 @@ struct VerificationSuccessView: View {
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
                 
-                // Three dots indicator matching mockup
+                // Three dots loading indicator
                 HStack(spacing: 6) {
-                    Circle().fill(Color(hex: "00A86B")).frame(width: 4, height: 4)
-                    Circle().fill(Color(hex: "00A86B")).frame(width: 4, height: 4)
-                    Circle().fill(Color(hex: "00A86B")).frame(width: 4, height: 4)
+                    Circle().fill(AppTheme.Colors.primary).frame(width: 4, height: 4)
+                    Circle().fill(AppTheme.Colors.primary).frame(width: 4, height: 4)
+                    Circle().fill(AppTheme.Colors.primary).frame(width: 4, height: 4)
                 }
-                .padding(.top, 10)
+                .padding(.top, AppTheme.Spacing.sm)
             }
             
             Spacer()
@@ -52,13 +52,13 @@ struct VerificationSuccessView: View {
             }) {
                 HStack(spacing: 8) {
                     Text("Continue Now")
-                        .foregroundColor(Color(hex: "3AC45A"))
-                        .font(.headline)
+                        .foregroundColor(AppTheme.Colors.primary)
+                        .font(AppTheme.Typography.headline)
                     Image(systemName: "arrow.right")
-                        .foregroundColor(Color(hex: "3AC45A"))
+                        .foregroundColor(AppTheme.Colors.primary)
                 }
             }
-            .padding(.bottom, 40)
+            .padding(.bottom, AppTheme.Spacing.xxl)
             
             NavigationLink(destination: SkillSetupView(fullName: viewModel.fullName, phoneNumber: viewModel.phoneNumber), isActive: $viewModel.navigateToSkillSetup) {
                 EmptyView()

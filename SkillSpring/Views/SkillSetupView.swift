@@ -159,7 +159,7 @@ struct SkillSetupView: View {
                     EmptyView()
                 }
 
-                NavigationLink(destination: Text("Main App Dashboard").font(.largeTitle), isActive: isSetupCompleteOrSkipped) {
+                NavigationLink(destination: MainTabView().navigationBarHidden(true), isActive: isSetupCompleteOrSkipped) {
                     EmptyView()
                 }
             }
