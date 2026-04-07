@@ -15,7 +15,7 @@ struct SignInView: View {
                             .padding()
                     }
                     Spacer()
-                    Text("Create Account")
+                    Text("Get Started")
                         .font(.headline)
                         .bold()
                     Spacer()
@@ -67,36 +67,56 @@ struct SignInView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 10)
                 
-                HStack(spacing: 20) {
-                    Button(action: { /* Google Auth Placeholder */ }) {
-                        Circle()
-                            .fill(Color(.systemGray6))
-                            .frame(width: 50, height: 50)
-                            .overlay(Image(systemName: "g.circle.fill").foregroundColor(.red).font(.title2))
+                VStack(spacing: 16) {
+                    Button(action: { /* Apple Auth Placeholder */ }) {
+                        HStack {
+                            Image(systemName: "applelogo")
+                                .foregroundColor(.white)
+                                .font(.title3)
+                            Text("Continue with Apple")
+                                .foregroundColor(.white)
+                                .font(AppTheme.Typography.subheadline)
+                                .bold()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                        .cornerRadius(AppTheme.Radius.md)
                     }
                     
-                    Button(action: { /* Apple Auth Placeholder */ }) {
-                        Circle()
-                            .fill(Color(.systemGray6))
-                            .frame(width: 50, height: 50)
-                            .overlay(Image(systemName: "applelogo").foregroundColor(.black).font(.title3))
+                    Button(action: { /* Google Auth Placeholder */ }) {
+                        HStack {
+                            Text("G")
+                                .foregroundColor(.blue)
+                                .font(.title3)
+                                .bold()
+                            Text("Continue with Google")
+                                .foregroundColor(.primary)
+                                .font(AppTheme.Typography.subheadline)
+                                .bold()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.white)
+                        .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.md).stroke(Color.gray.opacity(0.3), lineWidth: 1))
                     }
-                }
-                
-                Button(action: { 
-                    viewModel.authenticateWithBiometrics() 
-                }) {
-                    HStack {
-                        Image(systemName: "faceid")
-                            .foregroundColor(AppTheme.Colors.primary)
-                        Text("Sign in with Face ID")
-                            .foregroundColor(AppTheme.Colors.primary)
-                            .font(AppTheme.Typography.subheadline)
-                            .bold()
+                    
+                    Button(action: { 
+                        viewModel.authenticateWithBiometrics() 
+                    }) {
+                        HStack {
+                            Image(systemName: "faceid")
+                                .foregroundColor(AppTheme.Colors.primary)
+                            Text("Sign in with Face ID")
+                                .foregroundColor(AppTheme.Colors.primary)
+                                .font(AppTheme.Typography.subheadline)
+                                .bold()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.white)
+                        .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.md).stroke(AppTheme.Colors.primary, lineWidth: 1))
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.md).stroke(AppTheme.Colors.primary, lineWidth: 1))
                 }
                 .padding(.horizontal, AppTheme.Spacing.lg)
                 
