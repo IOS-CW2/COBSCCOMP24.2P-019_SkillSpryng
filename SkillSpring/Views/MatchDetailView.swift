@@ -2,197 +2,267 @@ import SwiftUI
 
 struct MatchDetailView: View {
     let profile: MatchProfile
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
-                // Header Image & Back Button (Overlay)
+                // Header with Image
                 ZStack(alignment: .top) {
-                    Circle()
-                        .fill(Color(.systemGray6))
-                        .frame(width: 120, height: 120)
+                    Image(profile.imageUrl)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 140, height: 140)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
+                        .shadow(radius: 10)
                         .overlay(
-                            Image(systemName: "person.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 60)
-                                .foregroundColor(.gray.opacity(0.3))
+                            ZStack {
+                                Circle().fill(Color.white).frame(width: 24, height: 24)
+                                Image(systemName: "checkmark.seal.fill")
+                                    .foregroundColor(AppTheme.Colors.primary)
+                                    .font(.system(size: 20))
+                            }
+                            .offset(x: 45, y: 45),
+                            alignment: .center
                         )
-                        .padding(.top, 40)
+                        .padding(.top, 60)
                     
                     HStack {
-                        Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(AppTheme.Colors.primary)
-                                .padding()
-                                .background(Circle().fill(Color.white).shadow(radius: 2))
-                        }
-                        Spacer()
-                        Button(action: { /* Share action */ }) {
-                            Image(systemName: "square.and.arrow.up")
-                                .foregroundColor(AppTheme.Colors.primary)
-                                .padding()
-                                .background(Circle().fill(Color.white).shadow(radius: 2))
-                        }
+                        AppHeader(title: "", backAction: { dismiss() }, actionIcon: "ellipsis", action: { })
                     }
-                    .padding(.horizontal)
-                    .padding(.top, AppTheme.Spacing.sm)
+                    .padding(.top, 40)
                 }
                 
-                // Name & Role
+                // Name & Stats Row
                 VStack(spacing: 8) {
-                    Text(profile.name)
-                        .font(.title2)
-                        .fontWeight(.bold)
+                    Text(profile.fullName)
+                        .font(.system(size: 26, weight: .bold))
                     
                     Text(profile.role)
-                        .font(.subheadline)
+                        .font(.system(size: 14))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                     
                     HStack(spacing: 12) {
-                        Label("ONLINE", systemImage: "circle.fill")
-                            .font(AppTheme.Typography.badge)
-                            .foregroundColor(AppTheme.Colors.success)
+                        Label(profile.onlineStatus ? "ONLINE" : "OFFLINE", systemImage: "circle.fill")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(profile.onlineStatus ? .green : .gray)
                         Label(profile.city, systemImage: "mappin.circle.fill")
-                            .font(AppTheme.Typography.badge)
-                            .foregroundColor(AppTheme.Colors.textSecondary)
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.gray)
                     }
-                    .padding(.top, AppTheme.Spacing.xs)
+                    .padding(.top, 4)
                 }
                 .frame(maxWidth: .infinity)
                 
-                // Skill Match Bar
-                VStack(spacing: 8) {
-                    HStack {
-                        Image(systemName: "bolt.fill")
-                            .foregroundColor(AppTheme.Colors.primaryLight)
-                        Text("\(profile.matchPercentage)% SKILL MATCH")
-                            .font(AppTheme.Typography.badge)
-                            .foregroundColor(AppTheme.Colors.primary)
-                    }
-                    .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity)
-                    .background(AppTheme.Colors.primary.opacity(0.1))
-                    .cornerRadius(AppTheme.Radius.md)
+                // Match Badge
+                HStack {
+                    Image(systemName: "bolt.fill")
+                    Text("\(profile.matchPercentage)% SKILL MATCH")
                 }
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(AppTheme.Colors.primary)
+                .cornerRadius(12)
                 .padding(.horizontal)
                 
-                // Teach & Learn Sections
+                // Teach & Learn
                 HStack(alignment: .top, spacing: 20) {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("CAN TEACH")
-                            .font(AppTheme.Typography.badge)
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                        
+                        SectionHeader(title: "CAN TEACH")
                         ForEach(profile.canTeach, id: \.self) { skill in
-                            TagView(title: skill, color: AppTheme.Colors.primary.opacity(0.1), textColor: AppTheme.Colors.primary)
+                            SkillBadge.teaching(skill)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("WANTS TO LEARN")
-                            .font(AppTheme.Typography.badge)
-                            .foregroundColor(AppTheme.Colors.textSecondary)
-                        
+                        SectionHeader(title: "WANTS TO LEARN")
                         ForEach(profile.wantsToLearn, id: \.self) { skill in
-                            TagView(title: skill, color: AppTheme.Colors.info.opacity(0.1), textColor: AppTheme.Colors.info)
+                            SkillBadge.learning(skill)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal)
                 
-                // Stats
+                // Stats Row
                 HStack(spacing: 16) {
-                    StatCard(title: "SESSIONS", value: "128", subValue: nil, iconName: nil)
-                    StatCard(title: "RATING", value: "4.9", subValue: "★", iconName: nil)
-                    StatCard(title: "RESPONSE", value: "2h", subValue: nil, iconName: nil)
+                    DetailStatCard(title: "SESSIONS", value: "\(profile.sessionsCount)")
+                    DetailStatCard(title: "RATING", value: String(format: "%.1f", profile.rating), suffix: "★")
+                    DetailStatCard(title: "RESPONSE", value: profile.responseTime)
                 }
                 .padding(.horizontal)
                 
-                // About section
+                // About
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("About \(profile.name.split(separator: " ").first ?? "")")
+                    Text("About \(profile.fullName.split(separator: " ").first ?? "")")
                         .font(.headline)
                         .fontWeight(.bold)
                     
                     Text(profile.bio)
-                        .font(.subheadline)
+                        .font(.system(size: 14))
                         .foregroundColor(.gray)
-                        .lineSpacing(4)
+                        .lineSpacing(6)
                 }
                 .padding(.horizontal)
                 
-                // Availability section
+                // Availability
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Availability")
                         .font(.headline)
                         .fontWeight(.bold)
                     
-                    HStack {
+                    HStack(spacing: 10) {
                         ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { day in
                             Text(day)
-                                .font(AppTheme.Typography.badge)
-                                .frame(width: 32, height: 32)
-                                .background(day == "W" || day == "T" ? AppTheme.Colors.primary : AppTheme.Colors.surfaceLight)
-                                .foregroundColor(day == "W" || day == "T" ? .white : AppTheme.Colors.textSecondary)
-                                .cornerRadius(AppTheme.Radius.sm)
+                                .font(.system(size: 12, weight: .bold))
+                                .frame(width: 36, height: 36)
+                                .background(profile.availability.contains(day) ? AppTheme.Colors.primary : Color(.systemGray6))
+                                .foregroundColor(profile.availability.contains(day) ? .white : .gray)
+                                .cornerRadius(8)
                         }
                     }
                     
-                    HStack {
+                    HStack(spacing: 12) {
                         Image(systemName: "calendar")
-                            .foregroundColor(.gray)
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .padding(10)
+                            .background(AppTheme.Colors.primary.opacity(0.1))
+                            .cornerRadius(10)
+                        
                         VStack(alignment: .leading) {
-                            Text("NEXT OPENING")
-                                .font(.system(size: 8, weight: .bold))
-                                .foregroundColor(.gray)
+                            SectionHeader(title: "NEXT OPENING")
                             Text("Tue, Oct 24")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 16, weight: .bold))
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "person.2.fill")
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .padding(10)
+                            .background(AppTheme.Colors.primary.opacity(0.1))
+                            .cornerRadius(10)
+                        
+                        VStack(alignment: .leading) {
+                            SectionHeader(title: "PAST MATCHES")
+                            Text("14 Students")
+                                .font(.system(size: 16, weight: .bold))
                         }
                     }
                 }
                 .padding(.horizontal)
                 
-                // Bottom Buttons
-                HStack(spacing: 16) {
-                    Button(action: { /* Message action */ }) {
-                        Label("Message", systemImage: "bubble.left.fill")
-                            .font(AppTheme.Typography.headline)
-                            .foregroundColor(AppTheme.Colors.primary)
-                            .frame(maxWidth: 120)
-                            .padding()
-                            .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.md).stroke(AppTheme.Colors.primary, lineWidth: 1))
-                    }
+                // Reviews
+                VStack(alignment: .leading, spacing: 16) {
+                    SectionHeader(title: "REVIEWS", actionTitle: "See All Reviews", action: { })
                     
-                    PrimaryButton(title: "Request Match ->") {
-                        /* Request action */
+                    ForEach(profile.reviews) { review in
+                        ReviewCard(review: review)
                     }
                 }
                 .padding(.horizontal)
-                .padding(.bottom, 40)
+                
+                Spacer().frame(height: 120)
             }
         }
+        .overlay(
+            VStack {
+                Spacer()
+                HStack(spacing: 16) {
+                    Button(action: { }) {
+                        Label("Message", systemImage: "bubble.left.fill")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 16).stroke(AppTheme.Colors.primary, lineWidth: 2))
+                    }
+                    
+                    Button(action: { }) {
+                        Text("Book Session ->")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(AppTheme.Colors.primary)
+                            .cornerRadius(16)
+                    }
+                }
+                .padding()
+                .background(Color.white.opacity(0.95))
+            }
+        )
         .navigationBarHidden(true)
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
-struct TagView: View {
+struct DetailStatCard: View {
     let title: String
-    let color: Color
-    let textColor: Color
+    let value: String
+    var suffix: String? = nil
     
     var body: some View {
-        Text(title)
-            .font(.system(size: 10, weight: .bold))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(color)
-            .foregroundColor(textColor)
-            .cornerRadius(8)
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(.gray)
+            HStack(alignment: .bottom, spacing: 2) {
+                Text(value)
+                    .font(.system(size: 20, weight: .bold))
+                if let suffix = suffix {
+                    Text(suffix)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.orange)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
+}
+
+struct ReviewCard: View {
+    let review: UserReview
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(review.reviewerImageUrl)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 32, height: 32)
+                    .clipShape(Circle())
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(review.reviewerName)
+                        .font(.system(size: 14, weight: .bold))
+                    HStack(spacing: 2) {
+                        ForEach(0..<5) { i in
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 10))
+                                .foregroundColor(i < review.rating ? .orange : .gray.opacity(0.3))
+                        }
+                    }
+                }
+            }
+            
+            Text("\"\(review.comment)\"")
+                .font(.system(size: 14))
+                .foregroundColor(.gray)
+                .italic()
+        }
+        .padding()
+        .background(Color(.systemGray6).opacity(0.5))
+        .cornerRadius(16)
     }
 }

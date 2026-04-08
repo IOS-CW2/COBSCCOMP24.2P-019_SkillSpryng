@@ -1,12 +1,19 @@
 import Foundation
 
-// MARK: - MatchProfile
-// Represents a peer/mentor match shown on the Matches and Profile Detail screens.
+enum MatchStatus {
+    case suggested
+    case requestIncoming
+    case requestSent
+    case active
+    case archived
+}
+
 struct MatchProfile: Identifiable {
     let id = UUID()
-    let name: String
+    let fullName: String
     let role: String
     let location: String
+    let distance: String
     let matchPercentage: Int
     let bio: String
     let canTeach: [String]
@@ -14,4 +21,10 @@ struct MatchProfile: Identifiable {
     let imageUrl: String
     let onlineStatus: Bool
     let city: String
+    let sessionsCount: Int
+    let rating: Double
+    let responseTime: String
+    let availability: [String]
+    let reviews: [UserReview]
+    let status: MatchStatus
 }

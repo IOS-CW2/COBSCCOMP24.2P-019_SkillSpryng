@@ -39,6 +39,9 @@ enum AppTheme {
 
         // Lighter brand green — used for checkmark circle, streak card top
         static let primaryLight  = Color(hex: "2DBF8E")  // Lighter SkillSpryng Green
+        
+        // Brand Accent — used for percentage matches and highlights
+        static let accent        = Color(hex: "27E246")
 
         // Button gradient — LEFT stop
         static let buttonStart   = Color(hex: "1D9E75")

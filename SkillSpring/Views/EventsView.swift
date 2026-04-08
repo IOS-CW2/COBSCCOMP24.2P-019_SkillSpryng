@@ -1,0 +1,226 @@
+import SwiftUI
+
+struct EventsView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedTab = "Events"
+    @State private var selectedFilter = "All"
+    let filters = ["All", "Free", "Paid", "Online", "Nearby"]
+    
+    var isNavigatedFromCourses: Bool = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            if !isNavigatedFromCourses {
+                // Header if not included by parent
+                HStack {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(AppTheme.Colors.primary)
+                    }
+                    Spacer()
+                    Text("Events")
+                        .font(AppTheme.Typography.headline)
+                    Spacer()
+                    Button(action: { /* Search */ }) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.gray)
+                    }
+                }
+                .padding()
+                
+                // Courses/Events Selector (Redundant if called from CoursesView but kept for standalone)
+                HStack(spacing: 0) {
+                    Button(action: { selectedTab = "Courses" }) {
+                        Text("Courses")
+                            .font(.system(size: 14, weight: .medium))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Button(action: { selectedTab = "Events" }) {
+                        Text("Events")
+                            .font(.system(size: 14, weight: .medium))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(AppTheme.Colors.primary.opacity(0.1))
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(AppTheme.Colors.primary, lineWidth: 1)
+                            )
+                    }
+                }
+                .padding(4)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .padding(.horizontal)
+                .padding(.bottom)
+            }
+            
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 24) {
+                    // Selection filters
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(filters, id: \.self) { filter in
+                                Button(action: { selectedFilter = filter }) {
+                                    Text(filter)
+                                        .font(.system(size: 14, weight: .medium))
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(selectedFilter == filter ? AppTheme.Colors.primary : Color(.systemGray6))
+                                        .foregroundColor(selectedFilter == filter ? .white : .gray)
+                                        .cornerRadius(20)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    // Happening Soon
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Happening Soon")
+                            .font(AppTheme.Typography.title3)
+                            .padding(.horizontal)
+                        
+                        EventHeroCard(event: MockDataProvider.shared.happeningSoonEvent)
+                            .padding(.horizontal)
+                    }
+                    
+                    // Upcoming
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Upcoming")
+                            .font(AppTheme.Typography.title3)
+                            .padding(.horizontal)
+                        
+                        VStack(spacing: 16) {
+                            ForEach(MockDataProvider.shared.upcomingEvents) { event in
+                                UpcomingEventRow(event: event)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    Spacer().frame(height: 100)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Subcomponents
+
+struct EventHeroCard: View {
+    let event: Event
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color(.systemGray6))
+                    .frame(height: 200)
+                    .overlay(
+                        Image(systemName: "desktopcomputer") // Placeholder for 1D image
+                            .font(.system(size: 60))
+                            .foregroundColor(.gray.opacity(0.3))
+                    )
+                
+                if event.isFree {
+                    Text("FREE")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(AppTheme.Colors.primary)
+                        .cornerRadius(4)
+                        .padding(16)
+                }
+            }
+            
+            Text(event.title)
+                .font(.system(size: 22, weight: .bold))
+            
+            HStack {
+                // Instructor
+                HStack {
+                    Circle().fill(.gray).frame(width: 32, height: 32)
+                    Text(event.instructor)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                // Attendance
+                HStack {
+                    Image(systemName: "person.2.fill")
+                    Text("\(event.attendanceCount) attending")
+                }
+                .font(.caption)
+                .foregroundColor(.gray)
+            }
+            
+            HStack {
+                if let spots = event.spotsLeft {
+                    Text("\(spots) spots left")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .bold()
+                }
+                
+                Spacer()
+                
+                Button(action: { }) {
+                    Text("Join Event")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 10)
+                        .background(AppTheme.Colors.primary)
+                        .cornerRadius(8)
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(24)
+        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+    }
+}
+
+struct UpcomingEventRow: View {
+    let event: Event
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemGray6))
+                .frame(width: 70, height: 70)
+                .overlay(Image(systemName: "calendar").foregroundColor(.gray))
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(event.title)
+                    .font(.system(size: 16, weight: .bold))
+                HStack {
+                    Text("\(event.date) • \(event.time)")
+                    Spacer()
+                }
+                .font(.caption)
+                .foregroundColor(AppTheme.Colors.primary)
+                
+                HStack {
+                    Image(systemName: "mappin.circle.fill")
+                    Text(event.location)
+                }
+                .font(.caption2)
+                .foregroundColor(.gray)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .foregroundColor(.gray)
+        }
+    }
+}

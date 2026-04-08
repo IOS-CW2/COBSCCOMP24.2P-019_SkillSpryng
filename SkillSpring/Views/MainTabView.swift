@@ -5,53 +5,55 @@ struct MainTabView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Tab 1: Home / Discover
+            // Tab 1: Home
             NavigationView {
                 DiscoverView()
             }
             .navigationViewStyle(.stack)
             .tabItem {
-                Label("Home", systemImage: "house.fill")
+                Label("HOME", systemImage: "house.fill")
             }
             .tag(0)
             
-            // Tab 2: Matches / Sessions
+            // Tab 2: Sessions
             NavigationView {
-                MatchesListView()
+                MySessionsView()
             }
             .navigationViewStyle(.stack)
             .tabItem {
-                Label("Sessions", systemImage: "calendar")
+                Label("SESSIONS", systemImage: "calendar")
             }
             .tag(1)
             
-            // Tab 3: Map Selection
+            // Tab 3: Chat
             NavigationView {
-                MapSelectionView()
+            NotificationsView()
+                .navigationTitle("")
+                .navigationBarHidden(true)
             }
             .navigationViewStyle(.stack)
             .tabItem {
-                Label("Map", systemImage: "mappin.and.ellipse")
+                Label("CHAT", systemImage: "message.fill")
             }
             .tag(2)
             
-            // Tab 4: Analytics / Learning Pulse
+            // Tab 4: Rewards
             NavigationView {
-                AnalyticsView()
+                RewardsTabView()
             }
             .navigationViewStyle(.stack)
             .tabItem {
-                Label("Analytics", systemImage: "chart.bar.fill")
+                Label("REWARDS", systemImage: "crown.fill")
             }
             .tag(3)
             
-            // Tab 5: Profile / Match Detail
+            // Tab 5: Profile
             NavigationView {
-                MatchDetailView(profile: MockDataProvider.shared.elenaProfile)
+                ProfileView()
             }
             .navigationViewStyle(.stack)
             .tabItem {
-                Label("Profile", systemImage: "person.fill")
+                Label("PROFILE", systemImage: "person.fill")
             }
             .tag(4)
         }

@@ -1,180 +1,276 @@
 import SwiftUI
 
-struct AnalyticsView: View {
+struct LearningAnalyticsView: View {
     let data = MockDataProvider.shared.analyticsData
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 24) {
-                // Header
-                HStack {
-                    Text("SkillSpryng")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color(hex: "00A86B"))
-                    Spacer()
-                    Image(systemName: "bell")
-                        .font(.title3)
-                        .foregroundColor(.gray)
-                }
-                .padding(.horizontal)
-                
-                // Title Area
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Learning Pulse")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Text("You're in the top 5% of active learners this \nweek.")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-                .padding(.horizontal)
-                
-                // Streak Card
-                StreakCard(streak: data.streakDays)
+        VStack(spacing: 0) {
+            // Header
+            AppHeader(title: "Learning Analytics", backAction: { dismiss() })
+            
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 24) {
+                    // Title Area
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Learning Pulse")
+                            .font(.system(size: 28, weight: .bold))
+                        Text("You're in the top 5% of active learners this week.")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
                     .padding(.horizontal)
-                
-                // Stats Grid
-                HStack(spacing: 16) {
-                    StatCard(title: "SESSIONS", value: "\(data.sessionsCount)", subValue: nil, iconName: nil)
-                    StatCard(title: "FOCUS HOURS", value: "\(data.focusHours)", subValue: nil, iconName: nil)
-                    StatCard(title: "SKILLS PRO", value: "\(data.skillsPro)", subValue: nil, iconName: nil)
-                }
-                .padding(.horizontal)
-                
-                // Karma Points Card
-                HStack {
-                    Image(systemName: "person.2.fill")
-                        .foregroundColor(.orange)
-                    Text("KARMA POINTS")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.gray)
-                    Spacer()
-                    Text("Top 5%")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.orange)
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
-                .background(Color(.systemGray6))
-                .cornerRadius(16)
-                .overlay(
-                    Text("\(data.karmaPoints)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .padding(.top, 40)
-                )
-                .frame(height: 80)
-                .padding(.horizontal)
-                
-                // Growth Trajectory section
-                VStack(alignment: .leading, spacing: 16) {
+                    
+                    // Streak Card (Updated to Blue/Cyan Gradient)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color(hex: "276EF1"), Color(hex: "06C1FF")]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                        
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "flame.fill")
+                                        .foregroundColor(.white)
+                                    Text("7 Day Streak!")
+                                        .font(.system(size: 18, weight: .bold))
+                                        .foregroundColor(.white)
+                                }
+                                Text("Keep growing your garden")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing, spacing: 4) {
+                                Text("LEVEL 4")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.7))
+                                Image(systemName: "bolt.horizontal.circle.fill")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(24)
+                    }
+                    .frame(height: 120)
+                    .padding(.horizontal)
+                    
+                    // Stats Grid
+                    HStack(spacing: 12) {
+                        StatChip(title: "SESSIONS", value: "24", color: .blue)
+                        StatChip(title: "FOCUS HOURS", value: "38.5", color: .green)
+                        StatChip(title: "SKILLS PRO", value: "18", color: .orange)
+                    }
+                    .padding(.horizontal)
+                    
+                    // Karma Points Card
                     HStack {
-                        Text("Growth Trajectory")
-                            .font(.headline)
-                            .fontWeight(.bold)
+                        Image(systemName: "person.2.fill")
+                            .foregroundColor(.orange)
+                            .padding(10)
+                            .background(Color.orange.opacity(0.1))
+                            .clipShape(Circle())
+                        
+                        Text("KARMA POINTS")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.gray)
+                        
                         Spacer()
-                        HStack(spacing: 4) {
-                            Text("7 DAYS")
-                                .font(.system(size: 8, weight: .bold))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color(hex: "00A86B"))
-                                .foregroundColor(.white)
-                                .cornerRadius(4)
-                            Text("30 DAYS")
-                                .font(.system(size: 8, weight: .bold))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
+                        
+                        Text("1,240")
+                            .font(.system(size: 18, weight: .bold))
+                        
+                        Text("Top 5%")
+                            .font(.system(size: 8, weight: .bold))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(Color.orange.opacity(0.1))
+                            .foregroundColor(.orange)
+                            .cornerRadius(4)
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(16)
+                    .padding(.horizontal)
+                    
+                    // Growth Trajectory section
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Text("Growth Trajectory")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                            Spacer()
+                            HStack(spacing: 4) {
+                                FilterChip(title: "7 DAYS", isSelected: true, action: { })
+                                FilterChip(title: "30 DAYS", isSelected: false, action: { })
+                            }
+                        }
+                        
+                        GrowthChart(points: data.growthHistory)
+                            .frame(height: 180)
+                    }
+                    .padding(.horizontal)
+                    
+                    // Skill Progression
+                    VStack(alignment: .leading, spacing: 20) {
+                        SectionHeader(title: "Skill Progression")
+                        
+                        VStack(spacing: 16) {
+                            SkillProgressRow(name: "Fullstack Development", level: "Level 4 • Pro", percentage: 0.85, color: .orange)
+                            SkillProgressRow(name: "UI/UX Design Strategy", level: "Level 2 • Intermediate", percentage: 0.42, color: .blue)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    // Focus Breakdown
+                    VStack(alignment: .leading, spacing: 16) {
+                        SectionHeader(title: "Focus Breakdown")
+                        
+                        VStack(spacing: 12) {
+                            FocusBreakdownRow(label: "TEACHING EFFICIENCY", percentage: 82, color: .green)
+                            FocusBreakdownRow(label: "LEARNING INTAKE", percentage: 64, color: .green)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    // Next Milestone Card
+                    HStack(spacing: 16) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.yellow.opacity(0.1))
+                                .frame(width: 44, height: 44)
+                            Image(systemName: "trophy.fill")
+                                .foregroundColor(.yellow)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Next Milestone")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("Complete 3 more peer reviews to unlock 'Community Catalyst' badge.")
+                                .font(.system(size: 10))
                                 .foregroundColor(.gray)
                         }
                     }
+                    .padding()
+                    .background(Color.yellow.opacity(0.05))
+                    .cornerRadius(16)
+                    .padding(.horizontal)
                     
-                    GrowthChart(points: data.growthHistory)
-                        .frame(height: 180)
+                    Spacer().frame(height: 100)
                 }
-                .padding(.horizontal)
-                
-                // Skill Progression
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Skill Progression")
-                        .font(.headline)
-                        .fontWeight(.bold)
-                    
-                    ForEach(data.skillProgress) { progress in
-                        SkillProgressBar(
-                            name: progress.name,
-                            percentage: progress.percentage,
-                            subheadline: progress.level,
-                            color: progress.name.contains("Fullstack") ? .blue : .green
-                        )
-                    }
-                }
-                .padding(.horizontal)
-                
-                // Next Milestone Card
-                HStack(spacing: 16) {
-                    Circle()
-                        .fill(Color.yellow.opacity(0.1))
-                        .frame(width: 44, height: 44)
-                        .overlay(Image(systemName: "trophy.fill").foregroundColor(.yellow))
-                    
+                .padding(.top)
+            }
+        }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+    }
+}
+
+struct StatChip: View {
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(.system(size: 8, weight: .bold))
+                .foregroundColor(.gray)
+            Text(value)
+                .font(.system(size: 18, weight: .bold))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .background(Color.white)
+        .cornerRadius(16)
+    }
+}
+
+struct SkillProgressRow: View {
+    let name: String
+    let level: String
+    let percentage: Double
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(color.opacity(0.1))
+                    .frame(width: 32, height: 32)
+                Image(systemName: "chevron.left.forwardslash.chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundColor(color)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Next Milestone")
-                            .font(.system(size: 14, weight: .bold))
-                        Text("Complete 3 more peer reviews to unlock 'Community Catalyst' badge.")
-                            .font(.system(size: 12))
+                        Text(name)
+                            .font(.system(size: 12, weight: .bold))
+                        Text(level)
+                            .font(.system(size: 10))
                             .foregroundColor(.gray)
                     }
+                    Spacer()
+                    Text("\(Int(percentage * 100))%")
+                        .font(.system(size: 12, weight: .bold))
                 }
-                .padding()
-                .background(Color.yellow.opacity(0.05))
-                .cornerRadius(16)
-                .padding(.horizontal)
                 
-                Spacer().frame(height: 100)
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(Color(.systemGray6))
+                        .frame(height: 6)
+                    Capsule()
+                        .fill(color)
+                        .frame(width: 200 * CGFloat(percentage), height: 6) // Mock width
+                }
             }
-            .padding(.top)
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(16)
+    }
+}
+
+struct FocusBreakdownRow: View {
+    let label: String
+    let percentage: Int
+    let color: Color
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(label)
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(.gray)
+                Spacer()
+                Text("\(percentage)%")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(color)
+            }
+            
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color(.systemGray6))
+                    .frame(height: 4)
+                Capsule()
+                    .fill(color)
+                    .frame(width: 300 * CGFloat(percentage) / 100, height: 4) // Mock width
+            }
         }
     }
 }
 
+
 // Sub-components
-struct StreakCard: View {
-    let streak: Int
-    
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 4) {
-                    Image(systemName: "flame.fill")
-                    Text("\(streak) Day Streak!")
-                        .fontWeight(.bold)
-                }
-                .font(.headline)
-                .foregroundColor(.white)
-                
-                Text("Keep growing your garden")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.8))
-            }
-            
-            Spacer()
-            
-            VStack {
-                Text("LEVEL 4")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(.white.opacity(0.6))
-                Image(systemName: "bolt.fill")
-                    .font(.title2)
-                    .foregroundColor(.white)
-            }
-        }
-        .padding(AppTheme.Spacing.lg)
-        .background(AppTheme.Gradients.streakCard)
-        .cornerRadius(AppTheme.Radius.xl)
-    }
-}
+
 
 struct GrowthChart: View {
     let points: [GrowthPoint]
