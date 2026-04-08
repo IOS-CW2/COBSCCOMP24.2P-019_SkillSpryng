@@ -11,7 +11,7 @@ struct SignInView: View {
                 HStack {
                     Button(action: { presentationMode.wrappedValue.dismiss() }) {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.green)
+                            .foregroundColor(AppTheme.Colors.primary)
                             .padding()
                     }
                     Spacer()

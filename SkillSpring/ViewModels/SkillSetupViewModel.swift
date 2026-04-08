@@ -33,19 +33,23 @@ class SkillSetupViewModel: ObservableObject {
     }
     
     func toggleTeachSkill(_ skill: String) {
-        if selectedTeachSkills.contains(skill) {
-            selectedTeachSkills.remove(skill)
+        var copy = selectedTeachSkills
+        if copy.contains(skill) {
+            copy.remove(skill)
         } else {
-            selectedTeachSkills.insert(skill)
+            copy.insert(skill)
         }
+        selectedTeachSkills = copy
     }
     
     func toggleLearnSkill(_ skill: String) {
-        if selectedLearnSkills.contains(skill) {
-            selectedLearnSkills.remove(skill)
+        var copy = selectedLearnSkills
+        if copy.contains(skill) {
+            copy.remove(skill)
         } else {
-            selectedLearnSkills.insert(skill)
+            copy.insert(skill)
         }
+        selectedLearnSkills = copy
     }
     
     func saveProfile(fullName: String, phoneNumber: String) {

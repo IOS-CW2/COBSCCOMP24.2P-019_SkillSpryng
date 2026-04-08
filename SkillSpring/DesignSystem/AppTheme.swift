@@ -34,19 +34,17 @@ enum AppTheme {
     // -------------------------------------------------------------------------
     enum Colors {
         // Primary Brand Green — used for icons, tags, toggles, links
-        // Sourced from: signup screen, OTP border, toggle tint, tags
-        static let primary       = Color(hex: "00A86B")  // Emerald
+        // Brand color: #1D9E75
+        static let primary       = Color(hex: "1D9E75")  // SkillSpryng Green
 
         // Lighter brand green — used for checkmark circle, streak card top
-        static let primaryLight  = Color(hex: "3AC45A")  // Leaf Green
+        static let primaryLight  = Color(hex: "2DBF8E")  // Lighter SkillSpryng Green
 
-        // Button gradient — LEFT stop (current PrimaryButton gradient)
-        // rgb(0.1, 0.8, 0.4) ≈ #1ACC66
-        static let buttonStart   = Color(hex: "1ACC66")
+        // Button gradient — LEFT stop
+        static let buttonStart   = Color(hex: "1D9E75")
 
-        // Button gradient — RIGHT stop (current PrimaryButton gradient)
-        // rgb(0.0, 0.5, 0.9) ≈ #0080E6
-        static let buttonEnd     = Color(hex: "0080E6")
+        // Button gradient — RIGHT stop
+        static let buttonEnd     = Color(hex: "0F7A5A")
 
         // Background shades
         static let background    = Color(.systemBackground)
@@ -59,14 +57,14 @@ enum AppTheme {
         static let textTertiary  = Color(.tertiaryLabel)
 
         // Semantic
-        static let success       = Color(hex: "3AC45A")
+        static let success       = Color(hex: "2DBF8E")
         static let warning       = Color.orange
         static let error         = Color.red
-        static let info          = Color(hex: "0080E6")
+        static let info          = Color(hex: "1D9E75")
 
         // Onboarding / SignIn — leaf icon gradient
-        static let onboardingTop    = Color(hex: "3AC45A").opacity(0.8)
-        static let onboardingBottom = Color.mint
+        static let onboardingTop    = Color(hex: "1D9E75")
+        static let onboardingBottom = Color(hex: "0F7A5A")
     }
 
     // -------------------------------------------------------------------------
@@ -76,8 +74,8 @@ enum AppTheme {
         /// Main CTA button gradient (green → blue). Used across all PrimaryButtons.
         static let primaryButton = LinearGradient(
             gradient: Gradient(colors: [Colors.buttonStart, Colors.buttonEnd]),
-            startPoint: .leading,
-            endPoint: .trailing
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
         )
 
         /// Streak / hero card gradient (light green → brand green)

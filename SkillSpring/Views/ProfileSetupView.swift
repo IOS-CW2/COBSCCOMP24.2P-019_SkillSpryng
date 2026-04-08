@@ -4,8 +4,9 @@ struct ProfileSetupView: View {
     @ObservedObject var viewModel: SkillSetupViewModel
     var fullName: String
     var phoneNumber: String
-    
+
     @State private var showingImagePicker = false
+    @State private var navigateToFamily = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -136,10 +137,15 @@ struct ProfileSetupView: View {
             
             // Floating Bottom Button
             VStack(spacing: 16) {
-                PrimaryButton(title: "Finish Setup ->", action: {
-                    viewModel.saveProfile(fullName: fullName, phoneNumber: phoneNumber)
+                PrimaryButton(title: "Finish Setup →", action: {
+                    navigateToFamily = true
                 }, isLoading: viewModel.isLoading)
-                
+
+                NavigationLink(
+                    destination: AddFamilyMemberView(),
+                    isActive: $navigateToFamily
+                ) { EmptyView() }
+
                 Text("You can update these details anytime in Settings.")
                     .font(.system(size: 13))
                     .foregroundColor(.gray)

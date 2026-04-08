@@ -11,7 +11,7 @@ struct PrimaryButton: View {
         Button(action: action) {
             ZStack {
                 RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                    .fill(AppTheme.Gradients.primaryButton)
+                    .fill(AppTheme.Colors.primary)
                     .frame(height: 56)
                     
                 if isLoading {

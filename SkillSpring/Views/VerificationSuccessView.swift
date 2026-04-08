@@ -5,6 +5,7 @@ struct VerificationSuccessView: View {
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
     @State private var calendarMessage: String?
+    @State private var navigateToAge = false
     
     var body: some View {
         VStack(spacing: 32) {
@@ -48,7 +49,7 @@ struct VerificationSuccessView: View {
             
             // Bottom Action Link matching mockup
             Button(action: {
-                viewModel.navigateToSkillSetup = true
+                navigateToAge = true
             }) {
                 HStack(spacing: 8) {
                     Text("Continue Now")
@@ -59,8 +60,8 @@ struct VerificationSuccessView: View {
                 }
             }
             .padding(.bottom, AppTheme.Spacing.xxl)
-            
-            NavigationLink(destination: SkillSetupView(fullName: viewModel.fullName, phoneNumber: viewModel.phoneNumber), isActive: $viewModel.navigateToSkillSetup) {
+
+            NavigationLink(destination: AgeVerificationView(), isActive: $navigateToAge) {
                 EmptyView()
             }
         }

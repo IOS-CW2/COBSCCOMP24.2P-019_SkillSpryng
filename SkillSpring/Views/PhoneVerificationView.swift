@@ -10,7 +10,7 @@ struct PhoneVerificationView: View {
             HStack {
                 Button(action: { presentationMode.wrappedValue.dismiss() }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.green)
+                        .foregroundColor(AppTheme.Colors.primary)
                         .padding()
                 }
                 Spacer()
@@ -53,7 +53,7 @@ struct PhoneVerificationView: View {
             }) {
                 Text("Resend Code")
                     .font(.subheadline)
-                    .foregroundColor(.green)
+                    .foregroundColor(AppTheme.Colors.primary)
                     .bold()
             }
             .padding(.top, 10)

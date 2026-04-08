@@ -39,7 +39,7 @@ struct SkillSetupView: View {
                                 .font(.headline)
                             Spacer()
                             Image(systemName: "checkmark.shield.fill")
-                                .foregroundColor(.green)
+                                .foregroundColor(AppTheme.Colors.primary)
                         }
                         
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -70,7 +70,7 @@ struct SkillSetupView: View {
                                 .font(.headline)
                             Spacer()
                             Image(systemName: "book.fill")
-                                .foregroundColor(.blue)
+                                .foregroundColor(AppTheme.Colors.primary)
                         }
                         
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -108,12 +108,12 @@ struct SkillSetupView: View {
                                 }) {
                                     Text(level.rawValue)
                                         .font(.subheadline)
-                                        .foregroundColor(viewModel.experienceLevel == level ? .green : .gray)
+                                        .foregroundColor(viewModel.experienceLevel == level ? AppTheme.Colors.primary : .gray)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
                                         .background(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .stroke(viewModel.experienceLevel == level ? Color.green : Color.gray.opacity(0.3), lineWidth: viewModel.experienceLevel == level ? 2 : 1)
+                                                .stroke(viewModel.experienceLevel == level ? AppTheme.Colors.primary : Color.gray.opacity(0.3), lineWidth: viewModel.experienceLevel == level ? 2 : 1)
                                         )
                                 }
                             }
@@ -151,7 +151,7 @@ struct SkillSetupView: View {
                         .multilineTextAlignment(.center)
                 }
                 
-                PrimaryButton(title: "Continue ->", action: {
+                PrimaryButton(title: "Continue →", action: {
                     navigateToProfileSetup = true
                 }, isLoading: viewModel.isLoading)
                 
@@ -184,13 +184,15 @@ struct SkillChip: View {
     
     var body: some View {
         Button(action: action) {
-            Text(title)
+            Text(isSelected ? "\(title) ×" : title)
                 .font(.subheadline)
-                .foregroundColor(isSelected ? .white : .black)
+                .fontWeight(isSelected ? .semibold : .regular)
+                .foregroundColor(isSelected ? .black : AppTheme.Colors.primary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.green : Color.green.opacity(0.1))
+                .background(isSelected ? Color(red: 39/255.0, green: 226/255.0, blue: 70/255.0) : AppTheme.Colors.primary.opacity(0.1))
                 .cornerRadius(16)
         }
+        .buttonStyle(.plain)
     }
 }

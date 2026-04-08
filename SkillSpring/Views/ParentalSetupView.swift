@@ -4,11 +4,12 @@ struct ParentalSetupView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var parentName = ""
     @State private var parentEmail = ""
+    @State private var navigateToSkillSetup = false
     
     var body: some View {
         ZStack {
             // Light background behind the card
-            Color(red: 0.97, green: 0.97, blue: 0.99)
+            AppTheme.Colors.surfaceLight
                 .edgesIgnoringSafeArea(.all)
                 
             VStack(spacing: 0) {
@@ -101,7 +102,7 @@ struct ParentalSetupView: View {
                             Spacer(minLength: 16)
                             
                             Button(action: {
-                                // Action
+                                navigateToSkillSetup = true
                             }) {
                                 HStack {
                                     Text("Send Approval Request")
@@ -115,6 +116,11 @@ struct ParentalSetupView: View {
                                 .cornerRadius(AppTheme.Radius.md)
                             }
                             .padding(.horizontal, 24)
+
+                            NavigationLink(
+                                destination: SkillSetupView(fullName: "", phoneNumber: ""),
+                                isActive: $navigateToSkillSetup
+                            ) { EmptyView() }
                             
                             Text("Your parent will receive an email to review and\napprove your account before you can use\nSkillSpryng.")
                                 .font(.footnote)

@@ -5,6 +5,7 @@ struct AddFamilyMemberView: View {
     @State private var fullName = ""
     @State private var phoneNumber = ""
     @State private var email = ""
+    @State private var navigateToMain = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -48,12 +49,8 @@ struct AddFamilyMemberView: View {
                     
                     // Gradient Card with Illustration
                     ZStack(alignment: .topLeading) {
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color(red: 0.45, green: 0.88, blue: 0.45), Color(red: 0.05, green: 0.45, blue: 0.85)]), // Matching the green-to-blue gradient
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                        .cornerRadius(20)
+                        AppTheme.Gradients.primaryButton
+                            .cornerRadius(20)
                         
                         // Background watermark graphic (simulated)
                         VStack {
@@ -134,11 +131,11 @@ struct AddFamilyMemberView: View {
                     // Bottom Buttons
                     VStack(spacing: 16) {
                         PrimaryButton(title: "Send Invitation", action: {
-                            // Action
+                            navigateToMain = true
                         })
-                        
+
                         Button(action: {
-                            // Skip action
+                            navigateToMain = true
                         }) {
                             Text("Skip for Now")
                                 .font(.headline)
@@ -151,6 +148,11 @@ struct AddFamilyMemberView: View {
                                         .stroke(AppTheme.Colors.primary, lineWidth: 1)
                                 )
                         }
+
+                        NavigationLink(
+                            destination: MainTabView().navigationBarHidden(true),
+                            isActive: $navigateToMain
+                        ) { EmptyView() }
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 30)

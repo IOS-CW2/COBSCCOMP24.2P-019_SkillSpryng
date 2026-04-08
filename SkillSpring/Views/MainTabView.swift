@@ -55,7 +55,7 @@ struct MainTabView: View {
             }
             .tag(4)
         }
-        .accentColor(Color(hex: "00A86B")) // Brand Green
+        .accentColor(AppTheme.Colors.primary) // Brand Green
     }
 }
 
