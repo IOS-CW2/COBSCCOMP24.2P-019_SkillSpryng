@@ -23,18 +23,10 @@ class AuthViewModel: ObservableObject {
     }
     
     func sendOTP() {
-        guard !fullName.isEmpty, !phoneNumber.isEmpty else {
-            errorMessage = "Please enter your full name and phone number."
-            return
-        }
-        
         isLoading = true
         errorMessage = nil
-        
-        let formattedNumber = phoneNumber.starts(with: "+") ? phoneNumber : "+\(phoneNumber)"
-        
         Task {
-            // Temporarily mocked to bypass for UI testing
+            // BYPASSED for UI navigation testing
             self.isLoading = false
             self.verificationID = "MOCK_ID"
             self.navigateToOTP = true
@@ -42,16 +34,10 @@ class AuthViewModel: ObservableObject {
     }
     
     func verifyCode() {
-        guard let verificationID = verificationID, !verificationCode.isEmpty else {
-            errorMessage = "Missing verification ID or code."
-            return
-        }
-        
         isLoading = true
         errorMessage = nil
-        
         Task {
-            // Temporarily mocked to bypass for UI testing
+            // BYPASSED for UI navigation testing
             self.navigateToSuccess = true
             self.isLoading = false
         }

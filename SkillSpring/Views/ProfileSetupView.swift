@@ -4,8 +4,9 @@ struct ProfileSetupView: View {
     @ObservedObject var viewModel: SkillSetupViewModel
     var fullName: String
     var phoneNumber: String
-    
+
     @State private var showingImagePicker = false
+    @State private var navigateToFamily = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -62,13 +63,13 @@ struct ProfileSetupView: View {
                             showingImagePicker = true
                         }) {
                             Circle()
-                                .fill(Color(hex: "00A86B")) // Mint Green color
+                                .fill(AppTheme.Colors.primary)
                                 .frame(width: 44, height: 44)
                                 .overlay(
                                     Image(systemName: "camera.fill")
                                         .foregroundColor(.white)
                                 )
-                                .shadow(radius: 4)
+                                .shadow(radius: AppTheme.Shadow.button.radius)
                         }
                     }
                     
@@ -123,7 +124,7 @@ struct ProfileSetupView: View {
                         
                         Toggle("", isOn: $viewModel.isLocationEnabled)
                             .toggleStyle(SwitchToggleStyle())
-                            .tint(Color(hex: "00A86B"))
+                            .tint(AppTheme.Colors.primary)
                             .labelsHidden()
                     }
                     .padding()
@@ -136,10 +137,15 @@ struct ProfileSetupView: View {
             
             // Floating Bottom Button
             VStack(spacing: 16) {
-                PrimaryButton(title: "Finish Setup ->", action: {
-                    viewModel.saveProfile(fullName: fullName, phoneNumber: phoneNumber)
+                PrimaryButton(title: "Finish Setup →", action: {
+                    navigateToFamily = true
                 }, isLoading: viewModel.isLoading)
-                
+
+                NavigationLink(
+                    destination: AddFamilyMemberView(),
+                    isActive: $navigateToFamily
+                ) { EmptyView() }
+
                 Text("You can update these details anytime in Settings.")
                     .font(.system(size: 13))
                     .foregroundColor(.gray)
@@ -155,30 +161,3 @@ struct ProfileSetupView: View {
     }
 }
 
-// Helper for Hex colors
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (1, 1, 1, 0)
-        }
-
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: Double(a) / 255
-        )
-    }
-}

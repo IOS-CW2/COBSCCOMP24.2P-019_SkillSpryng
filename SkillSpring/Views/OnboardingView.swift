@@ -18,7 +18,7 @@ struct OnboardingView: View {
                 Spacer()
                 
                 RoundedRectangle(cornerRadius: 24)
-                    .fill(Color(.systemGray6))
+                    .fill(AppTheme.Colors.primary.opacity(0.07))
                     .frame(width: 280, height: 280)
                     .overlay(
                         VStack {
@@ -26,7 +26,7 @@ struct OnboardingView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 100)
-                                .foregroundColor(.blue.opacity(0.7))
+                                .foregroundColor(AppTheme.Colors.primary.opacity(0.75))
                         }
                     )
                     .padding(.bottom, 40)
@@ -45,9 +45,9 @@ struct OnboardingView: View {
                 
                 HStack(spacing: 8) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.green)
-                        .frame(width: 20, height: 6)
-                    Circle().fill(Color.gray.opacity(0.3)).frame(width: 6, height: 6)
+                        .fill(AppTheme.Colors.primary)
+                        .frame(width: 24, height: 6)
+                    Circle().fill(AppTheme.Colors.primary.opacity(0.25)).frame(width: 6, height: 6)
                 }
                 .padding(.bottom, 30)
                 

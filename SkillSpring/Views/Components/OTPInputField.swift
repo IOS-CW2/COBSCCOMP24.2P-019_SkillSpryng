@@ -59,10 +59,10 @@ struct OTPInputField: View {
     
     private func borderColor(at index: Int) -> Color {
         if index == verificationCode.count && isFocused {
-            return .green
+            return AppTheme.Colors.primary
         }
         if index < verificationCode.count {
-            return .green.opacity(0.5)
+            return AppTheme.Colors.primary.opacity(0.5)
         }
         return .gray.opacity(0.3)
     }

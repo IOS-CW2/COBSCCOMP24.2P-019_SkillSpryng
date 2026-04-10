@@ -1,8 +1,8 @@
 import Foundation
-import FirebaseAuth
-import FirebaseFirestore
+@preconcurrency import FirebaseAuth
+@preconcurrency import FirebaseFirestore
 import UIKit
-import CoreData
+@preconcurrency import CoreData
 import Combine
 
 class PhoneAuthUIDelegate: NSObject, AuthUIDelegate {
@@ -31,6 +31,7 @@ class PhoneAuthUIDelegate: NSObject, AuthUIDelegate {
     }
 }
 
+@MainActor
 class FirebaseManager: FirebaseService {
     static let shared = FirebaseManager()
     

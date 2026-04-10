@@ -13,15 +13,28 @@ class CalendarManager: ObservableObject {
     }
     
     func checkAuthorizationStatus() {
-        let status = EKEventStore.authorizationStatus(for: .event)
-        DispatchQueue.main.async {
-            self.isAuthorized = status == .authorized
+        if #available(iOS 17.0, *) {
+            let status = EKEventStore.authorizationStatus(for: .event)
+            DispatchQueue.main.async {
+                self.isAuthorized = status == .fullAccess || status == .writeOnly
+            }
+        } else {
+            let status = EKEventStore.authorizationStatus(for: .event)
+            DispatchQueue.main.async {
+                self.isAuthorized = status == .authorized
+            }
         }
     }
     
     func requestAccess() async -> Bool {
         do {
-            let success = try await eventStore.requestAccess(to: .event)
+            let success: Bool
+            if #available(iOS 17.0, *) {
+                success = try await eventStore.requestFullAccessToEvents()
+            } else {
+                success = try await eventStore.requestAccess(to: .event)
+            }
+            
             DispatchQueue.main.async {
                 self.isAuthorized = success
             }
