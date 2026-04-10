@@ -18,9 +18,11 @@ struct RewardsTabView: View {
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                     Spacer()
-                    Image(systemName: "bell")
-                        .font(.system(size: 20))
-                        .foregroundColor(.gray)
+                    NavigationLink(destination: NotificationsView()) {
+                        Image(systemName: "bell")
+                            .font(.system(size: 20))
+                            .foregroundColor(.gray)
+                    }
                 }
                 .padding(.horizontal)
                 

@@ -18,8 +18,8 @@ class SkillSetupViewModel: ObservableObject {
     
     private let firebaseService: FirebaseService
     
-    init(firebaseService: FirebaseService = FirebaseManager.shared) {
-        self.firebaseService = firebaseService
+    init(firebaseService: FirebaseService? = nil) {
+        self.firebaseService = firebaseService ?? FirebaseManager.shared
     }
     
     let availableTeachSkills = ["UI Design", "Photography", "React", "Swift", "Marketing"]
@@ -53,7 +53,7 @@ class SkillSetupViewModel: ObservableObject {
     }
     
     func saveProfile(fullName: String, phoneNumber: String) {
-        let user = User(
+        _ = User(
             fullName: fullName,
             phoneNumber: phoneNumber,
             skillsToTeach: Array(selectedTeachSkills),

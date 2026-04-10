@@ -4,6 +4,7 @@ struct NotificationsView: View {
     @State private var searchText = ""
     @State private var selectedFilter = "All"
     @State private var selectedConversation: Conversation?
+    @State private var navigateToMatches = false
     
     let filters = ["All", "Unread", "Matches", "Groups"]
     
@@ -12,15 +13,15 @@ struct NotificationsView: View {
             VStack(spacing: 0) {
                     // Custom Header
                     HStack {
-                        Button(action: { /* Back */ }) {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(AppTheme.Colors.primary)
-                        }
                         Spacer()
-                        Text("Notifications")
+                        Text("Messages")
                             .font(AppTheme.Typography.headline)
                         Spacer()
-                        EmptyView().frame(width: 24) // Spacing
+                        NavigationLink(destination: MyMatchesInboxView()) {
+                            Label("Matches", systemImage: "person.2.fill")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(AppTheme.Colors.primary)
+                        }
                     }
                     .padding()
                     

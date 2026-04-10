@@ -18,8 +18,8 @@ class AuthViewModel: ObservableObject {
     
     private let firebaseService: FirebaseService
     
-    init(firebaseService: FirebaseService = FirebaseManager.shared) {
-        self.firebaseService = firebaseService
+    init(firebaseService: FirebaseService? = nil) {
+        self.firebaseService = firebaseService ?? FirebaseManager.shared
     }
     
     func sendOTP() {

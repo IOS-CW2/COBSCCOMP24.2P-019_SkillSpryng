@@ -213,7 +213,7 @@ struct InboxMatchCard: View {
                         }
                     }
                 case .active:
-                    Button(action: { }) {
+                    NavigationLink(destination: ChatDetailView(conversation: MockDataProvider.shared.mockConversations.first(where: { $0.participant.fullName == profile.fullName }) ?? MockDataProvider.shared.mockConversations[0])) {
                         Text("Message")
                             .font(.system(size: 14, weight: .bold))
                             .foregroundColor(AppTheme.Colors.primary)
@@ -222,7 +222,7 @@ struct InboxMatchCard: View {
                             .background(AppTheme.Colors.primary.opacity(0.05))
                             .cornerRadius(12)
                     }
-                    Button(action: { }) {
+                    NavigationLink(destination: SessionBookingView(instructor: profile)) {
                         Text("Book Now")
                             .font(.system(size: 14, weight: .bold))
                             .foregroundColor(.white)
@@ -232,7 +232,7 @@ struct InboxMatchCard: View {
                             .cornerRadius(12)
                     }
                 case .archived:
-                    Button(action: { }) {
+                    NavigationLink(destination: MatchDetailView(profile: profile)) {
                         Text(profile.fullName == "Sarah Jenkins" ? "Request Match Again" : "View Profile")
                             .font(.system(size: 14, weight: .bold))
                             .foregroundColor(profile.fullName == "Sarah Jenkins" ? AppTheme.Colors.primary : .gray)

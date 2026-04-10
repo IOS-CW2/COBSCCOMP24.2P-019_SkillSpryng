@@ -136,7 +136,7 @@ struct ProfileView: View {
                 .padding(.horizontal)
                 
                 // View Analytics Link
-                Button(action: { }) {
+                NavigationLink(destination: LearningAnalyticsView()) {
                     Label("View Analytics", systemImage: "chart.bar.fill")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(AppTheme.Colors.primary)

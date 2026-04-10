@@ -6,52 +6,47 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // Tab 1: Home
-            NavigationView {
+            NavigationStack {
                 DiscoverView()
             }
-            .navigationViewStyle(.stack)
             .tabItem {
                 Label("HOME", systemImage: "house.fill")
             }
             .tag(0)
             
             // Tab 2: Sessions
-            NavigationView {
+            NavigationStack {
                 MySessionsView()
             }
-            .navigationViewStyle(.stack)
             .tabItem {
                 Label("SESSIONS", systemImage: "calendar")
             }
             .tag(1)
             
             // Tab 3: Chat
-            NavigationView {
+            NavigationStack {
             NotificationsView()
                 .navigationTitle("")
                 .navigationBarHidden(true)
             }
-            .navigationViewStyle(.stack)
             .tabItem {
-                Label("CHAT", systemImage: "message.fill")
+                Label("MESSAGES", systemImage: "message.fill")
             }
             .tag(2)
             
             // Tab 4: Rewards
-            NavigationView {
+            NavigationStack {
                 RewardsTabView()
             }
-            .navigationViewStyle(.stack)
             .tabItem {
                 Label("REWARDS", systemImage: "crown.fill")
             }
             .tag(3)
             
             // Tab 5: Profile
-            NavigationView {
+            NavigationStack {
                 ProfileView()
             }
-            .navigationViewStyle(.stack)
             .tabItem {
                 Label("PROFILE", systemImage: "person.fill")
             }

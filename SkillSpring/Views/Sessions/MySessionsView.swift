@@ -70,8 +70,17 @@ struct UpcomingSessionsSection: View {
                     .padding(.horizontal)
                 
                 VStack(spacing: 12) {
-                    CompactSessionRow(date: "OCT 28", title: "UI Typography Workshop", time: "Virtual • 10:00 AM")
-                    CompactSessionRow(date: "OCT 30", title: "Growth Mindset Group", time: "In-Person • 04:00 PM")
+                    if let s1 = MockDataProvider.shared.mockSessions.first {
+                        NavigationLink(destination: SessionDetailView(session: s1)) {
+                            CompactSessionRow(date: "OCT 28", title: "UI Typography Workshop", time: "Virtual • 10:00 AM")
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink(destination: SessionDetailView(session: s1)) {
+                            CompactSessionRow(date: "OCT 30", title: "Growth Mindset Group", time: "In-Person • 04:00 PM")
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
                 }
                 .padding(.horizontal)
             }
@@ -81,7 +90,10 @@ struct UpcomingSessionsSection: View {
                 ActionCard(title: "Prepare for your next session", subtitle: "Review 3 shared documents", icon: "sparkles", color: Color.blue.opacity(0.1))
                 VStack(spacing: 16) {
                     ActionCard(title: "Notes", subtitle: "", icon: "note.text", color: Color.green.opacity(0.1))
-                    ActionCard(title: "Progress Overview", subtitle: "", icon: "chart.bar.fill", color: Color.gray.opacity(0.1))
+                    NavigationLink(destination: LearningAnalyticsView()) {
+                        ActionCard(title: "Progress Overview", subtitle: "", icon: "chart.bar.fill", color: Color.gray.opacity(0.1))
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
             }
             .padding(.horizontal)

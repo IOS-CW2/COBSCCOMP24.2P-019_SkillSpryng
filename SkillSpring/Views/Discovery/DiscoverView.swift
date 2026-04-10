@@ -18,7 +18,7 @@ struct DiscoverView: View {
                     
                     Spacer()
                     
-                    Button(action: { /* Notification action */ }) {
+                    NavigationLink(destination: NotificationsView()) {
                         Image(systemName: "bell")
                             .font(.title3)
                             .foregroundColor(.gray)
@@ -66,7 +66,7 @@ struct DiscoverView: View {
                 }
                 
                 // Perfect Match Card
-                HeroMatchCard()
+                HeroMatchCard(action: { navigateToSkillMatches = true })
                     .padding(.horizontal)
                     .onTapGesture { navigateToSkillMatches = true }
                 
@@ -138,8 +138,11 @@ struct CategoryChip: View {
 }
 
 struct HeroMatchCard: View {
+    var action: () -> Void = {}
+    
     var body: some View {
         ZStack(alignment: .leading) {
+
             RoundedRectangle(cornerRadius: 24)
                 .fill(AppTheme.Gradients.heroCard)
                 .frame(height: 180)
@@ -172,7 +175,7 @@ struct HeroMatchCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(width: 180, alignment: .leading)
                     
-                    Button(action: { /* Connect */ }) {
+                    Button(action: action) {
                         Text("Connect Now")
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(.white)

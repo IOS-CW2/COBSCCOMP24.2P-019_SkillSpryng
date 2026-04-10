@@ -42,13 +42,17 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
+    @MainActor
     private func fetchCityName(for location: CLLocation) {
         let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { placemarks, error in
-            if let placemark = placemarks?.first {
-                DispatchQueue.main.async {
+        Task {
+            do {
+                let placemarks = try await geocoder.reverseGeocodeLocation(location)
+                if let placemark = placemarks.first {
                     self.locationName = placemark.locality ?? "Current Location"
                 }
+            } catch {
+                print("Failed to reverse geocode: \(error.localizedDescription)")
             }
         }
     }
