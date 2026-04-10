@@ -46,7 +46,8 @@ class MockDataProvider {
             UserReview(reviewerName: "Marcus T.", rating: 5, comment: "Elena is an incredible mentor. She helped me restructure my portfolio and land my dream role!", reviewerImageUrl: "instructor1"),
             UserReview(reviewerName: "David L.", rating: 4, comment: "Very clear communication and actionable feedback on my React projects.", reviewerImageUrl: "instructor1")
         ],
-        status: .active
+        status: .active,
+        hourlyRate: 150
     )
     
     var allProfiles: [MatchProfile] {
@@ -299,7 +300,8 @@ class MockDataProvider {
                 status: .upcoming,
                 type: .online,
                 category: "Creative Strategy",
-                rating: nil
+                rating: nil,
+                matchPercentage: 98
             ),
             Session(
                 title: "Advanced Creative Strategy",
@@ -317,20 +319,26 @@ class MockDataProvider {
                 rating: nil
             ),
             Session(
-                title: "Advanced UI Architecture",
-                instructorName: "Sarah Jenkins",
-                instructorRole: "Growth Lead",
+                title: "Advanced Brand Identity Systems",
+                instructorName: "Marcus Aurelius",
+                instructorRole: "Senior Design Lead",
                 date: "Oct 24",
-                time: "10:00 AM",
-                duration: "60 min",
+                time: "14:00 - 15:30",
+                duration: "90 min",
                 location: nil,
                 distance: nil,
                 timeRemaining: nil,
-                status: .upcoming,
+                status: .completed,
                 type: .online,
-                category: "Digital Workshop",
-                rating: nil
-            ),
+                category: "Brand Systems",
+                rating: 5,
+                notes: "Focus was placed on developing a scalable design system for enterprise-level applications. Discussed the implementation of atomic design principles and color accessibility.",
+                creditsEarned: 450,
+                recordingAvailable: true,
+                recordingDuration: "1h 35m",
+                lessonCount: 8
+            )
+,
             Session(
                 title: "Systems Thinking 101",
                 instructorName: "David Chen",

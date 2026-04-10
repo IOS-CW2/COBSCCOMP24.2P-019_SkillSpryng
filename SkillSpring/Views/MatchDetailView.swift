@@ -184,7 +184,7 @@ struct MatchDetailView: View {
                             .background(RoundedRectangle(cornerRadius: 16).stroke(AppTheme.Colors.primary, lineWidth: 2))
                     }
                     
-                    Button(action: { }) {
+                    NavigationLink(destination: SessionBookingView(instructor: profile)) {
                         Text("Book Session ->")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(.white)

@@ -26,5 +26,6 @@ struct MatchProfile: Identifiable {
     let responseTime: String
     let availability: [String]
     let reviews: [UserReview]
-    let status: MatchStatus
+    var status: MatchStatus = .suggested
+    var hourlyRate: Int = 120 // Default rate in SKP
 }

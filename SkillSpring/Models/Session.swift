@@ -21,9 +21,17 @@ struct Session: Identifiable {
     let duration: String
     let location: String?
     let distance: String?
-    let timeRemaining: String? // e.g. "In 2 hours"
+    let timeRemaining: String?
     let status: SessionStatus
     let type: SessionType
-    let category: String // e.g. "Digital Workshop", "1-on-1 Mentorship"
+    let category: String
     let rating: Int?
+    
+    // Detailed fields
+    var notes: String?
+    var creditsEarned: Int?
+    var matchPercentage: Int? = 98
+    var recordingAvailable: Bool = false
+    var recordingDuration: String?
+    var lessonCount: Int?
 }

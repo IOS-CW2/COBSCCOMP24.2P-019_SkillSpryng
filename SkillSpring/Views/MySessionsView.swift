@@ -196,7 +196,7 @@ struct MainSessionCard: View {
             }
             
             HStack(spacing: 12) {
-                Button(action: { }) {
+                NavigationLink(destination: SessionDetailView(session: session)) {
                     Text("View Details")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(AppTheme.Colors.primary)
@@ -205,14 +205,26 @@ struct MainSessionCard: View {
                         .background(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.Colors.primary.opacity(0.2), lineWidth: 1))
                 }
                 
-                Button(action: { }) {
-                    Text(session.type == .online ? "Join Session" : "Get Location")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(AppTheme.Colors.primary)
-                        .cornerRadius(12)
+                if session.type == .online {
+                    NavigationLink(destination: LiveSessionView(session: session)) {
+                        Text("Join Session")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(AppTheme.Colors.primary)
+                            .cornerRadius(12)
+                    }
+                } else {
+                    Button(action: { }) {
+                        Text("Get Location")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(AppTheme.Colors.primary)
+                            .cornerRadius(12)
+                    }
                 }
             }
         }
@@ -264,56 +276,59 @@ struct HistorySessionRow: View {
     let session: Session
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 14) {
-                Image("instructor1")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 44, height: 44)
-                    .clipShape(Circle())
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(session.title)
-                            .font(.system(size: 15, weight: .bold))
-                        Spacer()
-                        StatusBadge.sessionStatus(session.status)
-                    }
+        NavigationLink(destination: SessionDetailView(session: session)) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: 14) {
+                    Image("instructor1")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 44, height: 44)
+                        .clipShape(Circle())
                     
-                    Text("with \(session.instructorName)")
-                        .font(.system(size: 12))
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(session.title)
+                                .font(.system(size: 15, weight: .bold))
+                            Spacer()
+                            StatusBadge.sessionStatus(session.status)
+                        }
+                        
+                        Text("with \(session.instructorName)")
+                            .font(.system(size: 12))
+                            .foregroundColor(.gray)
+                        
+                        HStack(spacing: 8) {
+                            Label(session.date, systemImage: "calendar")
+                            Text("•")
+                            Text(session.time)
+                        }
+                        .font(.system(size: 10))
                         .foregroundColor(.gray)
-                    
-                    HStack(spacing: 8) {
-                        Label(session.date, systemImage: "calendar")
-                        Text("•")
-                        Text(session.time)
                     }
-                    .font(.system(size: 10))
-                    .foregroundColor(.gray)
                 }
-            }
-            
-            HStack {
-                StatusBadge(text: session.category, color: .gray)
                 
-                Spacer()
-                
-                if let rating = session.rating {
-                    HStack(spacing: 2) {
-                        ForEach(0..<5) { i in
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 8))
-                                .foregroundColor(i < rating ? .orange : Color(.systemGray5))
+                HStack {
+                    StatusBadge(text: session.category, color: .gray)
+                    
+                    Spacer()
+                    
+                    if let rating = session.rating {
+                        HStack(spacing: 2) {
+                            ForEach(0..<5) { i in
+                                Image(systemName: "star.fill")
+                                    .font(.system(size: 8))
+                                    .foregroundColor(i < rating ? .orange : Color(.systemGray5))
+                            }
                         }
                     }
                 }
             }
+            .padding()
+            .background(Color.white)
+            .cornerRadius(20)
+            .shadow(color: Color.black.opacity(0.03), radius: 10, x: 0, y: 5)
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(20)
-        .shadow(color: Color.black.opacity(0.03), radius: 10, x: 0, y: 5)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
