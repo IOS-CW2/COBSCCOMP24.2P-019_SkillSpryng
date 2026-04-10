@@ -14,12 +14,14 @@ struct SettingsView: View {
                 VStack(spacing: 24) {
                     
                     // User Profile Brief
-                    VStack(spacing: 12) {
+                    VStack(spacing: 16) {
                         Image(user.profileImageURL)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 80, height: 80)
                             .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.white, lineWidth: 3))
+                            .shadow(radius: 5)
                         
                         VStack(spacing: 4) {
                             Text(user.fullName)
@@ -29,17 +31,21 @@ struct SettingsView: View {
                                 .foregroundColor(.gray)
                         }
                         
-                        // Search bar placeholder
+                        // Search bar 
                         HStack {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.gray)
+                                .font(.system(size: 14, weight: .bold))
                             TextField("Search settings", text: .constant(""))
+                                .font(.system(size: 14))
                         }
-                        .padding()
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
                     }
                     .padding(.horizontal)
+                    .padding(.top, 16)
                     
                     // Account & Security Section
                     VStack(alignment: .leading, spacing: 16) {
@@ -48,9 +54,8 @@ struct SettingsView: View {
                         VStack(spacing: 0) {
                             SettingsRow(icon: "person.fill", title: "Personal Information")
                             Divider().padding(.leading, 48)
-                            SettingsRow(icon: "lock.fill", title: "Password & Security")
+                            SettingsRow(icon: "lock.fill", title: "Password & Security", value: "2FA, Logins, Password")
                         }
-                        .padding(.horizontal)
                         .background(Color.white)
                         .cornerRadius(16)
                     }
@@ -60,8 +65,7 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         SectionHeader(title: "SUBSCRIPTION")
                         
-                        SettingsRow(icon: "crown.fill", title: "SkillSpryng Pro", value: "Active • Renews Dec 1")
-                            .padding(.horizontal)
+                        SettingsRow(icon: "crown.fill", title: "SkillSpryng Pro", value: "PRO • Renews Dec 1")
                             .background(Color.white)
                             .cornerRadius(16)
                     }
@@ -72,7 +76,6 @@ struct SettingsView: View {
                         SectionHeader(title: "WALLET")
                         
                         SettingsRow(icon: "w.square.fill", title: "SkillCredits Wallet", value: "4,850 SKP")
-                            .padding(.horizontal)
                             .background(Color.white)
                             .cornerRadius(16)
                     }
@@ -87,7 +90,6 @@ struct SettingsView: View {
                             Divider().padding(.leading, 48)
                             SettingsRow(icon: "moon.fill", title: "Dark Mode", toggleValue: $darkMode)
                         }
-                        .padding(.horizontal)
                         .background(Color.white)
                         .cornerRadius(16)
                     }
@@ -102,19 +104,19 @@ struct SettingsView: View {
                         }
                         
                         VStack(spacing: 0) {
-                            // Profile Visibility Toggle row style from mockup
+                            // Profile Visibility 
                             HStack {
                                 Text("PROFILE VISIBILITY")
                                     .font(.system(size: 10, weight: .bold))
                                     .foregroundColor(.gray)
                                 Spacer()
                                 HStack(spacing: 0) {
-                                    Text("Public").padding(.horizontal, 12).padding(.vertical, 6).background(AppTheme.Colors.primary).foregroundColor(.white).cornerRadius(4)
+                                    Text("Public").padding(.horizontal, 12).padding(.vertical, 6).background(AppTheme.Colors.primary).foregroundColor(.white).cornerRadius(6)
                                     Text("Private").padding(.horizontal, 12).padding(.vertical, 6).foregroundColor(.gray)
                                     Text("Mutuals").padding(.horizontal, 12).padding(.vertical, 6).foregroundColor(.gray)
                                 }
                                 .background(Color(.systemGray6))
-                                .cornerRadius(6)
+                                .cornerRadius(8)
                             }
                             .padding()
                             
@@ -127,9 +129,11 @@ struct SettingsView: View {
                             
                             Divider().padding(.leading, 48)
                             
-                            SettingsRow(icon: "person.badge.plus", title: "Add Family Member", toggleValue: .constant(true))
+                            NavigationLink(destination: AddFamilyMemberView()) {
+                                SettingsRow(icon: "person.badge.plus", title: "Add Family Member", toggleValue: .constant(true))
+                            }
+                            .buttonStyle(PlainButtonStyle())
                         }
-                        .padding(.horizontal)
                         .background(Color.white)
                         .cornerRadius(16)
                     }
@@ -140,10 +144,9 @@ struct SettingsView: View {
                         SectionHeader(title: "DANGER ZONE")
                         
                         VStack(spacing: 0) {
-                            SettingsRow(icon: "trash.fill", title: "Delete Account")
+                            SettingsRow(icon: "trash.fill", title: "Delete Account", value: "Permanently remove all data")
                                 .foregroundColor(.red)
                         }
-                        .padding(.horizontal)
                         .background(Color.white)
                         .cornerRadius(16)
                     }
@@ -174,6 +177,7 @@ struct SettingsView: View {
                     
                     Spacer().frame(height: 60)
                 }
+                .padding(.bottom, 40)
             }
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())

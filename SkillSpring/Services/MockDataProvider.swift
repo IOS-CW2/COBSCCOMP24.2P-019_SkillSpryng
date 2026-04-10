@@ -19,10 +19,14 @@ class MockDataProvider {
         sessionsCount: 128,
         rating: 4.9,
         awardsCount: 12,
-        walletBalance: 4850,
-        isPro: true,
+        walletBalance: 200,
+        isPro: false, // Changed to false to show the subscription UI better
         isChildMode: false,
-        profileCompleteness: 85
+        profileCompleteness: 85,
+        skillStats: [
+            "Creative Design": SkillMetrics(credibilityScore: 85, studentsTaught: 12, rating: 4.9, level: "EXPERT"),
+            "UI Engineering": SkillMetrics(credibilityScore: 62, studentsTaught: 24, rating: 5.0, level: "PRO")
+        ]
     )
     
     // MARK: - Match Profiles

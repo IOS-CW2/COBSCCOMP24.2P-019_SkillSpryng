@@ -5,7 +5,8 @@ struct CredibilityCard: View {
     let score: Int
     let badge: String // e.g., "EXPERT", "PRO"
     let subheadline: String
-    let iconUrl: String? = nil
+    var studentsTaught: Int = 12
+    var rating: Double = 4.9
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -17,8 +18,8 @@ struct CredibilityCard: View {
                     .font(.system(size: 10, weight: .bold))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(AppTheme.Colors.primary.opacity(0.1))
-                    .foregroundColor(AppTheme.Colors.primary)
+                    .background(badge == "EXPERT" ? Color.blue.opacity(0.1) : Color.green.opacity(0.1))
+                    .foregroundColor(badge == "EXPERT" ? .blue : .green)
                     .cornerRadius(4)
             }
             
@@ -47,26 +48,47 @@ struct CredibilityCard: View {
             }
             
             HStack {
-                HStack(spacing: -8) {
-                    ForEach(0..<3) { i in
-                        Circle()
-                            .fill(Color(.systemGray4))
-                            .frame(width: 24, height: 24)
-                            .overlay(Image(systemName: "person.fill").font(.system(size: 10)).foregroundColor(.white))
-                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                    }
-                    Text("+14")
-                        .font(.system(size: 10, weight: .bold))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(studentsTaught) students taught • \(String(format: "%.1f", rating)) ★ • \(badge == "EXPERT" ? "4.9k" : "1.2k") views")
+                        .font(.system(size: 10, weight: .medium))
                         .foregroundColor(.gray)
-                        .padding(.leading, 12)
+                    
+                    HStack(spacing: -8) {
+                        ForEach(0..<4) { i in
+                            Image("instructor\(i % 2 + 1)")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 24, height: 24)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                        }
+                        Text("+4")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.gray)
+                            .padding(.leading, 12)
+                        
+                        Spacer()
+                        
+                        HStack(spacing: 8) {
+                            StatusBadge(text: "Online", color: .green)
+                            StatusBadge(text: "In-Person", color: .blue)
+                        }
+                    }
+                    .padding(.top, 4)
                 }
-                
+            }
+            
+            Divider()
+            
+            HStack {
                 Spacer()
-                
                 Button(action: { }) {
-                    Text("Find Learners")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(AppTheme.Colors.primary)
+                    HStack(spacing: 4) {
+                        Text("Find Learners")
+                        Image(systemName: "arrow.right")
+                    }
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(AppTheme.Colors.primary)
                 }
             }
         }
