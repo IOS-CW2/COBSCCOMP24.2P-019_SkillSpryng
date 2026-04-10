@@ -10,25 +10,12 @@ struct AddFamilyMemberView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Top Navigation Bar
-            HStack {
-                Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(AppTheme.Colors.primary)
-                        .padding()
-                }
-                Spacer()
-                Text("Add Family Member")
-                    .font(.headline)
-                    .bold()
-                Spacer()
-                Button(action: {
-                    // Skip action
-                }) {
-                    Text("Skip")
-                        .foregroundColor(.gray)
-                        .padding()
-                }
-            }
+            AppHeader(
+                title: "Add Family Member",
+                backAction: { presentationMode.wrappedValue.dismiss() },
+                actionText: "Skip",
+                action: { navigateToMain = true }
+            )
             .padding(.top, 10)
             
             // Progress Bar

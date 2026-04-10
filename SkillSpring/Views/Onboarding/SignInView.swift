@@ -8,19 +8,9 @@ struct SignInView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
                 
-                HStack {
-                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(AppTheme.Colors.primary)
-                            .padding()
-                    }
-                    Spacer()
-                    Text("Get Started")
-                        .font(.headline)
-                        .bold()
-                    Spacer()
-                    Image(systemName: "chevron.left").opacity(0).padding()
-                }
+                // Header
+                AppHeader(title: "Get Started", backAction: { presentationMode.wrappedValue.dismiss() })
+                    .padding(.top, 10)
                 
                 ZStack {
                     RoundedRectangle(cornerRadius: AppTheme.Radius.md)

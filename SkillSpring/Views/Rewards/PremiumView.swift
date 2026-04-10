@@ -8,19 +8,8 @@ struct PremiumView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 32) {
                 // Header
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.gray)
-                    }
-                    Spacer()
-                    Text("Go Premium")
-                        .font(.headline)
-                    Spacer()
-                    EmptyView().frame(width: 34)
-                }
-                .padding(.horizontal)
+                AppHeader(title: "Go Premium", backAction: { dismiss() })
+                    .padding(.top, 8)
                 
                 // Elevation Hero Card
                 ZStack {

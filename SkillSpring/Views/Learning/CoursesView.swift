@@ -8,26 +8,13 @@ struct CoursesView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header with Back Button and Courses/Events Switch
-            HStack {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(AppTheme.Colors.primary)
-                }
-                
-                Spacer()
-                
-                Text("Courses")
-                    .font(AppTheme.Typography.headline)
-                
-                Spacer()
-                
-                Button(action: { /* Search */ }) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-                }
-            }
-            .padding()
+            // Header with Back Button and Search
+            AppHeader(
+                title: "Courses",
+                backAction: { dismiss() },
+                actionIcon: "magnifyingglass",
+                action: { /* Search */ }
+            )
             
             // Courses/Events Selector
             HStack(spacing: 0) {
@@ -149,6 +136,7 @@ struct CoursesView: View {
                 EventsView(isNavigatedFromCourses: true)
             }
         }
+        .navigationBarHidden(true)
     }
 }
 

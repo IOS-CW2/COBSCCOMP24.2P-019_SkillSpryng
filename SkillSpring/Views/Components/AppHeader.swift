@@ -5,35 +5,44 @@ struct AppHeader: View {
     var showBackButton: Bool = true
     var backAction: (() -> Void)? = nil
     var actionIcon: String? = nil
+    var actionText: String? = nil
     var action: (() -> Void)? = nil
     
     var body: some View {
-        HStack {
-            if showBackButton {
-                Button(action: { backAction?() }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(AppTheme.Colors.primary)
-                        .padding(8)
-                        .background(Circle().fill(Color.white).shadow(color: .black.opacity(0.05), radius: 5))
-                }
-            }
-            
-            Spacer()
-            
+        ZStack {
+            // Absolute Center Title
             Text(title)
                 .font(AppTheme.Typography.headline)
+                .multilineTextAlignment(.center)
             
-            Spacer()
-            
-            if let actionIcon = actionIcon {
-                Button(action: { action?() }) {
-                    Image(systemName: actionIcon)
-                        .foregroundColor(AppTheme.Colors.primary)
-                        .padding(8)
-                        .background(Circle().fill(Color.white).shadow(color: .black.opacity(0.05), radius: 5))
+            // Side Actions
+            HStack {
+                if showBackButton {
+                    Button(action: { backAction?() }) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .padding(8)
+                            .background(Circle().fill(Color.white).shadow(color: .black.opacity(0.05), radius: 5))
+                    }
                 }
-            } else {
-                EmptyView().frame(width: 34)
+                
+                Spacer()
+                
+                if let actionIcon = actionIcon {
+                    Button(action: { action?() }) {
+                        Image(systemName: actionIcon)
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .padding(8)
+                            .background(Circle().fill(Color.white).shadow(color: .black.opacity(0.05), radius: 5))
+                    }
+                } else if let actionText = actionText {
+                    Button(action: { action?() }) {
+                        Text(actionText)
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .padding(8)
+                    }
+                }
             }
         }
         .padding(.horizontal)

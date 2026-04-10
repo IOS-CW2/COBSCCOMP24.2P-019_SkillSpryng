@@ -14,20 +14,8 @@ struct ParentalSetupView: View {
                 
             VStack(spacing: 0) {
                 // Top Navigation Bar
-                HStack {
-                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(AppTheme.Colors.primary)
-                            .padding()
-                    }
-                    Spacer()
-                    Text("Parental Setup")
-                        .font(.headline)
-                        .bold()
-                    Spacer()
-                    Image(systemName: "chevron.left").opacity(0).padding()
-                }
-                .background(Color.white)
+                AppHeader(title: "Parental Setup", backAction: { presentationMode.wrappedValue.dismiss() })
+                    .background(Color.white)
                 
                 // Progress Bar
                 GeometryReader { geometry in

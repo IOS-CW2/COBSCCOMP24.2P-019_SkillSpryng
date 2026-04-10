@@ -9,20 +9,8 @@ struct AgeVerificationView: View {
         VStack(spacing: 0) {
 
             // Top Navigation Bar
-            HStack {
-                Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(AppTheme.Colors.primary)
-                        .padding()
-                }
-                Spacer()
-                Text("Age Verification")
-                    .font(.headline)
-                    .bold()
-                Spacer()
-                Image(systemName: "chevron.left").opacity(0).padding()
-            }
-            .padding(.top)
+            AppHeader(title: "Age Verification", backAction: { presentationMode.wrappedValue.dismiss() })
+                .padding(.top, 10)
 
             // Progress Bar
             GeometryReader { geometry in
