@@ -74,7 +74,7 @@ struct MatchDetailView: View {
                 HStack(alignment: .top, spacing: 20) {
                     VStack(alignment: .leading, spacing: 12) {
                         SectionHeader(title: "CAN TEACH")
-                        ForEach(profile.canTeach, id: \.self) { skill in
+                        ForEach(profile.skillsToTeach, id: \.self) { skill in
                             SkillBadge.teaching(skill)
                         }
                     }
@@ -82,7 +82,7 @@ struct MatchDetailView: View {
                     
                     VStack(alignment: .leading, spacing: 12) {
                         SectionHeader(title: "WANTS TO LEARN")
-                        ForEach(profile.wantsToLearn, id: \.self) { skill in
+                        ForEach(profile.skillsToLearn, id: \.self) { skill in
                             SkillBadge.learning(skill)
                         }
                     }
