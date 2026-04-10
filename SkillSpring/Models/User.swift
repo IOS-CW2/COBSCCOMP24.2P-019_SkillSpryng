@@ -24,4 +24,15 @@ struct User: Identifiable, Codable {
     var isPro: Bool = false
     var isChildMode: Bool = false
     var profileCompleteness: Int = 0
+    
+    // Skill specific statistics
+    var skillStats: [String: SkillMetrics] = [:]
 }
+
+struct SkillMetrics: Codable {
+    var credibilityScore: Int
+    var studentsTaught: Int
+    var rating: Double
+    var level: String // e.g., "EXPERT", "PRO"
+}
+

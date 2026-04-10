@@ -1,0 +1,168 @@
+import SwiftUI
+
+struct WalletView: View {
+    @State private var balance = MockDataProvider.shared.currentUser.walletBalance
+    @Environment(\.dismiss) var dismiss
+    let data = MockDataProvider.shared
+    
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 24) {
+                // Header
+                AppHeader(title: "Wallet", backAction: { dismiss() })
+                
+                // My Wallet Title Area
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("My Wallet")
+                        .font(.system(size: 28, weight: .bold))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+                
+                // High-Fidelity Balance Card
+                ZStack {
+                    RoundedRectangle(cornerRadius: 32)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color(hex: "1D9E75"), Color(hex: "27E246")]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("CURRENT WALLET BALANCE")
+                                    .font(.system(size: 10, weight: .black))
+                                    .foregroundColor(.white.opacity(0.8))
+                                
+                                HStack(alignment: .center, spacing: 8) {
+                                    Text("\(balance)")
+                                        .font(.system(size: 44, weight: .bold))
+                                        .foregroundColor(.white)
+                                    Text("SKP")
+                                        .font(.system(size: 18, weight: .bold))
+                                        .foregroundColor(.white.opacity(0.7))
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            ZStack {
+                                Circle()
+                                    .fill(Color.white.opacity(0.15))
+                                    .frame(width: 50, height: 50)
+                                Image(systemName: "creditcard.fill")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        
+                        HStack {
+                            HStack(spacing: -10) {
+                                ForEach(0..<3) { i in
+                                    Image("instructor\(i + 1)")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 32, height: 32)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.white.opacity(0.3), lineWidth: 2))
+                                }
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 32, height: 32)
+                                    Text("+12")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            
+                            Text("Trusted by 14 local mentors")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(.white.opacity(0.9))
+                        }
+                    }
+                    .padding(32)
+                }
+                .padding(.horizontal)
+                
+                // Dashboard Quick Actions
+                HStack(spacing: 32) {
+                    WalletActionView(icon: "plus.circle.fill", label: "EARN", color: .green)
+                    WalletActionView(icon: "bag.circle.fill", label: "SPEND", color: .blue)
+                    WalletActionView(icon: "arrow.left.arrow.right.circle.fill", label: "TRANSFER", color: .teal)
+                }
+                .padding(.vertical, 8)
+                
+                // Replenish Credits Section
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack {
+                        Text("Replenish Credits")
+                            .font(.headline)
+                        Spacer()
+                        Button("VIEW ALL") { }
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(AppTheme.Colors.primary)
+                    }
+                    
+                    VStack(spacing: 16) {
+                        ForEach(data.creditPacks) { pack in
+                            CreditPackCard(pack: pack)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                
+                // Skill Missions Section
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Skill Missions")
+                                .font(.headline)
+                            Text("Earn while you grow")
+                                .font(.system(size: 11))
+                                .foregroundColor(.gray)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 14))
+                            .foregroundColor(.gray)
+                    }
+                    
+                    VStack(spacing: 12) {
+                        ForEach(data.skillMissions) { mission in
+                            MissionRow(mission: mission)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                
+                Spacer().frame(height: 100)
+            }
+        }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+    }
+}
+
+struct WalletActionView: View {
+    let icon: String
+    let label: String
+    let color: Color
+    
+    var body: some View {
+        Button(action: { }) {
+            VStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 32))
+                    .foregroundColor(color)
+                    .background(Circle().fill(Color.white).shadow(color: Color.black.opacity(0.05), radius: 5))
+                
+                Text(label)
+                    .font(.system(size: 10, weight: .black))
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+}

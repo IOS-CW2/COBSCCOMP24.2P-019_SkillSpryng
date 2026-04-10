@@ -8,9 +8,7 @@ struct ProfileView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
                 // Header Navigation
-                AppHeader(title: "Profile", showBackButton: true, actionIcon: "gearshape") {
-                    // Navigate to Settings - this will happen via the action button if I wrap the header or use a state
-                }
+                AppHeader(title: "Profile", showBackButton: true, actionIcon: "gearshape") { }
                 .overlay(
                     HStack {
                         Spacer()
@@ -20,26 +18,26 @@ struct ProfileView: View {
                     }
                 )
                 
-                // Profile Hero Card
+                // Profile Hero 
                 VStack(spacing: 16) {
                     ZStack(alignment: .bottomTrailing) {
                         Image(user.profileImageURL)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 90, height: 90)
+                            .frame(width: 100, height: 100)
                             .clipShape(Circle())
                             .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                            .shadow(radius: 5)
+                            .overlay(
+                                Circle()
+                                    .stroke(AppTheme.Colors.primary, lineWidth: 2)
+                                    .frame(width: 108, height: 108)
+                            )
                         
-                        Button(action: { }) {
-                            Image(systemName: "pencil")
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(8)
-                                .background(AppTheme.Colors.accent)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                        }
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .offset(x: -5, y: -5)
                     }
                     
                     VStack(spacing: 4) {
@@ -67,7 +65,7 @@ struct ProfileView: View {
                     .padding(.horizontal)
                 }
                 
-                // Completion Progress
+                // Profile Completeness
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("Profile Completeness")
@@ -78,14 +76,17 @@ struct ProfileView: View {
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                     
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(Color(.systemGray6))
-                            .frame(height: 8)
-                        Capsule()
-                            .fill(AppTheme.Colors.primary)
-                            .frame(width: 300 * CGFloat(user.profileCompleteness) / 100, height: 8)
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule()
+                                .fill(Color(.systemGray6))
+                                .frame(height: 8)
+                            Capsule()
+                                .fill(AppTheme.Colors.primary)
+                                .frame(width: geo.size.width * CGFloat(user.profileCompleteness) / 100, height: 8)
+                        }
                     }
+                    .frame(height: 8)
                     
                     Button(action: { }) {
                         HStack(spacing: 4) {
@@ -101,33 +102,57 @@ struct ProfileView: View {
                 .cornerRadius(16)
                 .padding(.horizontal)
                 
-                // Wallet Balance
-                HStack {
-                    Image(systemName: "creditcard.fill")
-                        .foregroundColor(AppTheme.Colors.primary)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Balance")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundColor(.gray)
-                        Text("\(user.walletBalance) SKP")
-                            .font(.system(size: 16, weight: .bold))
+                // Wallet Balance High-Fidelity
+                NavigationLink(destination: WalletView()) {
+                    HStack {
+                        ZStack {
+                            Circle()
+                                .fill(AppTheme.Colors.primary.opacity(0.1))
+                                .frame(width: 40, height: 40)
+                            Image(systemName: "banknote.fill")
+                                .foregroundColor(AppTheme.Colors.primary)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Balance")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.gray)
+                            Text("\(user.walletBalance) SKP")
+                                .font(.system(size: 18, weight: .bold))
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.gray.opacity(0.5))
                     }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.gray.opacity(0.5))
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(16)
+                    .shadow(color: Color.black.opacity(0.03), radius: 10, x: 0, y: 5)
                 }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(16)
-                .shadow(color: Color.black.opacity(0.03), radius: 10, x: 0, y: 5)
+                .buttonStyle(PlainButtonStyle())
                 .padding(.horizontal)
                 
-                // Stats Row
-                ProfileStatRow(sessions: user.sessionsCount, rating: user.rating, awards: user.awardsCount)
-                    .padding(.horizontal)
+                // View Analytics Link
+                Button(action: { }) {
+                    Label("View Analytics", systemImage: "chart.bar.fill")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(AppTheme.Colors.primary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
                 
-                // My Skills Section
+                // Stats Grid
+                HStack(spacing: 12) {
+                    SimplifiedStatCard(value: "\(user.sessionsCount)", label: "SESSIONS")
+                    SimplifiedStatCard(value: String(format: "%.1f", user.rating), label: "RATING")
+                    SimplifiedStatCard(value: "\(user.skillsToTeach.count + user.skillsToLearn.count)", label: "SKILLS")
+                }
+                .padding(.horizontal)
+                
+                // My Skills Quick View
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
                         Text("My Skills")
@@ -146,9 +171,11 @@ struct ProfileView: View {
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(.gray)
                         
-                        FlowLayout(spacing: 8) {
-                            ForEach(user.skillsToTeach, id: \.self) { skill in
-                                SkillBadge.teaching(skill)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(user.skillsToTeach, id: \.self) { skill in
+                                    SkillBadge.teaching(skill)
+                                }
                             }
                         }
                     }
@@ -158,16 +185,18 @@ struct ProfileView: View {
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(.gray)
                         
-                        FlowLayout(spacing: 8) {
-                            ForEach(user.skillsToLearn, id: \.self) { skill in
-                                SkillBadge.learning(skill)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(user.skillsToLearn, id: \.self) { skill in
+                                    SkillBadge.learning(skill)
+                                }
                             }
                         }
                     }
                 }
                 .padding(.horizontal)
                 
-                // Badges Section
+                // Badges 
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
                         Text("Badges")
@@ -190,7 +219,7 @@ struct ProfileView: View {
                 }
                 .padding(.horizontal)
                 
-                // Reviews Section
+                // Reviews
                 VStack(alignment: .leading, spacing: 16) {
                     SectionHeader(title: "REVIEWS", actionTitle: "42 Total", action: { })
                     
@@ -208,113 +237,22 @@ struct ProfileView: View {
     }
 }
 
-// MARK: - Supporting Views
-
-struct BadgeIcon: View {
-    let title: String
-    let icon: String
-    let color: Color
+struct SimplifiedStatCard: View {
+    let value: String
+    let label: String
     
     var body: some View {
-        VStack(spacing: 8) {
-            ZStack {
-                Circle().fill(color.opacity(0.1)).frame(width: 50, height: 50)
-                Image(systemName: icon).foregroundColor(color)
-            }
-            Text(title)
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.system(size: 20, weight: .bold))
+            Text(label)
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.gray)
         }
-        .frame(width: 80)
-    }
-}
-
-struct ReviewRow: View {
-    let name: String
-    let time: String
-    let comment: String
-    let rating: Int
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 12) {
-                Image("instructor1") // Placeholder
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(name)
-                        .font(.system(size: 14, weight: .bold))
-                    Text(time)
-                        .font(.system(size: 10))
-                        .foregroundColor(.gray)
-                }
-                
-                Spacer()
-                
-                HStack(spacing: 2) {
-                    ForEach(0..<5) { i in
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 8))
-                            .foregroundColor(i < rating ? .orange : Color(.systemGray4))
-                    }
-                }
-            }
-            
-            Text(comment)
-                .font(.system(size: 13, weight: .medium))
-                .lineSpacing(4)
-                .foregroundColor(.gray)
-        }
-        .padding()
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
         .background(Color.white)
         .cornerRadius(16)
-    }
-}
-
-struct FlowLayout: View {
-    let spacing: CGFloat
-    let items: () -> [AnyView]
-    
-    init(spacing: CGFloat, @ViewBuilder content: @escaping () -> some View) {
-        self.spacing = spacing
-        // Simplification for flow layout in this demo
-        self.items = { [] }
-    }
-    
-    // Using a simpler HStack for demo purposes as FlowLayout is complex to implement generically without custom ViewLayout
-    var body: some View {
-        HStack {
-            // Placeholder for flow logic
-        }
-    }
-}
-
-// Simplified version for the badges row to avoid complex flow layout in demo
-struct SkillBadgeRow: View {
-    let skills: [String]
-    let type: String
-    
-    var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(skills, id: \.self) { skill in
-                    if type == "teaching" {
-                        SkillBadge.teaching(skill)
-                    } else {
-                        SkillBadge.learning(skill)
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Temporary EditProfileView
-struct EditProfileView: View {
-    var body: some View {
-        Text("Edit Profile Content")
+        .shadow(color: Color.black.opacity(0.02), radius: 5)
     }
 }

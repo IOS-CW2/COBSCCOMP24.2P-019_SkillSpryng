@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ChildSafetyView: View {
-    @State private var isAdultMode = true // Mock state to switch between Adult/Child views
+    @State private var isAdultMode = true
     @Environment(\.dismiss) var dismiss
     
     // Adult State Toggles
@@ -19,7 +19,7 @@ struct ChildSafetyView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
                     
-                    // Safety Hero Card
+                    // Safety Hero Status Card
                     SafetyHeroCard(
                         title: "Protected Environment",
                         subtitle: "Enhanced security layers are managing your profile to ensure a respectful and secure digital experience.",
@@ -28,18 +28,19 @@ struct ChildSafetyView: View {
                     .padding(.horizontal)
                     
                     if !isAdultMode {
-                        // CHILD VIEW - Simplified UI
+                        // CHILD VIEW - Display Mode
                         Button(action: { }) {
                             HStack {
                                 Image(systemName: "key.fill")
                                     .foregroundColor(AppTheme.Colors.primary)
+                                    .font(.system(size: 20))
                                 Text("Manage with Parent PIN")
                                     .font(.system(size: 16, weight: .bold))
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .foregroundColor(.gray)
                             }
-                            .padding()
+                            .padding(20)
                             .background(Color.white)
                             .cornerRadius(16)
                             .padding(.horizontal)
@@ -53,44 +54,41 @@ struct ChildSafetyView: View {
                                 Divider().padding(.leading, 48)
                                 SettingsRow(icon: "safari.fill", title: "Safe Search Mode", toggleValue: .constant(true))
                             }
-                            .padding(.horizontal)
                             .background(Color.white)
                             .cornerRadius(16)
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                         
                         VStack(alignment: .leading, spacing: 16) {
                             SectionHeader(title: "COMMUNICATION")
                             
                             SettingsRow(icon: "message.badge.fill", title: "Direct Message Restrictions", toggleValue: .constant(true))
-                                .padding(.horizontal)
                                 .background(Color.white)
                                 .cornerRadius(16)
+                                .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                         
-                        // Toggle for demo
-                        Button("Switch to Adult View") { isAdultMode.toggle() }
+                        // Demo Toggle
+                        Button("Switch to Parent/Adult Control") { isAdultMode.toggle() }
                             .font(.caption)
                             .foregroundColor(.gray)
                         
                     } else {
-                        // ADULT VIEW - Control Panel
+                        // ADULT CONTROL PANEL
                         VStack(alignment: .leading, spacing: 16) {
-                            SectionHeader(title: "CONTENT SAFETY")
+                            SectionHeader(title: "CONTENT & SAFETY")
                             
                             VStack(spacing: 0) {
-                                SettingsRow(icon: "exclamationmark.shield.fill", title: "Restricted Content", toggleValue: $restrictedContent)
+                                SettingsRow(icon: "nosign", title: "Restricted Content", toggleValue: $restrictedContent)
                                 Divider().padding(.leading, 48)
-                                SettingsRow(icon: "star.bubble.fill", title: "Verified Instructors Only", toggleValue: $verifiedInstructors)
+                                SettingsRow(icon: "checkmark.seal.fill", title: "Verified Instructors", toggleValue: $verifiedInstructors)
                                 Divider().padding(.leading, 48)
                                 SettingsRow(icon: "lock.fill", title: "Private Profile", toggleValue: $privateProfile)
                             }
-                            .padding(.horizontal)
                             .background(Color.white)
                             .cornerRadius(16)
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                         
                         VStack(alignment: .leading, spacing: 16) {
                             SectionHeader(title: "COMMUNICATION")
@@ -106,6 +104,7 @@ struct ChildSafetyView: View {
                                         .padding(.vertical, 12)
                                         .background(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.Colors.primary, lineWidth: 1))
                                 }
+                                .padding(.horizontal)
                                 
                                 Divider().padding(.vertical, 8)
                                 
@@ -120,44 +119,45 @@ struct ChildSafetyView: View {
                                         .background(AppTheme.Colors.primary)
                                         .cornerRadius(12)
                                 }
+                                .padding(.horizontal)
                             }
-                            .padding()
+                            .padding(.vertical)
                             .background(Color.white)
                             .cornerRadius(16)
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                         
                         VStack(alignment: .leading, spacing: 16) {
                             SectionHeader(title: "TIME MANAGEMENT")
                             
                             VStack(spacing: 0) {
-                                SettingsRow(icon: "clock.fill", title: "Daily Session Limit", value: "3 Sessions")
+                                SettingsRow(icon: "timer", title: "Daily Session Limit", value: "3 Sessions")
                                 Divider().padding(.leading, 48)
-                                SettingsRow(icon: "moon.stars.fill", title: "Schedule Restrictions", value: "Edit")
+                                SettingsRow(icon: "calendar.badge.clock", title: "Schedule Restrictions", value: "Edit")
                             }
-                            .padding(.horizontal)
                             .background(Color.white)
                             .cornerRadius(16)
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                         
                         VStack(alignment: .leading, spacing: 16) {
                             SectionHeader(title: "REPORTING")
                             
-                            SettingsRow(icon: "doc.text.fill", title: "Activity Report")
-                                .padding(.horizontal)
-                                .background(Color.white)
-                                .cornerRadius(16)
+                            NavigationLink(destination: Text("Activity logs")) {
+                                SettingsRow(icon: "doc.text.below.ecg.fill", title: "Activity Report", value: "Detailed history and logs")
+                            }
+                            .background(Color.white)
+                            .cornerRadius(16)
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                         
-                        // Toggle for demo
-                        Button("Switch to Child View") { isAdultMode.toggle() }
+                        // Demo Toggle
+                        Button("Switch to Protected Child View") { isAdultMode.toggle() }
                             .font(.caption)
                             .foregroundColor(.gray)
                     }
                     
-                    Spacer().frame(height: 60)
+                    Spacer().frame(height: 100)
                 }
                 .padding(.top)
             }
