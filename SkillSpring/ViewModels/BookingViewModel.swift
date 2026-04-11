@@ -51,12 +51,61 @@ class BookingViewModel: ObservableObject {
     }
     
     func confirmBooking() {
-        // Mock logic: deduct points if paid
+        let notificationManager = NotificationManager.shared
+        
         if instructor.status == .active {
+            // Paid booking confirmed
             MockDataProvider.shared.currentUser.walletBalance -= totalPrice
             showSuccess = true
+            
+            // 1. Immediate booking confirmation notification
+            notificationManager.scheduleBookingConfirmation(
+                sessionTitle: "\(instructor.role) Session",
+                instructorName: instructor.fullName,
+                time: selectedTime
+            )
+            
+            // 2. Reminder 30 min before the session
+            // Build a representative date for Oct selectedDate at selectedTime
+            let sessionDate = buildSessionDate(day: selectedDate, timeString: selectedTime)
+            notificationManager.scheduleSessionReminder(
+                identifier: "\(instructor.id)-\(selectedDate)-\(selectedTime)",
+                sessionTitle: "\(instructor.role) Session",
+                instructorName: instructor.fullName,
+                sessionDate: sessionDate
+            )
+            
         } else {
+            // Free request flow
             showRequestSent = true
+            
+            // Notify that the request has been sent
+            notificationManager.scheduleBookingRequestSent(instructorName: instructor.fullName)
         }
     }
+    
+    // MARK: - Helpers
+    
+    /// Builds a Date for the selected day + time string (e.g. "10:00 AM") in October of the current year.
+    private func buildSessionDate(day: Int, timeString: String) -> Date {
+        var components = DateComponents()
+        components.year   = Calendar.current.component(.year, from: Date())
+        components.month  = 10 // October (hardcoded to match UI)
+        components.day    = day
+        
+        // Parse time string like "10:00 AM" or "2:30 PM"
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        if let parsed = formatter.date(from: timeString) {
+            let timeParts = Calendar.current.dateComponents([.hour, .minute], from: parsed)
+            components.hour   = timeParts.hour
+            components.minute = timeParts.minute
+        } else {
+            components.hour   = 10
+            components.minute = 0
+        }
+        
+        return Calendar.current.date(from: components) ?? Date().addingTimeInterval(86400)
+    }
 }
+

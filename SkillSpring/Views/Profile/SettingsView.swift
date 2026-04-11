@@ -254,6 +254,7 @@ struct SettingsView: View {
             Button("Log Out", role: .destructive) {
                 biometricService.errorMessage = nil
                 PersistenceService.shared.clearCache()
+                NotificationManager.shared.cancelAllPendingNotifications()
                 isLoggedIn = false
             }
             Button("Cancel", role: .cancel) { }
