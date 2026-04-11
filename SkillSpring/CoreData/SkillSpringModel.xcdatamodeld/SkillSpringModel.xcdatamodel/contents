@@ -8,6 +8,18 @@
         <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="bio" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="profileImageURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="role" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="level" optional="YES" attributeType="Integer 16" defaultValueString="1" syncable="YES"/>
+        <attribute name="karmaPoints" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="sessionsCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="rating" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="awardsCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="walletBalance" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="isPro" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isChildMode" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="profileCompleteness" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="skillsToTeach" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="skillsToLearn" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
         <element name="LocalUser" positionX="-63" positionY="-18" width="128" height="120"/>

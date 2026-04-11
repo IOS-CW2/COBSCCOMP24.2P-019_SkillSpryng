@@ -53,7 +53,7 @@ class SkillSetupViewModel: ObservableObject {
     }
     
     func saveProfile(fullName: String, phoneNumber: String) {
-        _ = User(
+        let user = User(
             fullName: fullName,
             phoneNumber: phoneNumber,
             skillsToTeach: Array(selectedTeachSkills),
@@ -67,6 +67,9 @@ class SkillSetupViewModel: ObservableObject {
         isLoading = true
         
         Task {
+            // Cache the user profile locally so it's available for zero-latency loading
+            PersistenceService.shared.saveUser(user)
+            
             // Temporarily mocked to bypass for UI testing
             // Mark user as fully logged in — root switches to MainTabView
             UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")

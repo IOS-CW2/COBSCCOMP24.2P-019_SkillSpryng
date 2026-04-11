@@ -245,11 +245,15 @@ struct SettingsView: View {
         .navigationBarHidden(true)
         .onAppear {
             biometricService.checkBiometricSupport()
+            if let cachedUser = PersistenceService.shared.fetchUser() {
+                self.user = cachedUser
+            }
         }
         // HIG: Confirm destructive logout action with an alert
         .alert("Log Out", isPresented: $showLogoutConfirmation) {
             Button("Log Out", role: .destructive) {
                 biometricService.errorMessage = nil
+                PersistenceService.shared.clearCache()
                 isLoggedIn = false
             }
             Button("Cancel", role: .cancel) { }
