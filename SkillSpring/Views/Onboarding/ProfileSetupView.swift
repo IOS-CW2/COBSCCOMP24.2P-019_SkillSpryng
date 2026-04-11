@@ -4,6 +4,7 @@ struct ProfileSetupView: View {
     @ObservedObject var viewModel: SkillSetupViewModel
     var fullName: String
     var phoneNumber: String
+    @AppStorage("skillspryng.isLoggedIn") private var isLoggedIn = false
 
     @State private var showingImagePicker = false
     @State private var navigateToFamily = false
@@ -14,7 +15,9 @@ struct ProfileSetupView: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    viewModel.isSetupComplete = true
+                    HapticManager.light()
+                    // Skip profile setup — go directly home
+                    isLoggedIn = true
                 }) {
                     Text("Skip")
                         .foregroundColor(.gray)
@@ -138,6 +141,7 @@ struct ProfileSetupView: View {
             // Floating Bottom Button
             VStack(spacing: 16) {
                 PrimaryButton(title: "Finish Setup →", action: {
+                    HapticManager.light()
                     navigateToFamily = true
                 }, isLoading: viewModel.isLoading)
 

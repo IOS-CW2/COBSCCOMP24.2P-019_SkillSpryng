@@ -6,7 +6,6 @@ struct SkillSetupView: View {
     var fullName: String
     var phoneNumber: String
     
-    @State private var navigateToMainApp = false
     @State private var navigateToProfileSetup = false
     
     var body: some View {
@@ -17,7 +16,8 @@ struct SkillSetupView: View {
                     HStack {
                         Spacer()
                         Button(action: {
-                            navigateToMainApp = true
+                            // Skip setup — mark as logged in, RootCoordinatorView switches to MainTabView
+                            UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
                         }) {
                             Text("Skip")
                                 .foregroundColor(.gray)
@@ -158,41 +158,30 @@ struct SkillSetupView: View {
                 NavigationLink(destination: ProfileSetupView(viewModel: viewModel, fullName: fullName, phoneNumber: phoneNumber), isActive: $navigateToProfileSetup) {
                     EmptyView()
                 }
-
-                NavigationLink(destination: MainTabView().navigationBarHidden(true), isActive: isSetupCompleteOrSkipped) {
-                    EmptyView()
-                }
             }
             .padding(24)
             .background(Color.white.shadow(color: .black.opacity(0.05), radius: 8, y: -5))
+            .navigationBarHidden(true)
         }
-        .navigationBarHidden(true)
     }
     
-    private var isSetupCompleteOrSkipped: Binding<Bool> {
-        Binding(
-            get: { viewModel.isSetupComplete || navigateToMainApp },
-            set: { _ in }
-        )
-    }
-}
-
-struct SkillChip: View {
-    var title: String
-    var isSelected: Bool
-    var action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Text(isSelected ? "\(title) ×" : title)
-                .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .foregroundColor(isSelected ? .black : AppTheme.Colors.primary)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(isSelected ? Color(red: 39/255.0, green: 226/255.0, blue: 70/255.0) : AppTheme.Colors.primary.opacity(0.1))
-                .cornerRadius(16)
+    struct SkillChip: View {
+        var title: String
+        var isSelected: Bool
+        var action: () -> Void
+        
+        var body: some View {
+            Button(action: action) {
+                Text(isSelected ? "\(title) ×" : title)
+                    .font(.subheadline)
+                    .fontWeight(isSelected ? .semibold : .regular)
+                    .foregroundColor(isSelected ? .black : AppTheme.Colors.primary)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(isSelected ? Color(red: 39/255.0, green: 226/255.0, blue: 70/255.0) : AppTheme.Colors.primary.opacity(0.1))
+                    .cornerRadius(16)
+            }
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
     }
 }

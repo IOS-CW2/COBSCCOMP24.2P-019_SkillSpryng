@@ -5,7 +5,7 @@ struct AddFamilyMemberView: View {
     @State private var fullName = ""
     @State private var phoneNumber = ""
     @State private var email = ""
-    @State private var navigateToMain = false
+    @State private var toast: ToastMessage? = nil
     
     var body: some View {
         VStack(spacing: 0) {
@@ -14,7 +14,7 @@ struct AddFamilyMemberView: View {
                 title: "Add Family Member",
                 backAction: { presentationMode.wrappedValue.dismiss() },
                 actionText: "Skip",
-                action: { navigateToMain = true }
+                action: { UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn") }
             )
             .padding(.top, 10)
             
@@ -118,11 +118,17 @@ struct AddFamilyMemberView: View {
                     // Bottom Buttons
                     VStack(spacing: 16) {
                         PrimaryButton(title: "Send Invitation", action: {
-                            navigateToMain = true
+                            HapticManager.success()
+                            toast = .success("Invitation sent to \(fullName.isEmpty ? "family member" : fullName)!", icon: "envelope.fill")
+                            // Navigate to home after brief delay so toast is visible
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                                UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
+                            }
                         })
 
                         Button(action: {
-                            navigateToMain = true
+                            HapticManager.light()
+                            UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
                         }) {
                             Text("Skip for Now")
                                 .font(.headline)
@@ -135,11 +141,6 @@ struct AddFamilyMemberView: View {
                                         .stroke(AppTheme.Colors.primary, lineWidth: 1)
                                 )
                         }
-
-                        NavigationLink(
-                            destination: MainTabView().navigationBarHidden(true),
-                            isActive: $navigateToMain
-                        ) { EmptyView() }
                     }
                     .padding(.horizontal, 24)
                     .padding(.bottom, 30)
@@ -147,5 +148,6 @@ struct AddFamilyMemberView: View {
             }
         }
         .navigationBarHidden(true)
+        .toast($toast)
     }
 }

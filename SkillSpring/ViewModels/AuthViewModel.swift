@@ -38,13 +38,26 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
         Task {
             // BYPASSED for UI navigation testing
+            HapticManager.success()
             self.navigateToSuccess = true
             self.isLoading = false
         }
     }
     
     func authenticateWithBiometrics() {
-        // Temporarily mocked to bypass for UI testing
-        self.navigateToSuccess = true
+        isLoading = true
+        errorMessage = nil
+        Task {
+            let success = await BiometricAuthService.shared.authenticate()
+            self.isLoading = false
+            if success {
+                HapticManager.success()
+                // Set login flag — RootCoordinatorView switches to MainTabView automatically
+                UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
+            } else {
+                HapticManager.error()
+            }
+            // Errors shown via BiometricAuthService.shared.errorMessage in the view
+        }
     }
 }

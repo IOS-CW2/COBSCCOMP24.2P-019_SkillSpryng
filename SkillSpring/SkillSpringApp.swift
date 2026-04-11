@@ -35,8 +35,22 @@ struct SkillSpringApp: App {
     
     var body: some Scene {
         WindowGroup {
-            LaunchView()
+            RootCoordinatorView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+        }
+    }
+}
+
+/// A SwiftUI View (not App) is required for @AppStorage to reliably re-render
+/// when UserDefaults changes — this is the root login/logout gate.
+struct RootCoordinatorView: View {
+    @AppStorage("skillspryng.isLoggedIn") var isLoggedIn = false
+    
+    var body: some View {
+        if isLoggedIn {
+            MainTabView()
+        } else {
+            LaunchView()
         }
     }
 }
