@@ -16,8 +16,8 @@ struct MatchProfile: Identifiable {
     let distance: String
     let matchPercentage: Int
     let bio: String
-    let canTeach: [String]
-    let wantsToLearn: [String]
+    let skillsToTeach: [String]
+    let skillsToLearn: [String]
     let imageUrl: String
     let onlineStatus: Bool
     let city: String

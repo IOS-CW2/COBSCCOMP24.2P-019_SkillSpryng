@@ -155,8 +155,8 @@ struct SkillMatchCard: View {
             }
             
             HStack(spacing: 8) {
-                SkillBadge.teaching(profile.canTeach.first ?? "")
-                SkillBadge.learning(profile.wantsToLearn.first ?? "")
+                SkillBadge.teaching(profile.skillsToTeach.first ?? "")
+                SkillBadge.learning(profile.skillsToLearn.first ?? "")
             }
             
             Text("\"\(profile.bio.prefix(80))...\"")
