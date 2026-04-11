@@ -5,6 +5,7 @@ struct DiscoverView: View {
     @State private var selectedCategory = "All Learners"
     @State private var navigateToCourses = false
     @State private var navigateToSkillMatches = false
+    @State private var navigateToMap = false
     let categories = ["All Learners", "Design", "Coding", "Marketing", "Arts", "Music"]
     
     var body: some View {
@@ -74,6 +75,10 @@ struct DiscoverView: View {
                 StreakCard(streakCount: 7, subheadline: "1,240 Karma • Top 5%")
                     .padding(.horizontal)
                 
+                // Nearby Skills Map Banner
+                NearbyMapBannerCard(action: { navigateToMap = true })
+                    .padding(.horizontal)
+                
                 // Most Popular Skills
                 SkillSection(title: "Most Popular Skills", items: MockDataProvider.shared.recommendedSkills)
                 
@@ -110,6 +115,10 @@ struct DiscoverView: View {
             }
             
             NavigationLink(destination: CoursesView(), isActive: $navigateToCourses) {
+                EmptyView()
+            }
+            
+            NavigationLink(destination: LocationMapView(), isActive: $navigateToMap) {
                 EmptyView()
             }
         }
@@ -330,3 +339,61 @@ struct PostSkillCard: View {
         .cornerRadius(AppTheme.Radius.xl)
     }
 }
+
+// MARK: - Nearby Map Banner
+
+struct NearbyMapBannerCard: View {
+    var action: () -> Void = {}
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                // Map icon cluster
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(AppTheme.Colors.primary.opacity(0.12))
+                        .frame(width: 56, height: 56)
+                    Image(systemName: "map.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(AppTheme.Colors.primary)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Skills Near You")
+                        .font(.system(size: 15, weight: .bold))
+                    Text("See instructors on the map in your area")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
+                    
+                    HStack(spacing: -8) {
+                        ForEach(["instructor1", "instructor2", "instructor1"], id: \.self) { img in
+                            Image(img)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 22, height: 22)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.white, lineWidth: 1.5))
+                        }
+                        Text("  +3 nearby")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .padding(.leading, 12)
+                    }
+                    .padding(.top, 2)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.gray.opacity(0.5))
+            }
+            .padding(16)
+            .background(Color.white)
+            .cornerRadius(18)
+            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
