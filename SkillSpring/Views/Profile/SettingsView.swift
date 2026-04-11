@@ -52,7 +52,10 @@ struct SettingsView: View {
                         SectionHeader(title: "ACCOUNT & SECURITY")
                         
                         VStack(spacing: 0) {
-                            SettingsRow(icon: "person.fill", title: "Personal Information")
+                            NavigationLink(destination: EditProfileView()) {
+                                SettingsRow(icon: "person.fill", title: "Personal Information")
+                            }
+                            .buttonStyle(PlainButtonStyle())
                             Divider().padding(.leading, 48)
                             SettingsRow(icon: "lock.fill", title: "Password & Security", value: "2FA, Logins, Password")
                         }
@@ -65,9 +68,12 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         SectionHeader(title: "SUBSCRIPTION")
                         
-                        SettingsRow(icon: "crown.fill", title: "SkillSpryng Pro", value: "PRO • Renews Dec 1")
-                            .background(Color.white)
-                            .cornerRadius(16)
+                        NavigationLink(destination: PremiumView()) {
+                            SettingsRow(icon: "crown.fill", title: "SkillSpryng Pro", value: "PRO • Renews Dec 1")
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .background(Color.white)
+                        .cornerRadius(16)
                     }
                     .padding(.horizontal)
                     
@@ -75,9 +81,12 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         SectionHeader(title: "WALLET")
                         
-                        SettingsRow(icon: "w.square.fill", title: "SkillCredits Wallet", value: "4,850 SKP")
-                            .background(Color.white)
-                            .cornerRadius(16)
+                        NavigationLink(destination: WalletView()) {
+                            SettingsRow(icon: "w.square.fill", title: "SkillCredits Wallet", value: "4,850 SKP")
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .background(Color.white)
+                        .cornerRadius(16)
                     }
                     .padding(.horizontal)
                     
@@ -153,7 +162,7 @@ struct SettingsView: View {
                     .padding(.horizontal)
                     
                     // Log Out
-                    Button(action: { }) {
+                    Button(action: { dismiss() }) {
                         HStack {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
                             Text("Log Out")

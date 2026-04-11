@@ -175,7 +175,7 @@ struct MatchDetailView: View {
             VStack {
                 Spacer()
                 HStack(spacing: 16) {
-                    Button(action: { }) {
+                    NavigationLink(destination: ChatDetailView(conversation: MockDataProvider.shared.mockConversations.first(where: { $0.participant.fullName == profile.fullName }) ?? MockDataProvider.shared.mockConversations[0])) {
                         Label("Message", systemImage: "bubble.left.fill")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(AppTheme.Colors.primary)

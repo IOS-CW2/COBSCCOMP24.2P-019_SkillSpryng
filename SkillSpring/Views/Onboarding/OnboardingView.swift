@@ -4,11 +4,11 @@ struct OnboardingView: View {
     @State private var navigateToSignIn = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 HStack {
                     Spacer()
-                    NavigationLink(destination: SignInView(), isActive: $navigateToSignIn) {
+                    Button(action: { navigateToSignIn = true }) {
                         Text("Skip")
                             .foregroundColor(.gray)
                             .padding()
@@ -58,7 +58,9 @@ struct OnboardingView: View {
                 .padding(.bottom, 20)
             }
             .navigationBarHidden(true)
+            .navigationDestination(isPresented: $navigateToSignIn) {
+                SignInView()
+            }
         }
-        .navigationViewStyle(.stack)
     }
 }
