@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @State private var user = MockDataProvider.shared.currentUser
+    @State private var user = PersistenceService.shared.fetchUser() ?? MockDataProvider.shared.currentUser
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -21,17 +21,30 @@ struct ProfileView: View {
                 // Profile Hero 
                 VStack(spacing: 16) {
                     ZStack(alignment: .bottomTrailing) {
-                        Image(user.profileImageURL)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                            .overlay(
-                                Circle()
-                                    .stroke(AppTheme.Colors.primary, lineWidth: 2)
-                                    .frame(width: 108, height: 108)
-                            )
+                        if !user.profileImageURL.isEmpty {
+                            Image(user.profileImageURL)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.white, lineWidth: 4))
+                                .overlay(
+                                    Circle()
+                                        .stroke(AppTheme.Colors.primary, lineWidth: 2)
+                                        .frame(width: 108, height: 108)
+                                )
+                        } else {
+                            Circle()
+                                .fill(Color(.systemGray6))
+                                .frame(width: 100, height: 100)
+                                .overlay(Image(systemName: "person.fill").font(.system(size: 40)).foregroundColor(.gray))
+                                .overlay(Circle().stroke(Color.white, lineWidth: 4))
+                                .overlay(
+                                    Circle()
+                                        .stroke(AppTheme.Colors.primary, lineWidth: 2)
+                                        .frame(width: 108, height: 108)
+                                )
+                        }
                         
                         Image(systemName: "checkmark.seal.fill")
                             .foregroundColor(AppTheme.Colors.primary)
@@ -234,6 +247,11 @@ struct ProfileView: View {
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarHidden(true)
+        .onAppear {
+            if let cachedUser = PersistenceService.shared.fetchUser() {
+                self.user = cachedUser
+            }
+        }
     }
 }
 
