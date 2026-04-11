@@ -52,9 +52,14 @@ struct MainTabView: View {
             }
             .tag(4)
         }
-        .accentColor(AppTheme.Colors.primary) // Brand Green
+        .accentColor(AppTheme.Colors.primary)
+        // Deep-link: tapping "Join Session" on a notification banner opens Sessions tab
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("skillspryng.openSessionsTab"))) { _ in
+            selectedTab = 1
+        }
     }
 }
+
 
 // Preview
 struct MainTabView_Previews: PreviewProvider {
