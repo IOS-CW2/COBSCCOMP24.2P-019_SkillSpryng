@@ -228,7 +228,7 @@ struct MainSessionCard: View {
                             .cornerRadius(12)
                     }
                 } else {
-                    Button(action: { }) {
+                    NavigationLink(destination: MapSelectionView(session: session)) {
                         Text("Get Location")
                             .font(.system(size: 14, weight: .bold))
                             .foregroundColor(.white)

@@ -10,15 +10,15 @@ struct LiveSessionView: View {
     var body: some View {
         ZStack {
             // Main Video (Background)
-            Image("instructor1") // Using mock asset
+            Image("instructor1")
                 .resizable()
                 .scaledToFill()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
                 .overlay(Color.black.opacity(0.1))
             
-            // Header
             VStack(spacing: 0) {
+                // Header
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("SkillSpryng")
@@ -31,26 +31,28 @@ struct LiveSessionView: View {
                     
                     Spacer()
                     
-                    Text(formatDuration(callDuration))
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.green.opacity(0.8))
-                        .foregroundColor(.white)
-                        .cornerRadius(20)
+                    VStack(alignment: .trailing, spacing: 6) {
+                        // Timer
+                        Text(formatDuration(callDuration))
+                            .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.green.opacity(0.8))
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
+                    }
                 }
                 .padding(.horizontal)
                 .padding(.top, 40)
                 
                 Spacer()
                 
-                // Content
+                // Participant overlay
                 HStack {
                     Spacer()
-                    // Participant Overlay
                     VStack(alignment: .trailing) {
                         ZStack(alignment: .bottomLeading) {
-                            Image("instructor2") // User view
+                            Image("instructor2")
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 100, height: 140)
@@ -92,3 +94,4 @@ struct LiveSessionView: View {
         return String(format: "%02d:%02d:%02d", h, m, s)
     }
 }
+

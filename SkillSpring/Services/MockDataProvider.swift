@@ -33,7 +33,7 @@ class MockDataProvider {
     lazy var elenaProfile = MatchProfile(
         fullName: "Elena Rodriguez",
         role: "Senior UI/UX Designer & Creative Strategist",
-        location: "Manhattan, NY",
+        location: "Colombo, Sri Lanka",
         distance: "0.8 miles away",
         matchPercentage: 92,
         bio: "Passionate about bridging the gap between high-fidelity design and scalable front-end code. Currently leading design teams at a fintech startup and looking to deepen my technical understanding... Read more",
@@ -60,7 +60,7 @@ class MockDataProvider {
             MatchProfile(
                 fullName: "Julian Rivers",
                 role: "Jazz Pianist & Music Producer",
-                location: "Brooklyn, NY",
+                location: "Kandy, Sri Lanka",
                 distance: "1.2 miles away",
                 matchPercentage: 98,
                 bio: "Looking for someone to help me brush up on my conversational Italian before my European tour next summer.",
@@ -79,7 +79,7 @@ class MockDataProvider {
             MatchProfile(
                 fullName: "Sarah Chen",
                 role: "Software Engineer & Athlete",
-                location: "Manhattan, NY",
+                location: "Galle, Sri Lanka",
                 distance: "0.8 miles away",
                 matchPercentage: 91,
                 bio: "Software engineer by day, aspiring athlete by evening. Let's trade code for courtside tips!",

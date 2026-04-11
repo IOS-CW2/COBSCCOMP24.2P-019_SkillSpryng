@@ -1,11 +1,17 @@
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct MapSelectionView: View {
+    var session: Session? = nil
+    
     @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7892, longitude: -122.3965), // San Francisco
+        center: CLLocationCoordinate2D(latitude: 6.9271, longitude: 79.8612), // Colombo default
         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     )
+    @State private var venueCoordinate: CLLocationCoordinate2D? = nil
+    @StateObject private var geofenceManager = GeofenceManager.shared
+    @State private var showMonitoringStarted = false
     
     // Mock annotations from screen
     let annotations = [
@@ -13,16 +19,21 @@ struct MapSelectionView: View {
         MapPoint(name: "UX Workshop", coordinate: CLLocationCoordinate2D(latitude: 37.7885, longitude: -122.3960), icon: "desktopcomputer")
     ]
     
+    var venueAnnotations: [MapPoint] {
+        guard let coord = venueCoordinate else { return annotations }
+        return [MapPoint(name: session?.location ?? "Session Venue", coordinate: coord, icon: "mappin.circle.fill")]
+    }
+    
     var body: some View {
         ZStack(alignment: .bottom) {
-            Map(coordinateRegion: $region, annotationItems: annotations) { point in
+            Map(coordinateRegion: $region, annotationItems: venueAnnotations) { point in
                 MapAnnotation(coordinate: point.coordinate) {
                     MapPointView(point: point)
                 }
             }
             .ignoresSafeArea()
             
-            // Map Controls (Overlay)
+            // Map Controls
             VStack {
                 HStack {
                     Spacer()
@@ -35,22 +46,31 @@ struct MapSelectionView: View {
                 Spacer()
             }
             
-            // Pick Session Point Card
+            // Bottom Card
             VStack(spacing: 20) {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
-                        Text("PICK SESSION POINT")
+                        Text("SESSION VENUE")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(.blue)
                         Spacer()
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
+                        if geofenceManager.isMonitoring {
+                            HStack(spacing: 4) {
+                                Circle().fill(Color.green).frame(width: 6, height: 6)
+                                Text("MONITORING ACTIVE")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundColor(.green)
+                            }
+                        } else {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                        }
                     }
                     
-                    Text("Salesforce Transit Center")
+                    Text(session?.location ?? "Salesforce Transit Center")
                         .font(.title3)
                         .fontWeight(.bold)
-                    Text("425 Mission St, San Francisco, CA")
+                    Text(session?.title ?? "Session")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
@@ -60,8 +80,40 @@ struct MapSelectionView: View {
                     AmenityView(icon: "cup.and.saucer.fill", title: "Quiet Cafe", color: .orange)
                 }
                 
-                PrimaryButton(title: "Confirm Meeting Location ->") {
-                    // Confirm action
+                if geofenceManager.isMonitoring {
+                    // Already monitoring
+                    HStack {
+                        Image(systemName: "shield.checkered")
+                            .foregroundColor(.green)
+                        Text("Safety monitoring is active")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.green)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green.opacity(0.1))
+                    .cornerRadius(12)
+                    
+                    Button("Stop Monitoring") {
+                        geofenceManager.stopMonitoring()
+                    }
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.red)
+                    
+                } else {
+                    // Start monitoring on arrival
+                    Button(action: startSafetyMonitoring) {
+                        HStack {
+                            Image(systemName: "shield.fill")
+                            Text("I've Arrived — Start Safety Monitoring")
+                                .fontWeight(.bold)
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(AppTheme.Colors.primary)
+                        .cornerRadius(12)
+                    }
                 }
             }
             .padding(24)
@@ -70,8 +122,48 @@ struct MapSelectionView: View {
             .shadow(color: .black.opacity(0.1), radius: 20)
             .padding()
         }
+        .navigationBarHidden(false)
+        .onAppear {
+            geocodeVenue()
+        }
+        .alert("Safety Monitoring Started", isPresented: $showMonitoringStarted) {
+            Button("Got It", role: .cancel) { }
+        } message: {
+            Text("You'll be notified if you move more than 100m from the venue during your session.")
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func geocodeVenue() {
+        guard let address = session?.location else { return }
+        Task {
+            let geocoder = CLGeocoder()
+            if let placemark = try? await geocoder.geocodeAddressString(address),
+               let coord = placemark.first?.location?.coordinate {
+                await MainActor.run {
+                    self.venueCoordinate = coord
+                    self.region = MKCoordinateRegion(
+                        center: coord,
+                        span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                    )
+                }
+            }
+        }
+    }
+    
+    private func startSafetyMonitoring() {
+        let coord = venueCoordinate ?? region.center
+        GeofenceManager.shared.startMonitoring(
+            sessionTitle: session?.title ?? "Session",
+            coordinate: coord,
+            radius: 100
+        )
+        HapticManager.success()
+        showMonitoringStarted = true
     }
 }
+
 
 // Sub-components
 struct MapPoint: Identifiable {
