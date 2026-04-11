@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SignInView: View {
     @StateObject private var viewModel = AuthViewModel()
+    @ObservedObject private var biometricService = BiometricAuthService.shared
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -91,26 +92,46 @@ struct SignInView: View {
                         .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.md).stroke(Color.gray.opacity(0.3), lineWidth: 1))
                     }
                     
-                    Button(action: { 
-                        viewModel.authenticateWithBiometrics() 
-                    }) {
-                        HStack {
-                            Image(systemName: "faceid")
-                                .foregroundColor(AppTheme.Colors.primary)
-                            Text("Sign in with Face ID")
-                                .foregroundColor(AppTheme.Colors.primary)
-                                .font(AppTheme.Typography.subheadline)
-                                .bold()
+                    if biometricService.isSupported && biometricService.isBiometricLoginEnabled {
+                        Button(action: {
+                            viewModel.authenticateWithBiometrics()
+                        }) {
+                            HStack {
+                                if viewModel.isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: AppTheme.Colors.primary))
+                                        .scaleEffect(0.85)
+                                } else {
+                                    Image(systemName: biometricService.biometricIcon)
+                                        .foregroundColor(AppTheme.Colors.primary)
+                                }
+                                Text(viewModel.isLoading ? "Authenticating…" : "Sign in with \(biometricService.biometricType)")
+                                    .foregroundColor(AppTheme.Colors.primary)
+                                    .font(AppTheme.Typography.subheadline)
+                                    .bold()
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.white)
+                            .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.md).stroke(AppTheme.Colors.primary, lineWidth: 1))
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.white)
-                        .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.md).stroke(AppTheme.Colors.primary, lineWidth: 1))
+                        .disabled(viewModel.isLoading)
+                        
+                        // Biometric-specific error shown right below the button
+                        if let biometricError = biometricService.errorMessage {
+                            Text(biometricError)
+                                .foregroundColor(.red)
+                                .font(.caption)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 8)
+                                .transition(.opacity)
+                        }
                     }
+
                 }
                 .padding(.horizontal, AppTheme.Spacing.lg)
                 
-                // Navigate to success if biometrics pass
+                // OTP verified → phone verification success screen (new user flow)
                 NavigationLink(destination: VerificationSuccessView(viewModel: viewModel), isActive: $viewModel.navigateToSuccess) {
                     EmptyView()
                 }
@@ -125,5 +146,8 @@ struct SignInView: View {
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            biometricService.checkBiometricSupport()
+        }
     }
 }

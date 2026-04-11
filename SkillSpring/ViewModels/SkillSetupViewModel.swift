@@ -68,6 +68,8 @@ class SkillSetupViewModel: ObservableObject {
         
         Task {
             // Temporarily mocked to bypass for UI testing
+            // Mark user as fully logged in — root switches to MainTabView
+            UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
             self.isSetupComplete = true
             self.isLoading = false
         }

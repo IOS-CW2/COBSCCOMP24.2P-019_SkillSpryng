@@ -4,7 +4,14 @@ struct SettingsView: View {
     @State private var user = MockDataProvider.shared.currentUser
     @State private var pushNotifications = true
     @State private var darkMode = false
+    @ObservedObject private var biometricService = BiometricAuthService.shared
+    @AppStorage("skillspryng.isLoggedIn") private var isLoggedIn = false
     @Environment(\.dismiss) var dismiss
+    
+    // Toast & confirmation state
+    @State private var toast: ToastMessage? = nil
+    @State private var showLogoutConfirmation = false
+    @State private var showDeleteConfirmation = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -51,13 +58,52 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         SectionHeader(title: "ACCOUNT & SECURITY")
                         
-                        VStack(spacing: 0) {
+                    VStack(spacing: 0) {
                             NavigationLink(destination: EditProfileView()) {
                                 SettingsRow(icon: "person.fill", title: "Personal Information")
                             }
                             .buttonStyle(PlainButtonStyle())
                             Divider().padding(.leading, 48)
                             SettingsRow(icon: "lock.fill", title: "Password & Security", value: "2FA, Logins, Password")
+                            
+                            // Face ID / Touch ID toggle — shows on any device with biometric hardware
+                            if biometricService.hasBiometricHardware {
+                                Divider().padding(.leading, 48)
+                                SettingsRow(
+                                    icon: biometricService.biometricIcon,
+                                    title: "Sign in with \(biometricService.biometricType)",
+                                    toggleValue: Binding(
+                                        get: { biometricService.isBiometricLoginEnabled },
+                                        set: { newValue in
+                                            if newValue {
+                                                Task {
+                                                    let confirmed = await biometricService.authenticate()
+                                                    if confirmed {
+                                                        biometricService.isBiometricLoginEnabled = true
+                                                        HapticManager.success()
+                                                        toast = .success("\(biometricService.biometricType) login enabled", icon: biometricService.biometricIcon)
+                                                    } else {
+                                                        HapticManager.error()
+                                                    }
+                                                }
+                                            } else {
+                                                biometricService.isBiometricLoginEnabled = false
+                                                biometricService.errorMessage = nil
+                                                HapticManager.medium()
+                                                toast = .info("\(biometricService.biometricType) login disabled", icon: biometricService.biometricIcon)
+                                            }
+                                        }
+                                    )
+                                )
+                                
+                                if let error = biometricService.errorMessage, !biometricService.isBiometricLoginEnabled {
+                                    Text(error)
+                                        .font(.caption)
+                                        .foregroundColor(.red)
+                                        .padding(.horizontal, 16)
+                                        .padding(.bottom, 8)
+                                }
+                            }
                         }
                         .background(Color.white)
                         .cornerRadius(16)
@@ -153,8 +199,11 @@ struct SettingsView: View {
                         SectionHeader(title: "DANGER ZONE")
                         
                         VStack(spacing: 0) {
-                            SettingsRow(icon: "trash.fill", title: "Delete Account", value: "Permanently remove all data")
-                                .foregroundColor(.red)
+                            Button(action: { showDeleteConfirmation = true }) {
+                                SettingsRow(icon: "trash.fill", title: "Delete Account", value: "Permanently remove all data")
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(PlainButtonStyle())
                         }
                         .background(Color.white)
                         .cornerRadius(16)
@@ -162,7 +211,10 @@ struct SettingsView: View {
                     .padding(.horizontal)
                     
                     // Log Out
-                    Button(action: { dismiss() }) {
+                    Button(action: {
+                        HapticManager.warning()
+                        showLogoutConfirmation = true
+                    }) {
                         HStack {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
                             Text("Log Out")
@@ -191,5 +243,30 @@ struct SettingsView: View {
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarHidden(true)
+        .onAppear {
+            biometricService.checkBiometricSupport()
+        }
+        // HIG: Confirm destructive logout action with an alert
+        .alert("Log Out", isPresented: $showLogoutConfirmation) {
+            Button("Log Out", role: .destructive) {
+                biometricService.errorMessage = nil
+                isLoggedIn = false
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Are you sure you want to log out of SkillSpryng?")
+        }
+        // HIG: Destructive delete action requires explicit confirmation
+        .alert("Delete Account", isPresented: $showDeleteConfirmation) {
+            Button("Delete Account", role: .destructive) {
+                // TODO: call delete account API
+                HapticManager.error()
+                toast = .error("Account deletion is not yet available.")
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will permanently delete your account and all data. This action cannot be undone.")
+        }
+        .toast($toast)
     }
 }

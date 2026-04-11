@@ -3,6 +3,7 @@ import SwiftUI
 struct PhoneVerificationView: View {
     @ObservedObject var viewModel: AuthViewModel
     @Environment(\.presentationMode) var presentationMode
+    @State private var toast: ToastMessage? = nil
     
     var body: some View {
         VStack(spacing: 24) {
@@ -29,6 +30,7 @@ struct PhoneVerificationView: View {
             }
             
             PrimaryButton(title: "Verify", action: {
+                HapticManager.light()
                 viewModel.verifyCode()
             }, isLoading: viewModel.isLoading)
             .padding(.horizontal, 24)
@@ -39,7 +41,9 @@ struct PhoneVerificationView: View {
             }
             
             Button(action: {
+                HapticManager.light()
                 viewModel.sendOTP()
+                toast = .info("Verification code resent", icon: "envelope.fill")
             }) {
                 Text("Resend Code")
                     .font(.subheadline)
@@ -51,5 +55,6 @@ struct PhoneVerificationView: View {
             Spacer()
         }
         .navigationBarHidden(true)
+        .toast($toast)
     }
 }
