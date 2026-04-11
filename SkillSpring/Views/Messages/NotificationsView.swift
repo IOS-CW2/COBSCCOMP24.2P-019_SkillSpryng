@@ -11,19 +11,14 @@ struct NotificationsView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
-                    // Custom Header
-                    HStack {
-                        Spacer()
-                        Text("Messages")
-                            .font(AppTheme.Typography.headline)
-                        Spacer()
-                        NavigationLink(destination: MyMatchesInboxView()) {
-                            Label("Matches", systemImage: "person.2.fill")
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(AppTheme.Colors.primary)
-                        }
-                    }
-                    .padding()
+                    // Standardized AppHeader (No back button for Root Tab)
+                    AppHeader(
+                        title: "Messages",
+                        showBackButton: false,
+                        actionText: "Matches",
+                        action: { navigateToMatches = true }
+                    )
+                    .padding(.top, 8)
                     
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 24) {
@@ -159,6 +154,9 @@ struct NotificationsView: View {
                 .padding()
         }
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $navigateToMatches) {
+            MyMatchesInboxView()
+        }
     }
 }
 

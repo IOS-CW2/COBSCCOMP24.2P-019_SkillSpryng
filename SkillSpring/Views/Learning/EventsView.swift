@@ -12,21 +12,12 @@ struct EventsView: View {
         VStack(spacing: 0) {
             if !isNavigatedFromCourses {
                 // Header if not included by parent
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(AppTheme.Colors.primary)
-                    }
-                    Spacer()
-                    Text("Events")
-                        .font(AppTheme.Typography.headline)
-                    Spacer()
-                    Button(action: { /* Search */ }) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                    }
-                }
-                .padding()
+                AppHeader(
+                    title: "Events",
+                    backAction: { dismiss() },
+                    actionIcon: "magnifyingglass",
+                    action: { /* Search */ }
+                )
                 
                 // Courses/Events Selector (Redundant if called from CoursesView but kept for standalone)
                 HStack(spacing: 0) {
@@ -106,6 +97,7 @@ struct EventsView: View {
                 }
             }
         }
+        .navigationBarHidden(true)
     }
 }
 
