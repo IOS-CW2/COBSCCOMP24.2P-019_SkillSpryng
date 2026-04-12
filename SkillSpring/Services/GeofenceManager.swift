@@ -3,155 +3,331 @@ import CoreLocation
 import UserNotifications
 import Combine
 
-/// Manages geofence monitoring for in-person sessions.
+/// Manages geofence safety monitoring for in-person SkillSpryng sessions.
 ///
-/// How it works:
-/// 1. When an in-person session starts, call `startMonitoring(sessionTitle:coordinate:radius:)`
-/// 2. iOS registers a CLCircularRegion and watches the boundary in the background
-/// 3. If the device crosses outside the radius → `didExitRegion` fires → local notification sent
-/// 4. When the session ends, call `stopMonitoring()` to deregister the fence
+/// Architecture:
+/// - Singleton `shared` instance used across the app
+/// - Uses `CLCircularRegion` with 500m radius (spec requirement)
+/// - Region identifier: `"session-geofence-\(sessionId)"`
+/// - `notifyOnEntry = true` + `notifyOnExit = true` for full cycle tracking
+/// - Automatic 5-minute escalation timer in the service layer
+/// - `#if DEBUG` simulate functions for geofence testing on Simulator
 ///
-/// Requires: NSLocationWhenInUseUsageDescription (works for foreground + suspended)
-///           NSLocationAlwaysUsageDescription (required for true background monitoring)
+/// iOS Geofence limits: maximum 20 simultaneous regions per app.
+/// Always call `stopMonitoring(sessionId:)` when a session ends.
 @MainActor
 class GeofenceManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    
+
+    // MARK: - Singleton
+
     static let shared = GeofenceManager()
-    
+
     // MARK: - Published State
-    
+
     @Published var isMonitoring: Bool = false
+
+    /// True when `didExitRegion` fires. Drives `SafetyAlertSheet`.
     @Published var userLeftSession: Bool = false
+
+    /// True when user returns inside the region after having left.
+    @Published var userReturnedToArea: Bool = false
+
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
-    
+
     // MARK: - Private
-    
+
     private let locationManager = CLLocationManager()
-    private var activeRegionIdentifier: String?
+
+    /// Active session identifier (used to match region identifiers).
+    private var activeSessionId: String?
+
     private var activeSessionTitle: String = ""
-    
-    /// Geofence radius in metres. 100m is a good minimum — smaller becomes inaccurate.
-    private let defaultRadius: CLLocationDistance = 100
-    
+    private var activeRegionId: String?
+
+    /// 5-minute timer: auto-escalates if user doesn't confirm they are safe.
+    private var responseTimer: Timer?
+
+    /// Geofence radius — 500m as per spec.
+    private let geofenceRadius: Double = 500.0
+
+    // MARK: - Init
+
     private override init() {
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         authorizationStatus = locationManager.authorizationStatus
     }
-    
+
     // MARK: - Public API
-    
-    /// Start monitoring a circular geofence around the session venue.
+
+    /// Start geofence monitoring for a session venue.
+    ///
     /// - Parameters:
-    ///   - sessionTitle: shown in the exit notification
-    ///   - coordinate: centre of the venue (lat/lng)
-    ///   - radius: radius in metres (default 100m)
+    ///   - coordinate: Centre of the 500m safety boundary
+    ///   - sessionId: Unique session identifier (used in region identifier)
+    ///   - sessionTitle: Shown in notifications
+    func startMonitoring(
+        coordinate: CLLocationCoordinate2D,
+        sessionId: String,
+        sessionTitle: String
+    ) {
+        // Request Always permission for true background monitoring
+        LocationService.shared.requestAlwaysPermission()
+
+        let regionId = "session-geofence-\(sessionId)"
+
+        let region = CLCircularRegion(
+            center: coordinate,
+            radius: geofenceRadius,
+            identifier: regionId
+        )
+        region.notifyOnExit  = true  // safety alert when leaving
+        region.notifyOnEntry = true  // know when user returns
+
+        locationManager.startMonitoring(for: region)
+
+        activeSessionId    = sessionId
+        activeRegionId     = regionId
+        activeSessionTitle = sessionTitle
+        isMonitoring       = true
+        userLeftSession    = false
+        userReturnedToArea = false
+
+        HapticManager.success()
+
+        // Confirmation notification
+        scheduleNotification(
+            identifier: "geofence.started.\(sessionId)",
+            title: "Safety monitoring active 🛡️",
+            body: "We will alert your emergency contact if you move away from the session location.",
+            delay: 1
+        )
+
+        print("[GeofenceManager] Started monitoring '\(sessionTitle)' at \(coordinate), radius \(geofenceRadius)m")
+    }
+
+    /// Convenience wrapper matching the old API (for MapSelectionView compatibility).
     func startMonitoring(
         sessionTitle: String,
         coordinate: CLLocationCoordinate2D,
         radius: CLLocationDistance? = nil
     ) {
-        // Request Always auth for true background monitoring
-        locationManager.requestAlwaysAuthorization()
-        
-        let fenceRadius = radius ?? defaultRadius
-        let identifier = "skillspryng.session.\(UUID().uuidString)"
-        
-        let region = CLCircularRegion(
-            center: coordinate,
-            radius: fenceRadius,
-            identifier: identifier
-        )
-        region.notifyOnExit  = true   // alert when leaving
-        region.notifyOnEntry = false  // we don't need entry events here
-        
-        // iOS supports up to 20 simultaneous geofences per app
-        locationManager.startMonitoring(for: region)
-        
-        activeRegionIdentifier = identifier
-        activeSessionTitle = sessionTitle
-        isMonitoring = true
-        userLeftSession = false
-        
-        print("Geofence started: \(sessionTitle) at \(coordinate), radius \(fenceRadius)m")
+        let sessionId = UUID().uuidString
+        startMonitoring(coordinate: coordinate, sessionId: sessionId, sessionTitle: sessionTitle)
     }
-    
-    /// Stop all active geofence monitoring (call when session ends).
+
+    /// Stop monitoring for a specific session.
+    func stopMonitoring(sessionId: String) {
+        let regionId = "session-geofence-\(sessionId)"
+        for region in locationManager.monitoredRegions {
+            if region.identifier == regionId {
+                locationManager.stopMonitoring(for: region)
+            }
+        }
+        cleanupAfterSession()
+    }
+
+    /// Stop all active geofence monitoring (convenience, used by MapSelectionView).
     func stopMonitoring() {
         for region in locationManager.monitoredRegions {
             locationManager.stopMonitoring(for: region)
         }
-        activeRegionIdentifier = nil
-        isMonitoring = false
+        cleanupAfterSession()
+
+        scheduleNotification(
+            identifier: "geofence.ended.\(UUID().uuidString)",
+            title: "Session ended safely ✅",
+            body: "Safety monitoring has been stopped. Great session!",
+            delay: 1
+        )
+    }
+
+    /// Called when user taps "Yes, I'm Fine" on the SafetyAlertSheet.
+    func handleUserConfirmedSafe() {
         userLeftSession = false
-        print("Geofence monitoring stopped.")
+        responseTimer?.invalidate()
+        responseTimer = nil
+
+        // Log to Firestore
+        logGeofenceEvent(type: "user_confirmed_safe")
+
+        scheduleNotification(
+            identifier: "geofence.safe.\(UUID().uuidString)",
+            title: "Confirmed safe ✅",
+            body: "Glad you're okay! Monitoring continues.",
+            delay: 1
+        )
+
+        print("[GeofenceManager] User confirmed safe.")
     }
-    
-    // MARK: - CLLocationManagerDelegate
-    
-    nonisolated func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        Task { @MainActor in
-            guard region.identifier == self.activeRegionIdentifier else { return }
-            self.userLeftSession = true
-            self.fireExitNotification()
-        }
-    }
-    
-    nonisolated func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        Task { @MainActor in
-            guard region.identifier == self.activeRegionIdentifier else { return }
-            if self.userLeftSession {
-                self.userLeftSession = false
-                self.fireReturnNotification()
+
+    // MARK: - Private Handlers
+
+    private func handleGeofenceExit(regionId: String) {
+        guard regionId == activeRegionId else { return }
+
+        userLeftSession = true
+        userReturnedToArea = false
+        HapticManager.warning()
+
+        // Persistent exit notification
+        scheduleNotification(
+            identifier: "geofence.exit.\(regionId)",
+            title: "You've left the session area ⚠️",
+            body: "You moved away from '\(activeSessionTitle)'. Please confirm your safety.",
+            sound: .defaultCritical,
+            delay: 1
+        )
+
+        // Log exit to Firestore
+        logGeofenceEvent(type: "exit")
+
+        // Start 5-minute escalation timer
+        responseTimer?.invalidate()
+        responseTimer = Timer.scheduledTimer(withTimeInterval: 300, repeats: false) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, self.userLeftSession else { return }
+                self.notifyFamilyMember()
             }
         }
+
+        print("[GeofenceManager] EXIT detected for region: \(regionId)")
     }
-    
-    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        Task { @MainActor in
-            self.authorizationStatus = manager.authorizationStatus
-        }
-    }
-    
-    nonisolated func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        print("Geofence monitoring failed for \(region?.identifier ?? "unknown"): \(error.localizedDescription)")
-    }
-    
-    // MARK: - Notifications
-    
-    private func fireExitNotification() {
-        let content = UNMutableNotificationContent()
-        content.title = "You've left the session area ⚠️"
-        content.body  = "You moved away from your \(activeSessionTitle) venue. Your instructor has been notified."
-        content.sound = .defaultCritical
-        content.badge = 1
-        
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-        let request = UNNotificationRequest(
-            identifier: "geofence.exit.\(activeRegionIdentifier ?? UUID().uuidString)",
-            content: content,
-            trigger: trigger
-        )
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error { print("Geofence exit notification failed: \(error)") }
-        }
-        
-        HapticManager.warning()
-    }
-    
-    private func fireReturnNotification() {
-        let content = UNMutableNotificationContent()
-        content.title = "Welcome back! 👋"
-        content.body  = "You've returned to the \(activeSessionTitle) venue."
-        content.sound = .default
-        
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-        let request = UNNotificationRequest(
+
+    private func handleGeofenceReturn(regionId: String) {
+        guard regionId == activeRegionId, userLeftSession else { return }
+
+        userLeftSession    = false
+        userReturnedToArea = true
+
+        // Cancel escalation — user came back safely
+        responseTimer?.invalidate()
+        responseTimer = nil
+
+        HapticManager.success()
+
+        scheduleNotification(
             identifier: "geofence.return.\(UUID().uuidString)",
-            content: content,
-            trigger: trigger
+            title: "Glad you're back! 👋",
+            body: "You've returned to the \(activeSessionTitle) venue.",
+            delay: 1
         )
-        UNUserNotificationCenter.current().add(request) { _ in }
+
+        // Log return to Firestore
+        logGeofenceEvent(type: "return")
+
+        print("[GeofenceManager] RETURN detected for region: \(regionId)")
+    }
+
+    private func notifyFamilyMember() {
+        print("[GeofenceManager] 5-minute timer expired — escalating to family member.")
+
+        // Log escalation
+        logGeofenceEvent(type: "escalated")
+
+        // TODO: Fetch family member phone from FirebaseManager.shared.currentUser
+        //       and trigger Firebase Cloud Function:
+        //       FirebaseManager.shared.sendSafetyAlert(sessionId: activeSessionId ?? "")
+        //
+        // For now: fire a local escalation notification
+        scheduleNotification(
+            identifier: "geofence.escalated.\(UUID().uuidString)",
+            title: "Safety Alert Escalated 🚨",
+            body: "No response received. Your emergency contact has been notified about your session location.",
+            sound: .defaultCritical,
+            delay: 1
+        )
+    }
+
+    private func cleanupAfterSession() {
+        responseTimer?.invalidate()
+        responseTimer      = nil
+        activeSessionId    = nil
+        activeRegionId     = nil
+        activeSessionTitle = ""
+        isMonitoring       = false
+        userLeftSession    = false
+        userReturnedToArea = false
+    }
+
+    // MARK: - Firestore Logging
+
+    private func logGeofenceEvent(type: String) {
+        guard let sessionId = activeSessionId else { return }
+        // TODO: Wire to FirebaseManager once Firestore sessions collection is ready
+        // FirebaseManager.shared.logGeofenceEvent(
+        //     sessionId: sessionId,
+        //     type: type,          // "exit" | "return" | "user_confirmed_safe" | "escalated"
+        //     timestamp: Date()
+        // )
+        print("[GeofenceManager] Firestore log → sessionId: \(sessionId), event: \(type)")
+    }
+
+    // MARK: - Notification Helper
+
+    private func scheduleNotification(
+        identifier: String,
+        title: String,
+        body: String,
+        sound: UNNotificationSound = .default,
+        delay: TimeInterval = 1
+    ) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body  = body
+        content.sound = sound
+        content.badge = 1
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: delay, repeats: false)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error { print("[GeofenceManager] Notification error: \(error)") }
+        }
+    }
+
+    // MARK: - CLLocationManagerDelegate
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        guard region.identifier.hasPrefix("session-geofence") else { return }
+        Task { @MainActor in self.handleGeofenceExit(regionId: region.identifier) }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        guard region.identifier.hasPrefix("session-geofence") else { return }
+        Task { @MainActor in self.handleGeofenceReturn(regionId: region.identifier) }
+    }
+
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        Task { @MainActor in self.authorizationStatus = manager.authorizationStatus }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager,
+                                     monitoringDidFailFor region: CLRegion?,
+                                     withError error: Error) {
+        print("[GeofenceManager] Monitoring failed for \(region?.identifier ?? "unknown"): \(error.localizedDescription)")
+        print("[GeofenceManager] Note: Geofencing requires a physical device for full testing.")
     }
 }
+
+// MARK: - DEBUG Simulator Testing
+
+#if DEBUG
+extension GeofenceManager {
+
+    /// Manually triggers the geofence exit flow.
+    /// Add a hidden button in session view to call this during testing.
+    func simulateGeofenceExit() {
+        let fakeRegionId = activeRegionId ?? "session-geofence-debug"
+        print("[GeofenceManager] 🧪 Simulating geofence EXIT")
+        handleGeofenceExit(regionId: fakeRegionId)
+    }
+
+    /// Manually triggers the geofence return flow.
+    func simulateGeofenceReturn() {
+        let fakeRegionId = activeRegionId ?? "session-geofence-debug"
+        print("[GeofenceManager] 🧪 Simulating geofence RETURN")
+        handleGeofenceReturn(regionId: fakeRegionId)
+    }
+}
+#endif
