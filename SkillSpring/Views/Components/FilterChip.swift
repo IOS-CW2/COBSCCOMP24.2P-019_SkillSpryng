@@ -15,6 +15,7 @@ struct FilterChip: View {
                 .foregroundColor(isSelected ? .white : .gray)
                 .cornerRadius(20)
         }
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
         .animation(.spring(), value: isSelected)
     }
 }

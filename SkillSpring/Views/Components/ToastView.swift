@@ -76,6 +76,9 @@ struct ToastView: View {
         .padding(.vertical, 13)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
         .shadow(color: Color.black.opacity(0.12), radius: 12, x: 0, y: 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(toast.style == .error ? "Error: " : (toast.style == .warning ? "Warning: " : ""))\(toast.message)")
+        .accessibilityAddTraits(.isStaticText)
     }
 }
 
@@ -101,6 +104,9 @@ struct ToastModifier: ViewModifier {
                         )
                     )
                     .onAppear {
+                        // Announce the toast message to VoiceOver
+                        AccessibilityAnnouncement.post(toast.message)
+                        
                         DispatchQueue.main.asyncAfter(deadline: .now() + autoDismissAfter) {
                             withAnimation(.easeOut(duration: 0.25)) {
                                 self.toast = nil

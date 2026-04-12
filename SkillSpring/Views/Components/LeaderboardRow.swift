@@ -15,6 +15,7 @@ struct LeaderboardRow: View {
                 .scaledToFill()
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
+                .accessibilityHidden(true)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.fullName)
@@ -47,6 +48,13 @@ struct LeaderboardRow: View {
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(entry.isCurrentUser ? AppTheme.Colors.primary : Color.clear, lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            "Rank \(entry.rank). \(entry.fullName). " +
+            "\(entry.points) points" +
+            (entry.weeklyChange != nil ? ". Up \(entry.weeklyChange!) places this week" : "") +
+            (entry.isCurrentUser ? ". This is you" : "")
         )
     }
 }

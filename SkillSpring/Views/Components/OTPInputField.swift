@@ -22,6 +22,7 @@ struct OTPInputField: View {
                     }
                 }
             }
+            .accessibilityHidden(true)
             
             // Hidden text field on top to capture all taps
             TextField("", text: $verificationCode)
@@ -31,6 +32,9 @@ struct OTPInputField: View {
                 .accentColor(.clear)
                 .foregroundColor(.clear)
                 .background(Color.clear)
+                .accessibilityLabel("Verification Code")
+                .accessibilityValue(verificationCode.isEmpty ? "Empty" : verificationCode.map { String($0) }.joined(separator: " "))
+                .accessibilityHint("Enter your \(numberOfDigits)-digit code")
                 .onChange(of: verificationCode) { newValue in
                     // Only allow digits
                     let filtered = newValue.filter { "0123456789".contains($0) }

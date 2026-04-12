@@ -27,6 +27,7 @@ struct SessionSuccessView: View {
                     .font(.system(size: 60))
                     .foregroundColor(AppTheme.Colors.primary)
             }
+            .accessibilityHidden(true)
             
             VStack(spacing: 12) {
                 Text("Session Confirmed!")
@@ -37,6 +38,7 @@ struct SessionSuccessView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
+            .accessibilityElement(children: .combine)
             
             // Summary Card
             VStack(spacing: 16) {
@@ -98,6 +100,7 @@ struct SessionSuccessView: View {
             .cornerRadius(24)
             .shadow(color: Color.black.opacity(0.05), radius: 10)
             .padding(.horizontal)
+            .accessibilityElement(children: .combine)
             
             Spacer()
             

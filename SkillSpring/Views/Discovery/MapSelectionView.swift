@@ -84,6 +84,8 @@ struct MapSelectionView: View {
                     Text(session?.title ?? "Session")
                         .font(.caption).foregroundColor(.gray)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Session venue: \(session?.location ?? "Salesforce Transit Center"). \(session?.title ?? "Session"). \(geofenceManager.isMonitoring ? "Monitoring active" : "")")
 
                 // Amenities row
                 HStack(spacing: 16) {
@@ -110,6 +112,8 @@ struct MapSelectionView: View {
                     .padding(12)
                     .background(Color.green.opacity(0.07))
                     .cornerRadius(12)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Geofence active. Time elapsed: \(formatDuration(sessionSeconds)).")
 
                     // Action buttons
                     HStack(spacing: 12) {
@@ -341,6 +345,7 @@ struct MapButton: View {
                 .clipShape(Circle())
                 .shadow(radius: 2)
         }
+        .accessibilityLabel(icon == "scope" ? "Current Location" : "Map settings")
     }
 }
 

@@ -25,6 +25,7 @@ struct SessionBookingView: View {
                         .scaledToFill()
                         .frame(width: 50, height: 50)
                         .clipShape(Circle())
+                        .accessibilityHidden(true)
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Book a Session")
@@ -46,6 +47,8 @@ struct SessionBookingView: View {
                     .cornerRadius(8)
                 }
                 .padding(.horizontal)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Book a Session with \(instructor.fullName), \(instructor.role), \(String(format: "%.1f", instructor.rating)) stars")
                 
                 // Format Selector
                 VStack(alignment: .leading, spacing: 12) {
@@ -162,6 +165,8 @@ struct SessionBookingView: View {
                             },
                             alignment: .topLeading
                         )
+                        .accessibilityLabel("Topics and Goals")
+                        .accessibilityHint("What would you like to learn and share specific challenges or project details...")
                 }
                 .padding(.horizontal)
                 

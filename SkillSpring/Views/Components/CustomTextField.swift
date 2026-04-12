@@ -12,6 +12,7 @@ struct CustomTextField: View {
             Image(systemName: iconName)
                 .foregroundColor(isFocused ? AppTheme.Colors.primary : AppTheme.Colors.textSecondary)
                 .frame(width: 24)
+                .accessibilityHidden(true)
             
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)

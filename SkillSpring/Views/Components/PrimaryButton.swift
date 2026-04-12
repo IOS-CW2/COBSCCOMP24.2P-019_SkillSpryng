@@ -25,8 +25,7 @@ struct PrimaryButton: View {
             }
         }
         .disabled(isLoading)
-        .accessibilityLabel(title)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityHint(isLoading ? "Please wait, loading" : "Tap to \(title)")
+        .accessibilityButton(label: title, hint: "Double-tap to \(title.lowercased())")
+        .accessibilityValue(isLoading ? "Loading" : "")
     }
 }

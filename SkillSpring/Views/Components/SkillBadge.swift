@@ -11,6 +11,7 @@ struct SkillBadge: View {
             if let icon = icon {
                 Image(systemName: icon)
                     .font(.system(size: 8))
+                    .accessibilityHidden(true)
             }
             Text(title.uppercased())
                 .font(.system(size: 10, weight: .bold))
@@ -20,6 +21,9 @@ struct SkillBadge: View {
         .background(color)
         .foregroundColor(textColor)
         .cornerRadius(8)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(.isStaticText)
     }
 }
 

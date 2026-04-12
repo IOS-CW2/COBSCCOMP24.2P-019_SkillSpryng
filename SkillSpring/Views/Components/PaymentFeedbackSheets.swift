@@ -16,6 +16,7 @@ struct PaymentFailedSheet: View {
                     Circle().fill(Color.red.opacity(0.1)).frame(width: 80, height: 80)
                     Image(systemName: "xmark.circle.fill").font(.system(size: 60)).foregroundColor(.red)
                 }
+                .accessibilityHidden(true)
                 
                 VStack(spacing: 8) {
                     Text("Payment Failed")
@@ -81,6 +82,7 @@ struct PaymentConfirmationSheet: View {
                 Image(systemName: "checkmark.shield.fill")
                     .font(.system(size: 40))
                     .foregroundColor(AppTheme.Colors.primary)
+                    .accessibilityHidden(true)
                 
                 Text("Confirm Payment")
                     .font(.system(size: 20, weight: .bold))

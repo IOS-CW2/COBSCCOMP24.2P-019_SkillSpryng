@@ -26,6 +26,7 @@ struct LeaderboardView: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
+                    .accessibilityAddTraits(selectedTab == tab ? .isSelected : [])
                 }
             }
             .padding(.bottom, 24)
@@ -105,6 +106,8 @@ struct LeaderboardView: View {
                         .background(AppTheme.Colors.primary.opacity(0.05))
                         .cornerRadius(20)
                         .overlay(RoundedRectangle(cornerRadius: 20).stroke(AppTheme.Colors.primary.opacity(0.1), lineWidth: 1))
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("You, Alex. Rank 24. 1,450 points")
                     }
                     .padding(.horizontal)
                     
@@ -165,5 +168,7 @@ struct LeaderboardListRow: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.02), radius: 5)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Rank \(rank), \(name), \(role). \(points) points")
     }
 }

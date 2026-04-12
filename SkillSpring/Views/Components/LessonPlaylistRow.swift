@@ -47,5 +47,8 @@ struct LessonPlaylistRow: View {
         .padding(.horizontal, 16)
         .background(isCurrent ? AppTheme.Colors.primary.opacity(0.05) : Color.clear)
         .cornerRadius(12)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Lesson \(index). \(title). \(duration)." + (isCompleted ? " Completed." : (isCurrent ? " In Progress." : "")))
+        .accessibilityAddTraits(.isButton)
     }
 }

@@ -29,6 +29,7 @@ struct PerformanceStatCard: View {
                     .font(.system(size: 14))
                     .foregroundColor(AppTheme.Colors.primary)
             }
+            .accessibilityHidden(true)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -43,5 +44,7 @@ struct PerformanceStatCard: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.02), radius: 5, x: 0, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(value)")
     }
 }

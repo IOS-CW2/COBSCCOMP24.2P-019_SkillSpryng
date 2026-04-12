@@ -11,6 +11,7 @@ struct SectionHeader: View {
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.gray)
                 .tracking(1)
+                .accessibilityAddTraits(.isHeader)
             
             Spacer()
             
@@ -20,6 +21,8 @@ struct SectionHeader: View {
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(AppTheme.Colors.primary)
                 }
+                .accessibilityLabel("\(title) — \(actionTitle)")
+                .accessibilityHint("Double-tap to see all")
             }
         }
     }

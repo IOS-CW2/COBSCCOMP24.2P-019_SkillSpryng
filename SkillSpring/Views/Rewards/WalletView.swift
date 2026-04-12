@@ -34,20 +34,16 @@ struct WalletView: View {
                     
                     VStack(alignment: .leading, spacing: 20) {
                         HStack {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text("CURRENT WALLET BALANCE")
-                                    .font(.system(size: 10, weight: .black))
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Current Balance")
+                                    .font(.system(size: 14, weight: .semibold))
                                     .foregroundColor(.white.opacity(0.8))
-                                
-                                HStack(alignment: .center, spacing: 8) {
-                                    Text("\(balance)")
-                                        .font(.system(size: 44, weight: .bold))
-                                        .foregroundColor(.white)
-                                    Text("SKP")
-                                        .font(.system(size: 18, weight: .bold))
-                                        .foregroundColor(.white.opacity(0.7))
-                                }
+                                Text("\(balance) SKP")
+                                    .font(.system(size: 32, weight: .bold))
+                                    .foregroundColor(.white)
                             }
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("Current Wallet Balance: \(balance) SKP")
                             
                             Spacer()
                             
@@ -85,6 +81,8 @@ struct WalletView: View {
                                 .font(.system(size: 11, weight: .medium))
                                 .foregroundColor(.white.opacity(0.9))
                         }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Trusted by 14 local mentors")
                     }
                     .padding(32)
                 }
@@ -198,5 +196,6 @@ struct WalletActionView: View {
                     .foregroundColor(.gray)
             }
         }
+        .accessibilityLabel(label)
     }
 }

@@ -51,5 +51,7 @@ struct SafetyHeroCard: View {
             }
             .padding(24)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Safety feature: \(title). \(isActive ? "Active." : "") \(subtitle)")
     }
 }

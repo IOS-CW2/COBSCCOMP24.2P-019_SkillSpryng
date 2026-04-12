@@ -60,8 +60,8 @@ struct CredibilityCard: View {
                                 .scaledToFill()
                                 .frame(width: 24, height: 24)
                                 .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.white, lineWidth: 2))
                         }
+                        .accessibilityHidden(true)
                         Text("+4")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(.gray)
@@ -96,5 +96,7 @@ struct CredibilityCard: View {
         .background(Color.white)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.03), radius: 10, x: 0, y: 5)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title). \(badge) badge. Credibility score: \(score)%. \(studentsTaught) students taught, \(String(format: "%.1f", rating)) stars.")
     }
 }

@@ -43,6 +43,7 @@ struct SettingsView: View {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.gray)
                                 .font(.system(size: 14, weight: .bold))
+                                .accessibilityHidden(true)
                             TextField("Search settings", text: .constant(""))
                                 .font(.system(size: 14))
                         }

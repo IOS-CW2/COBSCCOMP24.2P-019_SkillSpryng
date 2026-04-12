@@ -46,12 +46,17 @@ struct LessonPlayerView: View {
                         HStack(spacing: 40) {
                             Image(systemName: "gobackward.10")
                                 .font(.title2)
+                                .accessibilityLabel("Go backward 10 seconds")
+                                .accessibilityAddTraits(.isButton)
                             Button(action: { isPlaying.toggle() }) {
                                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                                     .font(.system(size: 44))
                             }
+                            .accessibilityLabel(isPlaying ? "Pause" : "Play")
                             Image(systemName: "goforward.10")
                                 .font(.title2)
+                                .accessibilityLabel("Go forward 10 seconds")
+                                .accessibilityAddTraits(.isButton)
                         }
                         .foregroundColor(.white)
                         
@@ -123,6 +128,7 @@ struct LessonPlayerView: View {
                     }
                     .padding(.top, 24)
                     .padding(.horizontal)
+                    .accessibilityElement(children: .combine)
                     
                     // Tabs
                     HStack(spacing: 24) {
@@ -199,5 +205,7 @@ struct TabHeader: View {
                     .frame(height: 2)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

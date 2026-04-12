@@ -12,6 +12,7 @@ struct StatCard: View {
                 Image(systemName: icon)
                     .font(.footnote)
                     .foregroundColor(.gray)
+                    .accessibilityHidden(true)
             } else {
                 Text(title.uppercased())
                     .font(.system(size: 10, weight: .bold))
@@ -38,5 +39,7 @@ struct StatCard: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color(.systemGray5), lineWidth: 1)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(value)\(subValue != nil ? " \(subValue!)" : "")")
     }
 }

@@ -172,6 +172,7 @@ struct MainSessionCard: View {
                             .foregroundColor(.gray)
                     }
                 }
+                .accessibilityElement(children: .combine)
             }
             
             HStack(spacing: 12) {
@@ -205,6 +206,7 @@ struct MainSessionCard: View {
                 Label("Safety monitoring will activate at session time", systemImage: "checkmark.shield.fill")
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(.green)
+                    .accessibilityHidden(true)
             }
             
             HStack(spacing: 12) {
@@ -281,6 +283,8 @@ struct CompactSessionRow: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.02), radius: 5, x: 0, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title) on \(date) at \(time)")
     }
 }
 
@@ -339,6 +343,7 @@ struct HistorySessionRow: View {
             .background(Color.white)
             .cornerRadius(20)
             .shadow(color: Color.black.opacity(0.03), radius: 10, x: 0, y: 5)
+            .accessibilityElement(children: .combine)
         }
         .buttonStyle(PlainButtonStyle())
     }

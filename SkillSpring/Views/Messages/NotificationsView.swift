@@ -65,6 +65,7 @@ struct NotificationsView: View {
                                                 .foregroundColor(selectedFilter == filter ? .white : .gray)
                                                 .cornerRadius(20)
                                         }
+                                        .accessibilityAddTraits(selectedFilter == filter ? .isSelected : [])
                                     }
                                 }
                                 .padding(.horizontal)
@@ -215,6 +216,7 @@ struct ConversationCard: View {
         .background(Color.white)
         .cornerRadius(16)
         .padding(.horizontal)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -256,6 +258,7 @@ struct NotificationItemCard: View {
                         .overlay(Circle().stroke(Color.white, lineWidth: 2))
                 }
             }
+            .accessibilityHidden(true)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -275,5 +278,6 @@ struct NotificationItemCard: View {
         .padding()
         .background(Color.white)
         .cornerRadius(16)
+        .accessibilityElement(children: .combine)
     }
 }

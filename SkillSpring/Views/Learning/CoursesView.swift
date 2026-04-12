@@ -30,6 +30,7 @@ struct CoursesView: View {
                                 .stroke(selectedTab == "Courses" ? AppTheme.Colors.primary : Color.clear, lineWidth: 1)
                         )
                 }
+                .accessibilityAddTraits(selectedTab == "Courses" ? .isSelected : [])
                 
                 Button(action: { selectedTab = "Events" }) {
                     Text("Events")
@@ -43,6 +44,7 @@ struct CoursesView: View {
                                 .stroke(selectedTab == "Events" ? AppTheme.Colors.primary : Color.clear, lineWidth: 1)
                         )
                 }
+                .accessibilityAddTraits(selectedTab == "Events" ? .isSelected : [])
             }
             .padding(4)
             .background(Color(.systemGray6))
@@ -66,6 +68,7 @@ struct CoursesView: View {
                                             .foregroundColor(selectedCategory == cat ? .white : .gray)
                                             .cornerRadius(20)
                                     }
+                                    .accessibilityAddTraits(selectedCategory == cat ? .isSelected : [])
                                 }
                             }
                             .padding(.horizontal)
@@ -199,6 +202,7 @@ struct FeaturedCourseCard: View {
             }
             .frame(width: 300)
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -242,6 +246,7 @@ struct PopularCourseCard: View {
             }
             .frame(width: 160)
         }
+        .accessibilityElement(children: .combine)
     }
 }
 

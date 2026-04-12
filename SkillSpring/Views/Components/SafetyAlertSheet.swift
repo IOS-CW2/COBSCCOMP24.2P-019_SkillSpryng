@@ -45,6 +45,7 @@ struct SafetyAlertSheet: View {
                             .foregroundColor(.orange)
                     }
                     .padding(.top, 8)
+                    .accessibilityHidden(true)
 
                     // Heading & body
                     VStack(spacing: 10) {
@@ -79,6 +80,8 @@ struct SafetyAlertSheet: View {
                             .font(.system(size: expired ? 12 : 22, weight: .bold, design: .monospaced))
                             .foregroundColor(expired ? .red : .primary)
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(expired ? "Time's up" : "Time remaining: \(minutes) minutes and \(seconds) seconds")
 
                     // Action buttons
                     VStack(spacing: 12) {

@@ -31,6 +31,7 @@ struct EditProfileView: View {
                                     .clipShape(Circle())
                                     .overlay(Circle().stroke(Color.white, lineWidth: 3))
                             }
+                            .accessibilityLabel("Update profile photo")
                             .offset(x: 4, y: 4)
                         }
                         
@@ -57,6 +58,7 @@ struct EditProfileView: View {
                                 .frame(height: 100)
                                 .background(Color(.systemGray6).opacity(0.5))
                                 .cornerRadius(12)
+                                .accessibilityLabel("Bio")
                         }
                     }
                     .padding(.horizontal)
@@ -104,6 +106,7 @@ struct EditField: View {
                 .padding()
                 .background(Color(.systemGray6).opacity(0.5))
                 .cornerRadius(12)
+                .accessibilityLabel(label)
         }
     }
 }

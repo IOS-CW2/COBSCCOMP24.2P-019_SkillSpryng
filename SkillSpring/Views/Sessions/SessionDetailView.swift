@@ -44,6 +44,8 @@ struct SessionDetailView: View {
                     }
                     .padding(24)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("\(session.status.rawValue). \(session.title). With \(session.instructorName). \(session.date) at \(session.time).")
                 }
                 .padding(.horizontal)
                 
@@ -54,6 +56,7 @@ struct SessionDetailView: View {
                         .scaledToFill()
                         .frame(width: 50, height: 50)
                         .clipShape(Circle())
+                        .accessibilityHidden(true)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(session.instructorName)
@@ -76,6 +79,8 @@ struct SessionDetailView: View {
                     }
                 }
                 .padding(.horizontal)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Instructor \(session.instructorName), \(session.instructorRole). \(session.matchPercentage != nil ? "Match \(session.matchPercentage ?? 0)%" : "")")
                 
                 // Session Notes
                 if let notes = session.notes {
@@ -128,6 +133,7 @@ struct SessionDetailView: View {
                                     .background(AppTheme.Colors.primary)
                                     .cornerRadius(20)
                             }
+                            .accessibilityLabel("Watch session recording, available for 30 days")
                         }
                         .padding()
                         .background(AppTheme.Colors.primary.opacity(0.1))

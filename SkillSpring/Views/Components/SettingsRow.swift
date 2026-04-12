@@ -33,6 +33,7 @@ struct SettingsRow: View {
                 .frame(width: 32, height: 32)
                 .background(AppTheme.Colors.primary.opacity(0.1))
                 .cornerRadius(8)
+                .accessibilityHidden(true)
             
             Text(title)
                 .font(.system(size: 16, weight: .medium))
@@ -55,5 +56,8 @@ struct SettingsRow: View {
         }
         .padding(.vertical, 12)
         .background(Color(.systemBackground))
+        .accessibilityElement(children: showToggle ? .contain : .combine)
+        .accessibilityLabel(showToggle ? "" : (title + (value != nil ? ", \(value!)" : "")))
+        .accessibilityAddTraits(showToggle ? [] : .isButton)
     }
 }

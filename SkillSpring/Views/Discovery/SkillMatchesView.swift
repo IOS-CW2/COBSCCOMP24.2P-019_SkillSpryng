@@ -109,6 +109,10 @@ struct SkillMatchesView: View {
                     }
                 }
                 .padding(.horizontal)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Weekly Workshop. Public Speaking Masterclass. Join 12 others this Saturday in Central Park for an open-air speech workshop. Beginners welcome! 8 slots left.")
+                .accessibilityAddTraits(.isButton)
+                .accessibilityHint("Double-tap to join group")
                 
                 Spacer().frame(height: 100)
             }
@@ -168,5 +172,7 @@ struct SkillMatchCard: View {
         .background(Color.white)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(profile.fullName). \(profile.location), \(profile.distance) away. \(profile.matchPercentage) percent match. Bio: \(profile.bio)")
     }
 }

@@ -27,12 +27,15 @@ struct PlanCard: View {
                         .cornerRadius(4)
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(title) plan. \(price)." + (isRecommended ? " Best Value." : ""))
             
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(features, id: \.self) { feature in
                     HStack(spacing: 12) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(isRecommended ? AppTheme.Colors.primary : .gray)
+                            .accessibilityHidden(true)
                         Text(feature)
                             .font(.system(size: 12))
                             .foregroundColor(.gray)

@@ -20,6 +20,7 @@ struct ReportUserSheet: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(width: 40, height: 4)
                 .padding(.vertical, 12)
+                .accessibilityHidden(true)
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
@@ -54,6 +55,7 @@ struct ReportUserSheet: View {
                     .padding()
                     .background(Color(.systemGray6).opacity(0.5))
                     .cornerRadius(16)
+                    .accessibilityElement(children: .combine)
                     
                     // Select Reason
                     VStack(alignment: .leading, spacing: 16) {
@@ -85,8 +87,10 @@ struct ReportUserSheet: View {
                                                     .foregroundColor(.white)
                                             }
                                         }
+                                        .accessibilityHidden(true)
                                     }
                                 }
+                                .accessibilityAddTraits(selectedReason == reason ? .isSelected : [])
                                 .padding(.vertical, 16)
                                 .padding(.horizontal)
                                 
@@ -112,6 +116,7 @@ struct ReportUserSheet: View {
                                 .padding(12)
                                 .background(Color(.systemGray6).opacity(0.5))
                                 .cornerRadius(12)
+                                .accessibilityLabel("Additional Details")
                             
                             if details.isEmpty {
                                 Text("Tell us more about the incident (optional)...")
@@ -132,6 +137,7 @@ struct ReportUserSheet: View {
                             Image(systemName: "person.badge.minus.fill")
                                 .foregroundColor(.red)
                         }
+                        .accessibilityHidden(true)
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Block Alex Rivera")
@@ -145,6 +151,8 @@ struct ReportUserSheet: View {
                         
                         Toggle("", isOn: $blockUser)
                             .tint(.red)
+                            .labelsHidden()
+                            .accessibilityLabel("Block Alex Rivera")
                     }
                     .padding()
                     .background(Color.white)

@@ -6,8 +6,9 @@ struct OnboardingView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                HStack {
-                    Spacer()
+                VStack {
+                    HStack {
+                        Spacer()
                     Button(action: { navigateToSignIn = true }) {
                         Text("Skip")
                             .foregroundColor(.gray)
@@ -16,20 +17,8 @@ struct OnboardingView: View {
                 }
                 
                 Spacer()
-                
-                RoundedRectangle(cornerRadius: 24)
-                    .fill(AppTheme.Colors.primary.opacity(0.07))
-                    .frame(width: 280, height: 280)
-                    .overlay(
-                        VStack {
-                            Image(systemName: "person.3.sequence.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 100)
-                                .foregroundColor(AppTheme.Colors.primary.opacity(0.75))
-                        }
-                    )
                     .padding(.bottom, 40)
+                    .accessibilityHidden(true)
                 
                 Text("Share What You Know")
                     .font(.system(size: 28, weight: .bold))
@@ -42,14 +31,9 @@ struct OnboardingView: View {
                     .padding(.horizontal, 40)
                 
                 Spacer()
-                
-                HStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(AppTheme.Colors.primary)
-                        .frame(width: 24, height: 6)
-                    Circle().fill(AppTheme.Colors.primary.opacity(0.25)).frame(width: 6, height: 6)
                 }
                 .padding(.bottom, 30)
+                .accessibilityHidden(true)
                 
                 PrimaryButton(title: "Next", action: {
                     navigateToSignIn = true

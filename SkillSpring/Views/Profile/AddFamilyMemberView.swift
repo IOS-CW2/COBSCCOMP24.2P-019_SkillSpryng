@@ -53,6 +53,7 @@ struct AddFamilyMemberView: View {
                             }
                         }
                         .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .accessibilityHidden(true)
                         
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 8) {
@@ -70,6 +71,7 @@ struct AddFamilyMemberView: View {
                                     .foregroundColor(.white.opacity(0.9))
                                     .lineSpacing(4)
                             }
+                            .accessibilityElement(children: .combine)
                             
                             Spacer()
                             
@@ -83,6 +85,7 @@ struct AddFamilyMemberView: View {
                                     .font(.title3)
                                     .foregroundColor(.white)
                             }
+                            .accessibilityHidden(true)
                         }
                         .padding(24)
                     }
