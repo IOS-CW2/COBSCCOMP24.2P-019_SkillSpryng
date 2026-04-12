@@ -115,6 +115,7 @@ struct RateSessionSheet: View {
 struct CancelSessionSheet: View {
     let session: Session
     @Environment(\.dismiss) var dismiss
+    @State private var isCancelling = false
     
     var body: some View {
         VStack(spacing: 32) {
@@ -234,14 +235,34 @@ struct CancelSessionSheet: View {
                         .cornerRadius(16)
                 }
                 
-                Button(action: { dismiss() }) {
-                    Text("Confirm Cancellation")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.red)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 16).stroke(Color.red.opacity(0.2), lineWidth: 1))
+                Button(action: {
+                    isCancelling = true
+                    Task {
+                        // Attempt to delete it from calendar if the ID is tracked
+                        if let eventId = session.calendarEventId {
+                            _ = await CalendarService.shared.deleteCalendarEvent(identifier: eventId)
+                        }
+                        
+                        // Proceed to dismiss or run actual cancel logic
+                        await MainActor.run {
+                            isCancelling = false
+                            dismiss()
+                        }
+                    }
+                }) {
+                    HStack {
+                        if isCancelling {
+                            ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .red))
+                        }
+                        Text("Confirm Cancellation")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.red)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 16).stroke(Color.red.opacity(0.2), lineWidth: 1))
                 }
+                .disabled(isCancelling)
             }
             .padding(.horizontal)
             .padding(.bottom, 40)

@@ -106,6 +106,11 @@ struct EventsView: View {
 struct EventHeroCard: View {
     let event: Event
     
+    @State private var isJoining = false
+    @State private var hasJoined = false
+    @State private var showsAlert = false
+    @State private var alertMessage = ""
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack(alignment: .topTrailing) {
@@ -163,21 +168,115 @@ struct EventHeroCard: View {
                 
                 Spacer()
                 
-                Button(action: { }) {
-                    Text("Join Event")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 10)
-                        .background(AppTheme.Colors.primary)
-                        .cornerRadius(8)
+                Button(action: {
+                    guard !hasJoined else { return }
+                    isJoining = true
+                    
+                    Task {
+                        // Request Permission
+                        if !CalendarService.shared.checkCalendarAccess() {
+                            let granted = await CalendarService.shared.requestAccess()
+                            if !granted {
+                                await MainActor.run {
+                                    alertMessage = "SkillSpryng needs calendar access to add community events. Please enable it in Settings."
+                                    showsAlert = true
+                                    isJoining = false
+                                }
+                                return
+                            }
+                        }
+                        
+                        let startDate = buildEventDate()
+                        // Default community events to 1 hour
+                        let endDate = startDate.addingTimeInterval(3600)
+                        
+                        let notes = """
+                        🏆 Community Event: \(event.title)
+                        Host: \(event.instructor)
+                        Category: \(event.category)
+                        
+                        Remember to arrive 15 minutes early!
+                        """
+                        
+                        let eventId = await CalendarService.shared.addEventToCalendar(
+                            title: "Workshop: \(event.title)",
+                            startDate: startDate,
+                            endDate: endDate,
+                            location: event.location,
+                            notes: notes
+                        )
+                        
+                        await MainActor.run {
+                            isJoining = false
+                            if eventId != nil {
+                                hasJoined = true
+                                HapticManager.success()
+                            } else {
+                                alertMessage = "Failed to add workshop to your calendar."
+                                showsAlert = true
+                                HapticManager.error()
+                            }
+                        }
+                    }
+                }) {
+                    HStack {
+                        if isJoining {
+                            ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        } else if hasJoined {
+                            Image(systemName: "checkmark")
+                        }
+                        Text(hasJoined ? "Joined" : "Join Event")
+                            .font(.system(size: 14, weight: .bold))
+                    }
+                    .foregroundColor(hasJoined ? AppTheme.Colors.primary : .white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 10)
+                    .background(hasJoined ? Color.clear : AppTheme.Colors.primary)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(hasJoined ? AppTheme.Colors.primary : Color.clear, lineWidth: 1)
+                    )
+                    .cornerRadius(8)
                 }
+                .disabled(hasJoined || isJoining)
             }
         }
         .padding()
         .background(Color.white)
         .cornerRadius(24)
         .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+        .alert("Calendar", isPresented: $showsAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(alertMessage)
+        }
+    }
+    
+    private func buildEventDate() -> Date {
+        // e.g. event.date = "Oct 24", event.time = "10:00 AM"
+        var components = DateComponents()
+        components.year = Calendar.current.component(.year, from: Date())
+        
+        let parts = event.date.components(separatedBy: .whitespaces)
+        if parts.count >= 2, let day = Int(parts[1]) {
+            components.month = 10 // Mock fixed to Oct
+            components.day = day
+        } else {
+            components.month = 10
+            components.day = 25
+        }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        if let parsed = formatter.date(from: event.time) {
+            let timeParts = Calendar.current.dateComponents([.hour, .minute], from: parsed)
+            components.hour = timeParts.hour
+            components.minute = timeParts.minute
+        } else {
+            components.hour = 10
+        }
+        
+        return Calendar.current.date(from: components) ?? Date().addingTimeInterval(86400)
     }
 }
 

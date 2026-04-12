@@ -349,6 +349,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "SkillSpring needs full calendar access to check your availability and schedule learning sessions to prevent double-booking.";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "SkillSpring needs access to add new learning sessions to your calendar.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "SkillSpring needs camera access for your profile picture.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "SkillSpring needs Face ID to log you in securely.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "SkillSpring needs photo library access to choose a profile picture.";
@@ -430,6 +432,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "SkillSpring needs full calendar access to check your availability and schedule learning sessions to prevent double-booking.";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "SkillSpring needs access to add new learning sessions to your calendar.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "SkillSpring needs camera access for your profile picture.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "SkillSpring needs Face ID to log you in securely.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "SkillSpring uses your location in the background to monitor the session venue and alert you if you move too far away.";
@@ -467,6 +471,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "SkillSpring needs full calendar access to check your availability and schedule learning sessions to prevent double-booking.";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "SkillSpring needs access to add new learning sessions to your calendar.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "SkillSpring needs camera access for your profile picture.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "SkillSpring needs Face ID to log you in securely.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "SkillSpring uses your location in the background to monitor the session venue and alert you if you move too far away.";

@@ -4,6 +4,8 @@ struct SessionBookingView: View {
     let instructor: MatchProfile
     @StateObject private var viewModel: BookingViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var busyTimeSlots: [DateInterval] = []
+    @State private var showCalendarToast = false
     
     init(instructor: MatchProfile) {
         self.instructor = instructor
@@ -57,18 +59,21 @@ struct SessionBookingView: View {
                     HStack {
                         SectionHeader(title: "SELECT DATE")
                         Spacer()
-                        Text("October 2024")
+                        Text(viewModel.dateStripHeader)
                             .font(.system(size: 12, weight: .bold))
                             .foregroundColor(AppTheme.Colors.primary)
+                            .animation(.easeInOut, value: viewModel.selectedDate)
                     }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
-                            ForEach(22..<28, id: \.self) { date in
+                            ForEach(viewModel.availableDates, id: \.self) { date in
+                                let dayNum = Calendar.current.component(.day, from: date)
+                                let weekday = date.formatted(.dateTime.weekday(.abbreviated))
                                 DateChip(
-                                    date: date,
-                                    day: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date % 7],
-                                    isSelected: viewModel.selectedDate == date
+                                    date: dayNum,
+                                    day: weekday,
+                                    isSelected: Calendar.current.isDate(viewModel.selectedDate, inSameDayAs: date)
                                 ) {
                                     viewModel.selectedDate = date
                                 }
@@ -77,6 +82,12 @@ struct SessionBookingView: View {
                     }
                 }
                 .padding(.horizontal)
+                .onChange(of: viewModel.selectedDate) { _ in
+                    checkAvailability()
+                }
+                .onAppear {
+                    checkAvailability()
+                }
                 
                 // Time Selector
                 VStack(alignment: .leading, spacing: 16) {
@@ -85,9 +96,29 @@ struct SessionBookingView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(["09:00 AM", "10:30 AM", "12:00 PM", "01:30 PM", "03:00 PM"], id: \.self) { time in
-                                SelectionChip(title: time, isSelected: viewModel.selectedTime == time) {
-                                    viewModel.selectedTime = time
+                                let isAvailable = checkSlotAvailable(timeString: time)
+                                
+                                Button(action: {
+                                    if isAvailable { viewModel.selectedTime = time }
+                                }) {
+                                    Text(time)
+                                        .font(.system(size: 14, weight: .bold))
+                                        .foregroundColor(viewModel.selectedTime == time ? .white : (isAvailable ? AppTheme.Colors.primary : .secondary))
+                                        .strikethrough(!isAvailable)
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 10)
+                                        .background(
+                                            viewModel.selectedTime == time ? AppTheme.Colors.primary : Color.clear
+                                        )
+                                        .cornerRadius(20)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .stroke(viewModel.selectedTime == time ? AppTheme.Colors.primary : (isAvailable ? AppTheme.Colors.primary.opacity(0.3) : Color.gray.opacity(0.3)), lineWidth: 1)
+                                        )
                                 }
+                                .disabled(!isAvailable)
+                                .opacity(isAvailable ? 1.0 : 0.4)
+                                .accessibilityLabel("\(time), \(isAvailable ? "available" : "unavailable")")
                             }
                         }
                     }
@@ -194,7 +225,37 @@ struct SessionBookingView: View {
             SessionSuccessView(viewModel: viewModel)
         }
         .fullScreenCover(isPresented: $viewModel.showRequestSent) {
-            BookingRequestSentView(instructor: instructor, date: viewModel.selectedDate, time: viewModel.selectedTime)
+            BookingRequestSentView(instructor: instructor, sessionDate: viewModel.selectedDate, time: viewModel.selectedTime)
         }
+    }
+    
+    // MARK: - Availability Checking
+    
+    private func checkAvailability() {
+        Task {
+            if CalendarService.shared.checkCalendarAccess() {
+                // Use the real selected date directly
+                let slots = CalendarService.shared.getBusyTimeSlots(on: viewModel.selectedDate)
+                await MainActor.run {
+                    self.busyTimeSlots = slots
+                }
+            } else {
+                // Request access on first attempt
+                _ = await CalendarService.shared.requestAccess()
+                let slots = CalendarService.shared.getBusyTimeSlots(on: viewModel.selectedDate)
+                await MainActor.run {
+                    self.busyTimeSlots = slots
+                }
+            }
+        }
+    }
+    
+    private func checkSlotAvailable(timeString: String) -> Bool {
+        let startTime = viewModel.buildSessionDate(day: viewModel.selectedDate, timeString: timeString)
+        return CalendarService.shared.isTimeSlotAvailable(
+            startTime: startTime,
+            durationMinutes: viewModel.selectedDuration,
+            busySlots: busyTimeSlots
+        )
     }
 }
