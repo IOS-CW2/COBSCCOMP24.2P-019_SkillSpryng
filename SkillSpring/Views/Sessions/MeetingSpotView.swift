@@ -98,6 +98,7 @@ struct MeetingSpotView: View {
                                             .font(.system(size: 13))
                                             .foregroundColor(.white)
                                     }
+                                    .accessibilityHidden(true)
                                     Image(systemName: "arrowtriangle.down.fill")
                                         .font(.system(size: 8))
                                         .foregroundColor(selectedSpot?.id == spot.id
@@ -130,6 +131,7 @@ struct MeetingSpotView: View {
                             .foregroundColor(.gray)
                     }
                     .padding(.horizontal)
+                    .accessibilityElement(children: .combine)
 
                     // Horizontal scroll cards
                     if spots.isEmpty && !isLoading {
@@ -335,5 +337,8 @@ struct MeetingSpotCard: View {
                 .stroke(isSelected ? AppTheme.Colors.primary : Color.clear, lineWidth: 2)
         )
         .animation(.spring(response: 0.25), value: isSelected)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityLabel("\(spot.name), \(spot.category). Distance: \(spot.approximateDistance)")
     }
 }

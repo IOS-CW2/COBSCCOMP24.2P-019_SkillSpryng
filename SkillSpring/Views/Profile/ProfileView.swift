@@ -15,6 +15,7 @@ struct ProfileView: View {
                         NavigationLink(destination: SettingsView()) {
                             Color.clear.frame(width: 44, height: 44)
                         }
+                        .accessibilityLabel("Settings")
                     }
                 )
                 
@@ -65,6 +66,7 @@ struct ProfileView: View {
                             .foregroundColor(.gray)
                             .padding(.top, 4)
                     }
+                    .accessibilityElement(children: .combine)
                     
                     NavigationLink(destination: EditProfileView()) {
                         Text("Edit Profile")
@@ -272,5 +274,7 @@ struct SimplifiedStatCard: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.02), radius: 5)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }

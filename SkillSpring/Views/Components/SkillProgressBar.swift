@@ -35,5 +35,8 @@ struct SkillProgressBar: View {
                     .foregroundColor(.gray)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(name + (subheadline != nil ? ", \(subheadline!)" : ""))
+        .accessibilityValue("\(Int(percentage)) percent")
     }
 }

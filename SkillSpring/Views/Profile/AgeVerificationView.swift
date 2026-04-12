@@ -73,7 +73,8 @@ struct AgeVerificationView: View {
                         .offset(y: -25)
                     }
                     .padding(.top, 40)
-
+                    .accessibilityHidden(true)
+                    
                     Text("How old are you?")
                         .font(.system(size: 28, weight: .bold))
 

@@ -40,6 +40,7 @@ struct SkillSetupView: View {
                             Spacer()
                             Image(systemName: "checkmark.shield.fill")
                                 .foregroundColor(AppTheme.Colors.primary)
+                                .accessibilityHidden(true)
                         }
                         
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -71,6 +72,7 @@ struct SkillSetupView: View {
                             Spacer()
                             Image(systemName: "book.fill")
                                 .foregroundColor(AppTheme.Colors.primary)
+                                .accessibilityHidden(true)
                         }
                         
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -116,6 +118,7 @@ struct SkillSetupView: View {
                                                 .stroke(viewModel.experienceLevel == level ? AppTheme.Colors.primary : Color.gray.opacity(0.3), lineWidth: viewModel.experienceLevel == level ? 2 : 1)
                                         )
                                 }
+                                .accessibilityAddTraits(viewModel.experienceLevel == level ? .isSelected : [])
                             }
                         }
                     }
@@ -128,6 +131,7 @@ struct SkillSetupView: View {
                                 .bold()
                             Spacer()
                             Toggle("", isOn: .constant(true)).labelsHidden()
+                                .accessibilityLabel("Location context")
                         }
                         
                         HStack {
@@ -182,6 +186,7 @@ struct SkillSetupView: View {
                     .cornerRadius(16)
             }
             .buttonStyle(.plain)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
     }
 }

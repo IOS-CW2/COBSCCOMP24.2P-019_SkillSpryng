@@ -31,6 +31,7 @@ struct ChatDetailView: View {
                             .font(.system(size: 12))
                             .foregroundColor(.gray)
                     }
+                    .accessibilityElement(children: .combine)
                 }
                 
                 Spacer()
@@ -150,6 +151,7 @@ struct MessageBubble: View {
                             Image(systemName: "doc.fill")
                                 .foregroundColor(.orange)
                         }
+                        .accessibilityHidden(true)
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text(message.fileName ?? "")
@@ -180,5 +182,7 @@ struct MessageBubble: View {
             if !message.isFromMe { Spacer() }
         }
         .padding(.horizontal)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(message.isFromMe ? "You" : "Them"): \(message.text ?? (message.type == .image ? "Image Attachment" : (message.fileName ?? "Attachment"))), at \(message.timeString)")
     }
 }

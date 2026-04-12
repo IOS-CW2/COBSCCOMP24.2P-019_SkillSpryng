@@ -25,6 +25,7 @@ struct LaunchView: View {
                                 .frame(width: 44, height: 44)
                                 .foregroundColor(.white)
                         }
+                        .accessibilityHidden(true)
 
                         Text("SkillSpryng")
                             .font(.system(size: 34, weight: .bold, design: .default))
@@ -42,6 +43,7 @@ struct LaunchView: View {
                             Circle().fill(AppTheme.Colors.primary.opacity(0.2)).frame(width: 6, height: 6)
                         }
                         .padding(.bottom, 48)
+                        .accessibilityHidden(true)
                     }
                 }
             }

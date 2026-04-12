@@ -17,6 +17,7 @@ struct RewardsTabView: View {
                         Image(systemName: "leaf.fill")
                             .foregroundColor(AppTheme.Colors.primary)
                     }
+                    .accessibilityHidden(true)
                     Spacer()
                     NavigationLink(destination: NotificationsView()) {
                         Image(systemName: "bell")
@@ -97,6 +98,7 @@ struct RewardsTabView: View {
                             .background(Color.white)
                             .cornerRadius(16)
                             .shadow(color: Color.black.opacity(0.02), radius: 5)
+                            .accessibilityElement(children: .combine)
                         }
                     }
                     
@@ -214,5 +216,6 @@ struct BadgeCell: View {
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
         }
+        .accessibilityElement(children: .combine)
     }
 }

@@ -32,6 +32,7 @@ struct BookingRequestSentView: View {
                     .font(.system(size: 40))
                     .foregroundColor(.orange)
             }
+            .accessibilityHidden(true)
             
             VStack(spacing: 12) {
                 Text("Request Sent!")
@@ -42,6 +43,7 @@ struct BookingRequestSentView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
+            .accessibilityElement(children: .combine)
             
             // Summary Card
             VStack(spacing: 20) {
@@ -112,6 +114,7 @@ struct BookingRequestSentView: View {
             .cornerRadius(24)
             .shadow(color: Color.black.opacity(0.05), radius: 10)
             .padding(.horizontal)
+            .accessibilityElement(children: .combine)
             
             Text("Coach has 24 hours to respond. You'll be notified.")
                 .font(.system(size: 12))

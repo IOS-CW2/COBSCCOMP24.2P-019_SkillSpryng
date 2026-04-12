@@ -22,6 +22,7 @@ struct PodiumMember: View {
                         .scaledToFill()
                         .frame(width: isLarge ? 90 : 65, height: isLarge ? 90 : 65)
                         .clipShape(Circle())
+                        .accessibilityHidden(true)
                 }
                 
                 ZStack {
@@ -54,5 +55,7 @@ struct PodiumMember: View {
                     .foregroundColor(.gray)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Rank \(rank). \(name). \(points) points." + (isLarge ? " \(role)" : ""))
     }
 }

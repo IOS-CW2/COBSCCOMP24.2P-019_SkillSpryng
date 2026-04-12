@@ -22,6 +22,7 @@ struct SignInView: View {
                         .font(.title2)
                 }
                 .padding(.top, AppTheme.Spacing.lg)
+                .accessibilityHidden(true)
                 
                 VStack(spacing: 16) {
                     CustomTextField(iconName: "person", placeholder: "Full Name", text: $viewModel.fullName)
@@ -57,6 +58,8 @@ struct SignInView: View {
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 10)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Or continue with")
                 
                 VStack(spacing: 16) {
                     Button(action: { /* Apple Auth Placeholder */ }) {
@@ -104,6 +107,7 @@ struct SignInView: View {
                                 } else {
                                     Image(systemName: biometricService.biometricIcon)
                                         .foregroundColor(AppTheme.Colors.primary)
+                                        .accessibilityHidden(true)
                                 }
                                 Text(viewModel.isLoading ? "Authenticating…" : "Sign in with \(biometricService.biometricType)")
                                     .foregroundColor(AppTheme.Colors.primary)

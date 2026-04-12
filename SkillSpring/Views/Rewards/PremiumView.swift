@@ -39,8 +39,8 @@ struct PremiumView: View {
                                 .frame(width: 80, height: 80)
                             Image(systemName: "crown.fill")
                                 .font(.system(size: 40))
-                                .foregroundColor(.white)
                         }
+                        .accessibilityHidden(true)
                         VStack(spacing: 8) {
                             Text("SkillSpryng Pro")
                                 .font(.system(size: 28, weight: .bold))
@@ -73,6 +73,7 @@ struct PremiumView: View {
                                     .cornerRadius(10)
                                     .padding(4)
                             }
+                            .accessibilityAddTraits(selectedPlan == plan ? .isSelected : [])
                         }
                     }
                     .background(Color(.systemGray6))
@@ -116,6 +117,7 @@ struct PremiumView: View {
                     .background(Color.white)
                     .cornerRadius(20)
                     .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(.systemGray4), lineWidth: 1))
+                    .accessibilityElement(children: .contain)
 
                     // Pro Card
                     VStack(alignment: .leading, spacing: 10) {
@@ -148,6 +150,7 @@ struct PremiumView: View {
                     .padding()
                     .background(Color(hex: "34C759").gradient)
                     .cornerRadius(20)
+                    .accessibilityElement(children: .contain)
                 }
                 .padding(.horizontal)
 
@@ -321,5 +324,7 @@ struct ProFeatureRow: View {
                 .font(.system(size: 12))
                 .foregroundColor(isPro ? .white.opacity(0.9) : (isIncluded ? .primary : Color(.systemGray3)))
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(isIncluded ? "Included:" : "Not included:") \(text)")
     }
 }

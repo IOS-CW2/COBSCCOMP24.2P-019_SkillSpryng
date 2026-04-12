@@ -39,5 +39,7 @@ private struct StatItem: View {
                 .foregroundColor(.gray)
         }
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label), \(value)\(suffix == "★" ? " stars" : (suffix != nil ? " \(suffix!)" : ""))")
     }
 }

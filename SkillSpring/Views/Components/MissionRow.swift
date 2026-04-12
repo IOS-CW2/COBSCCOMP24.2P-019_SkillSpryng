@@ -41,5 +41,11 @@ struct MissionRow: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.02), radius: 5, x: 0, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            "\(mission.title). " +
+            (mission.status == .completed ? "Completed. Due in 2 days. " : "Pending. Available now. ") +
+            "Reward: \(mission.rewardAmount) Skill Points."
+        )
     }
 }

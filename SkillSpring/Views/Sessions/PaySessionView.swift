@@ -29,7 +29,9 @@ struct PaySessionView: View {
                         Spacer()
                         Image(systemName: "leaf.fill")
                             .foregroundColor(AppTheme.Colors.primary)
+                            .accessibilityHidden(true)
                     }
+                    .accessibilityElement(children: .combine)
                     
                     Divider()
                     
@@ -49,6 +51,8 @@ struct PaySessionView: View {
                                 .foregroundColor(.orange)
                         }
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Your SKP balance: \(viewModel.userBalance) SKP. \(viewModel.userBalance < viewModel.totalPrice ? "Insufficient funds." : "")")
                 }
                 .padding()
                 .background(Color(.systemGray6).opacity(0.5))
@@ -104,5 +108,7 @@ struct PriceRow: View {
                 .font(.system(size: isBold ? 20 : 14, weight: isBold ? .bold : .bold))
                 .foregroundColor(isBold ? AppTheme.Colors.primary : .black)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }

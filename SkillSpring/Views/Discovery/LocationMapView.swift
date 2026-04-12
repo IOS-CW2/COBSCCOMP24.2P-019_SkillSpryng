@@ -59,6 +59,8 @@ struct LocationMapView: View {
                             .padding(.horizontal, 14)
                             .padding(.vertical, 12)
                             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("Search nearby skills")
 
                             Button(action: {}) {
                                 Image(systemName: "slider.horizontal.3")
@@ -66,6 +68,7 @@ struct LocationMapView: View {
                                     .padding(12)
                                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
                             }
+                            .accessibilityLabel("Filter map")
                         }
                         .padding(.horizontal)
                         .padding(.top, 8)
@@ -317,6 +320,8 @@ struct NearbyUserCard: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(skill.name). Teaches \(skill.skills). \(viewModel.calculateDistance(to: skill.profile)). \(viewModel.calculateMatchPercentage(with: skill.profile)) percent match.")
     }
 }
 
@@ -361,6 +366,9 @@ struct NearbyUserRow: View {
         .padding(.horizontal)
         .padding(.vertical, 10)
         .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(skill.name). Teaches: \(skill.skills). \(viewModel.calculateDistance(to: skill.profile)). \(viewModel.calculateMatchPercentage(with: skill.profile)) percent match.")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -458,6 +466,7 @@ struct SelectedSkillCard: View {
                     .foregroundColor(.gray.opacity(0.4))
                     .font(.title3)
             }
+            .accessibilityLabel("Dismiss selected skill")
         }
         .padding(14)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))

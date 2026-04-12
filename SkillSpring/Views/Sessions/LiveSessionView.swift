@@ -16,6 +16,7 @@ struct LiveSessionView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
                 .overlay(Color.black.opacity(0.1))
+                .accessibilityHidden(true)
             
             VStack(spacing: 0) {
                 // Header
@@ -28,6 +29,7 @@ struct LiveSessionView: View {
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(.white.opacity(0.8))
                     }
+                    .accessibilityElement(children: .combine)
                     
                     Spacer()
                     
@@ -40,6 +42,7 @@ struct LiveSessionView: View {
                             .background(Color.green.opacity(0.8))
                             .foregroundColor(.white)
                             .cornerRadius(20)
+                            .accessibilityLabel("Call duration: \(formatDuration(callDuration))")
                     }
                 }
                 .padding(.horizontal)
@@ -71,6 +74,8 @@ struct LiveSessionView: View {
                             .cornerRadius(6)
                             .padding(8)
                         }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Participant: You. Microphone active.")
                     }
                 }
                 .padding(.horizontal)

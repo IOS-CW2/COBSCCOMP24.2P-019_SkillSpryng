@@ -70,5 +70,7 @@ struct MasteryHeroCard: View {
         }
         .background(Color(hex: "1D1D1F")) // Dark background as seen in mockup
         .cornerRadius(32)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Mastery rank. Total mastery points: \(data.total). Level \(data.level) Curator. \(Int(data.progressTowardsNextLevel * 100)) percent to level \(data.level + 1).")
     }
 }

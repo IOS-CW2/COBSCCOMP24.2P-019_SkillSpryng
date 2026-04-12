@@ -16,6 +16,7 @@ struct DiscoverView: View {
                     Image(systemName: "leaf.fill")
                         .foregroundColor(AppTheme.Colors.primary)
                         .font(.title3)
+                        .accessibilityHidden(true)
                     
                     Spacer()
                     
@@ -23,6 +24,7 @@ struct DiscoverView: View {
                         Image(systemName: "bell")
                             .font(.title3)
                             .foregroundColor(.gray)
+                            .accessibilityLabel("Notifications")
                     }
                 }
                 .padding(.horizontal)
@@ -41,12 +43,14 @@ struct DiscoverView: View {
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
+                        .accessibilityHidden(true)
                     TextField("What do you want to learn?", text: $searchText)
                         .font(AppTheme.Typography.body)
                     
                     Button(action: { /* Filter action */ }) {
                         Image(systemName: "slider.horizontal.3")
                             .foregroundColor(AppTheme.Colors.primary)
+                            .accessibilityLabel("Filter search")
                     }
                 }
                 .padding()
@@ -142,6 +146,7 @@ struct CategoryChip: View {
                 .background(isSelected ? AppTheme.Colors.primary : Color(.systemGray6))
                 .foregroundColor(isSelected ? .white : .gray)
                 .cornerRadius(20)
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
     }
 }
@@ -203,6 +208,10 @@ struct HeroMatchCard: View {
                     .foregroundColor(AppTheme.Colors.primary.opacity(0.15))
                     .padding(.trailing, 24)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Perfect Match Nearby! Elena also wants to learn UI Design and can teach Pottery.")
+            .accessibilityAddTraits(.isButton)
+            .accessibilityHint("Double-tap to connect")
         }
     }
 }
@@ -286,6 +295,9 @@ struct LargeSkillCard: View {
             }
             .foregroundColor(.gray)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(skill.title). With \(skill.instructor). \(String(format: "%.1f", skill.rating)) stars. \(skill.price). \(skill.isTopRated ? "Top Rated. " : "")Expert. Materials Included.")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -337,6 +349,9 @@ struct PostSkillCard: View {
         .padding(.vertical, 24)
         .background(Color(.systemGray6).opacity(0.5))
         .cornerRadius(AppTheme.Radius.xl)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Didn't find your skill? Create a new listing and let the experts find you.")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -394,6 +409,9 @@ struct NearbyMapBannerCard: View {
             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Skills Near You. See instructors on the map in your area. 3 nearby.")
+        .accessibilityHint("Double-tap to open map")
     }
 }
 

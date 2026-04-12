@@ -16,6 +16,7 @@ struct MatchDetailView: View {
                         .clipShape(Circle())
                         .overlay(Circle().stroke(Color.white, lineWidth: 4))
                         .shadow(radius: 10)
+                        .accessibilityHidden(true)
                         .overlay(
                             ZStack {
                                 Circle().fill(Color.white).frame(width: 24, height: 24)
@@ -56,6 +57,8 @@ struct MatchDetailView: View {
                     .padding(.top, 4)
                 }
                 .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("\(profile.fullName). \(profile.role). \(profile.onlineStatus ? "Online" : "Offline"). In \(profile.city).")
                 
                 // Match Badge
                 HStack {
@@ -69,6 +72,7 @@ struct MatchDetailView: View {
                 .background(AppTheme.Colors.primary)
                 .cornerRadius(12)
                 .padding(.horizontal)
+                .accessibilityElement(children: .combine)
                 
                 // Teach & Learn
                 HStack(alignment: .top, spacing: 20) {

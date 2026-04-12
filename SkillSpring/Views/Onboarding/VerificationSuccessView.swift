@@ -24,6 +24,7 @@ struct VerificationSuccessView: View {
                     .foregroundColor(.white)
                     .bold()
             }
+            .accessibilityHidden(true)
             
             VStack(spacing: 16) {
                 Text("Phone Number Verified")
@@ -43,6 +44,7 @@ struct VerificationSuccessView: View {
                     Circle().fill(AppTheme.Colors.primary).frame(width: 4, height: 4)
                 }
                 .padding(.top, AppTheme.Spacing.sm)
+                .accessibilityHidden(true)
             }
             
             Spacer()

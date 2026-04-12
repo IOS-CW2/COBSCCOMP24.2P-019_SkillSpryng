@@ -17,6 +17,7 @@ struct ReviewRow: View {
                             .font(.system(size: 14, weight: .bold))
                             .foregroundColor(.gray)
                     )
+                    .accessibilityHidden(true)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(name)
@@ -35,6 +36,7 @@ struct ReviewRow: View {
                             .foregroundColor(i < rating ? .orange : .gray.opacity(0.3))
                     }
                 }
+                .accessibilityHidden(true)
             }
             
             Text("\"\(comment)\"")
@@ -46,6 +48,8 @@ struct ReviewRow: View {
         .padding()
         .background(Color(.systemGray6).opacity(0.3))
         .cornerRadius(16)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(name). \(rating) out of 5 stars. \(comment). \(time)")
     }
 }
 

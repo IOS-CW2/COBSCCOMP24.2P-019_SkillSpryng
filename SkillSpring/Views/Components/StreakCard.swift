@@ -10,6 +10,7 @@ struct StreakCard: View {
                 .foregroundColor(.white)
                 .padding(8)
                 .background(Circle().fill(AppTheme.Colors.primary))
+                .accessibilityHidden(true)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(streakCount) Day Streak!")
@@ -25,9 +26,13 @@ struct StreakCard: View {
             Image(systemName: "chevron.right")
                 .foregroundColor(.white)
                 .font(.system(size: 12, weight: .bold))
+                .accessibilityHidden(true)
         }
         .padding(AppTheme.Spacing.lg)
         .background(AppTheme.Gradients.streakCard)
         .cornerRadius(AppTheme.Radius.xl)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(streakCount) day streak. \(subheadline)")
+        .accessibilityAddTraits(.isButton)
     }
 }

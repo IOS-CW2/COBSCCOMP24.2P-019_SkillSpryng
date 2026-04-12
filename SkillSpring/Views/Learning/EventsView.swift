@@ -28,6 +28,7 @@ struct EventsView: View {
                             .padding(.vertical, 10)
                             .foregroundColor(.gray)
                     }
+                    .accessibilityAddTraits(selectedTab == "Courses" ? .isSelected : [])
                     
                     Button(action: { selectedTab = "Events" }) {
                         Text("Events")
@@ -41,6 +42,7 @@ struct EventsView: View {
                                     .stroke(AppTheme.Colors.primary, lineWidth: 1)
                             )
                     }
+                    .accessibilityAddTraits(selectedTab == "Events" ? .isSelected : [])
                 }
                 .padding(4)
                 .background(Color(.systemGray6))
@@ -64,6 +66,7 @@ struct EventsView: View {
                                         .foregroundColor(selectedFilter == filter ? .white : .gray)
                                         .cornerRadius(20)
                                 }
+                                .accessibilityAddTraits(selectedFilter == filter ? .isSelected : [])
                             }
                         }
                         .padding(.horizontal)
@@ -121,6 +124,7 @@ struct EventHeroCard: View {
                         Image(systemName: "desktopcomputer") // Placeholder for 1D image
                             .font(.system(size: 60))
                             .foregroundColor(.gray.opacity(0.3))
+                            .accessibilityHidden(true)
                     )
                 
                 if event.isFree {
@@ -313,5 +317,6 @@ struct UpcomingEventRow: View {
             Image(systemName: "chevron.right")
                 .foregroundColor(.gray)
         }
+        .accessibilityElement(children: .combine)
     }
 }

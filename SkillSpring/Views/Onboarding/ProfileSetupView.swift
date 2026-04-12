@@ -61,6 +61,7 @@ struct ProfileSetupView: View {
                                     }
                                 }
                             )
+                            .accessibilityHidden(true)
                         
                         Button(action: {
                             showingImagePicker = true
@@ -74,6 +75,7 @@ struct ProfileSetupView: View {
                                 )
                                 .shadow(radius: AppTheme.Shadow.button.radius)
                         }
+                        .accessibilityLabel("Add profile photo")
                     }
                     
                     // Bio Section
@@ -92,6 +94,8 @@ struct ProfileSetupView: View {
                                 .padding(8)
                                 .scrollContentBackground(.hidden)
                                 .background(Color.clear)
+                                .accessibilityLabel("Tell us about yourself")
+                                .accessibilityHint("Expertise in gardening, curious about coding...")
                             
                             if viewModel.bio.isEmpty {
                                 Text("Expertise in gardening, curious about coding...")
@@ -114,6 +118,7 @@ struct ProfileSetupView: View {
                             Image(systemName: "mappin.and.ellipse")
                                 .foregroundColor(Color(hex: "00A86B"))
                         }
+                        .accessibilityHidden(true)
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Enable Location")
@@ -129,6 +134,7 @@ struct ProfileSetupView: View {
                             .toggleStyle(SwitchToggleStyle())
                             .tint(AppTheme.Colors.primary)
                             .labelsHidden()
+                            .accessibilityLabel("Enable Location, to find skills in your area")
                     }
                     .padding()
                     .background(Color(.systemGray6))

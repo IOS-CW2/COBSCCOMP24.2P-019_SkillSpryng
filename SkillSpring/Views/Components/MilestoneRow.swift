@@ -37,5 +37,7 @@ struct MilestoneRow: View {
         .padding()
         .background(Color.white)
         .cornerRadius(16)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(milestone.title). Progress: \(milestone.progress) out of \(milestone.total)")
     }
 }

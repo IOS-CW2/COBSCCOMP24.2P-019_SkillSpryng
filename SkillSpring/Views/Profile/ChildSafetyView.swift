@@ -44,6 +44,7 @@ struct ChildSafetyView: View {
                             .background(Color.white)
                             .cornerRadius(16)
                             .padding(.horizontal)
+                            .accessibilityElement(children: .combine)
                         }
                         
                         VStack(alignment: .leading, spacing: 16) {

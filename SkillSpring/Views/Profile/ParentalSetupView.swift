@@ -48,6 +48,7 @@ struct ParentalSetupView: View {
                                     .foregroundColor(Color(red: 0.05, green: 0.45, blue: 0.35))
                             }
                             .padding(.top, 30)
+                            .accessibilityHidden(true)
                             
                             Text("A parent or guardian needs to\nset up your account")
                                 .font(.title3)
@@ -70,6 +71,7 @@ struct ParentalSetupView: View {
                                     .padding()
                                     .background(Color(.systemGray6))
                                     .cornerRadius(AppTheme.Radius.md)
+                                    .accessibilityLabel("Parent or Guardian Full Name")
                             }
                             .padding(.horizontal, 24)
                             
@@ -84,6 +86,7 @@ struct ParentalSetupView: View {
                                     .padding()
                                     .background(Color(.systemGray6))
                                     .cornerRadius(AppTheme.Radius.md)
+                                    .accessibilityLabel("Parent or Guardian Email")
                             }
                             .padding(.horizontal, 24)
                             

@@ -45,6 +45,7 @@ struct MyMatchesInboxView: View {
                                 }
                             }
                             .frame(maxWidth: .infinity)
+                            .accessibilityAddTraits(selectedTab == index ? .isSelected : [])
                         }
                     }
                     .padding(.horizontal)
@@ -118,6 +119,7 @@ struct ArchivedMatchesView: View {
                 Image(systemName: "archivebox")
                     .font(.largeTitle)
                     .foregroundColor(.gray.opacity(0.3))
+                    .accessibilityHidden(true)
                 Text("Archived matches are stored for 90 days before being permanently removed.")
                     .font(.system(size: 12))
                     .foregroundColor(.gray)
@@ -171,6 +173,7 @@ struct InboxMatchCard: View {
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.gray)
             }
+            .accessibilityElement(children: .combine)
             
             // Action Buttons based on type
             HStack(spacing: 12) {

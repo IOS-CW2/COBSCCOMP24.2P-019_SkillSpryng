@@ -26,6 +26,7 @@ struct RateSessionSheet: View {
                         .frame(width: 80, height: 80)
                         .clipShape(Circle())
                 }
+                .accessibilityHidden(true)
                 
                 VStack(spacing: 4) {
                     Text(instructor)
@@ -34,6 +35,7 @@ struct RateSessionSheet: View {
                         .font(.system(size: 14))
                         .foregroundColor(.gray)
                 }
+                .accessibilityElement(children: .combine)
                 
                 Text("How was your session?")
                     .font(.system(size: 24, weight: .bold))
@@ -47,6 +49,9 @@ struct RateSessionSheet: View {
                                 .font(.system(size: 32))
                                 .foregroundColor(rating >= index ? .orange : Color(.systemGray4))
                         }
+                        .accessibilityLabel("\(index) star\(index > 1 ? "s" : "")")
+                        .accessibilityHint("Tap to rate \(index) out of 5")
+                        .accessibilityAddTraits(rating == index ? .isSelected : [])
                     }
                 }
                 
@@ -68,6 +73,7 @@ struct RateSessionSheet: View {
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
+                    .accessibilityField(label: "Review feedback")
                     .overlay(
                         VStack {
                             if feedback.isEmpty {
@@ -141,6 +147,7 @@ struct CancelSessionSheet: View {
                     .frame(width: 44, height: 44)
                     .clipShape(Circle())
                 
+                
                 VStack(alignment: .leading, spacing: 2) {
                     Text(session.instructorName)
                         .font(.system(size: 14, weight: .bold))
@@ -160,6 +167,8 @@ struct CancelSessionSheet: View {
             .background(Color(.systemGray6).opacity(0.5))
             .cornerRadius(16)
             .padding(.horizontal)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Session with \(session.instructorName), \(session.instructorRole), on \(session.date) at \(session.time)")
             
             // Refund Section
             VStack(alignment: .leading, spacing: 16) {
@@ -190,6 +199,7 @@ struct CancelSessionSheet: View {
                 }
                 .padding()
                 .background(RoundedRectangle(cornerRadius: 12).stroke(Color.green, lineWidth: 1))
+                .accessibilityElement(children: .combine)
                 
                 HStack(spacing: 12) {
                     Circle().fill(Color(.systemGray5)).frame(width: 24, height: 24)
@@ -205,6 +215,7 @@ struct CancelSessionSheet: View {
                 .padding()
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
+                .accessibilityElement(children: .combine)
             }
             .padding(.horizontal)
             

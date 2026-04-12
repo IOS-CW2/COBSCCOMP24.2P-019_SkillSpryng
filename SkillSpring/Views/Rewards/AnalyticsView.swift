@@ -58,6 +58,7 @@ struct LearningAnalyticsView: View {
                                     .font(.system(size: 13))
                                     .foregroundColor(.white.opacity(0.9))
                             }
+                            .accessibilityElement(children: .combine)
                             
                             Spacer()
                             
@@ -75,6 +76,7 @@ struct LearningAnalyticsView: View {
                                             .foregroundColor(.white)
                                     )
                             }
+                            .accessibilityElement(children: .combine)
                         }
                         .padding(24)
                     }
@@ -119,6 +121,8 @@ struct LearningAnalyticsView: View {
                     .background(Color.white)
                     .cornerRadius(20)
                     .padding(.horizontal)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Karma Points: 1,240. Top 5%")
                     
                     // Growth Trajectory Chart
                     VStack(alignment: .leading, spacing: 20) {
@@ -184,6 +188,7 @@ struct LearningAnalyticsView: View {
                     .background(Color.yellow.opacity(0.05))
                     .cornerRadius(20)
                     .padding(.horizontal)
+                    .accessibilityElement(children: .combine)
                     
                     Spacer().frame(height: 100)
                 }
@@ -214,6 +219,8 @@ struct RefinedStatGap: View {
         .background(Color.white)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.02), radius: 5)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }
 
@@ -265,6 +272,8 @@ struct SkillProgressionRow: View {
         .background(Color.white)
         .cornerRadius(24)
         .shadow(color: Color.black.opacity(0.02), radius: 10)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(name), \(level). \(Int(percentage * 100))% complete")
     }
 }
 
@@ -297,5 +306,7 @@ struct HorizontalMetricRow: View {
             }
             .frame(height: 6)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(percentage)%")
     }
 }
