@@ -73,6 +73,12 @@ struct SkillSpringApp: App {
         WindowGroup {
             RootCoordinatorView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .task {
+                    // StoreKit 2: Load products and silently restore Pro status on every launch
+                    async let products: () = StoreKitService.shared.loadProducts()
+                    async let status: () = StoreKitService.shared.checkSubscriptionStatus()
+                    _ = await (products, status)
+                }
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {

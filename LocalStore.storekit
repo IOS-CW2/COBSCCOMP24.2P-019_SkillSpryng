@@ -1,0 +1,137 @@
+{
+  "identifier" : "SkillSpryngStore",
+  "nonConsumableProducts" : [],
+  "consumableProducts" : [
+    {
+      "displayPrice" : "0.99",
+      "familySharable" : false,
+      "internalID" : "6B59B5A4",
+      "localizations" : [
+        {
+          "description" : "Buy 100 SkillCredits to spend on sessions.",
+          "displayName" : "100 SkillCredits",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.skillspryng.credits.100",
+      "referenceName" : "100 SkillCredits",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "3.99",
+      "familySharable" : false,
+      "internalID" : "7C60C6B5",
+      "localizations" : [
+        {
+          "description" : "Buy 500 SkillCredits — Best Value pack.",
+          "displayName" : "500 SkillCredits",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.skillspryng.credits.500",
+      "referenceName" : "500 SkillCredits",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "7.99",
+      "familySharable" : false,
+      "internalID" : "8D71D7C6",
+      "localizations" : [
+        {
+          "description" : "Buy 1200 SkillCredits — Maximum pack.",
+          "displayName" : "1200 SkillCredits",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.skillspryng.credits.1200",
+      "referenceName" : "1200 SkillCredits",
+      "type" : "Consumable"
+    }
+  ],
+  "autoRenewableSubscriptions" : [
+    {
+      "adHocOffers" : [],
+      "codeOffers" : [],
+      "displayPrice" : "6.99",
+      "familySharable" : false,
+      "groupNumber" : 1,
+      "internalID" : "9E82E8D7",
+      "introductoryOffer" : {
+        "offerIdentifier" : null,
+        "paymentMode" : "FREE_TRIAL",
+        "period" : "P7D",
+        "periodCount" : 1,
+        "type" : "Introductory"
+      },
+      "localizations" : [
+        {
+          "description" : "All SkillSpryng Pro features, unlimited matches, host paid sessions.",
+          "displayName" : "SkillSpryng Pro Monthly",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.skillspryng.pro.monthly",
+      "recurringSubscriptionPeriod" : "P1M",
+      "referenceName" : "Pro Monthly",
+      "subscriptionGroupID" : "20000001",
+      "type" : "RecurringSubscription"
+    },
+    {
+      "adHocOffers" : [],
+      "codeOffers" : [],
+      "displayPrice" : "49.99",
+      "familySharable" : false,
+      "groupNumber" : 2,
+      "internalID" : "AF93F9E8",
+      "introductoryOffer" : null,
+      "localizations" : [
+        {
+          "description" : "SkillSpryng Pro yearly — save 40% vs monthly.",
+          "displayName" : "SkillSpryng Pro Yearly",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.skillspryng.pro.yearly",
+      "recurringSubscriptionPeriod" : "P1Y",
+      "referenceName" : "Pro Yearly",
+      "subscriptionGroupID" : "20000001",
+      "type" : "RecurringSubscription"
+    }
+  ],
+  "subscriptionGroups" : [
+    {
+      "id" : "20000001",
+      "localizations" : [
+        {
+          "displayName" : "SkillSpryng Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "SkillSpryng Pro"
+    }
+  ],
+  "settings" : {
+    "_developerTeamID" : "",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Connect Response"
+      }
+    ]
+  },
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

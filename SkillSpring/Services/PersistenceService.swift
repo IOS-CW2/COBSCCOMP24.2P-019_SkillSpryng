@@ -103,4 +103,19 @@ class PersistenceService {
             print("ERROR: Failed to clear Core Data cache: \(error)")
         }
     }
+    
+    /// Updates the isPro flag on the locally cached Core Data user — called after Pro purchase.
+    func updateLocalUserPro(isPremium: Bool) {
+        let fetchRequest: NSFetchRequest<LocalUser> = NSFetchRequest<LocalUser>(entityName: "LocalUser")
+        fetchRequest.fetchLimit = 1
+        do {
+            if let localUser = try context.fetch(fetchRequest).first {
+                localUser.isPro = isPremium
+                try context.save()
+                print("[Core Data] isPro updated to \(isPremium)")
+            }
+        } catch {
+            print("[Core Data] Failed to update isPro: \(error)")
+        }
+    }
 }

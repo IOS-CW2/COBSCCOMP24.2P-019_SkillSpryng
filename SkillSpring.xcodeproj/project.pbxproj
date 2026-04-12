@@ -33,6 +33,7 @@
 		6227C22A2F7A96D200E964BB /* SkillSpring.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkillSpring.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6227C2422F7A9AF600E964BB /* SkillSpringTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkillSpringTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6227C24F2F7A9B1D00E964BB /* SkillSpringUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkillSpringUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A201B452F8B803C006224E0 /* LocalStore.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = LocalStore.storekit; sourceTree = "<group>"; };
 		8A2E68A42F8B3AE8006BBE33 /* geofence_test.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = geofence_test.gpx; sourceTree = "<group>"; };
 		8A2E68AB2F8B4524006BBE33 /* colombo_geofence_test.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = colombo_geofence_test.gpx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +87,7 @@
 		6227C2212F7A96D200E964BB = {
 			isa = PBXGroup;
 			children = (
+				8A201B452F8B803C006224E0 /* LocalStore.storekit */,
 				8A2E68AB2F8B4524006BBE33 /* colombo_geofence_test.gpx */,
 				8A2E68A42F8B3AE8006BBE33 /* geofence_test.gpx */,
 				6227C22C2F7A96D200E964BB /* SkillSpring */,
@@ -348,8 +350,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "SkillSpring needs full calendar access to check your availability and schedule learning sessions to prevent double-booking.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "SkillSpring needs access to add new learning sessions to your calendar.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "SkillSpring needs camera access for your profile picture.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "SkillSpring needs Face ID to log you in securely.";
@@ -431,8 +433,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "SkillSpring needs full calendar access to check your availability and schedule learning sessions to prevent double-booking.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "SkillSpring needs access to add new learning sessions to your calendar.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "SkillSpring needs camera access for your profile picture.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "SkillSpring needs Face ID to log you in securely.";
@@ -470,8 +472,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "SkillSpring needs full calendar access to check your availability and schedule learning sessions to prevent double-booking.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "SkillSpring needs access to your calendar to schedule your learning sessions.";
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "SkillSpring needs access to add new learning sessions to your calendar.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "SkillSpring needs camera access for your profile picture.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "SkillSpring needs Face ID to log you in securely.";

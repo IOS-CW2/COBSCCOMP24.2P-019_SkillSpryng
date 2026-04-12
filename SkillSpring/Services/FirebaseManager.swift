@@ -139,4 +139,40 @@ class FirebaseManager: FirebaseService {
             return nil
         }
     }
+    
+    // MARK: - StoreKit / Monetisation Sync
+    
+    /// Called after a successful Pro subscription purchase to mark the user as premium in Firestore.
+    func updateUserPro(isPremium: Bool, expiryDate: Date?) async {
+        guard let uid = auth.currentUser?.uid else {
+            print("[Firebase] updateUserPro: No authenticated user — skipping Firestore write.")
+            return
+        }
+        var data: [String: Any] = ["isPremium": isPremium]
+        if let expiry = expiryDate {
+            data["proExpiryDate"] = expiry
+        }
+        do {
+            try await firestore.collection("users").document(uid).updateData(data)
+            print("[Firebase] ✅ User pro status updated: isPremium=\(isPremium)")
+        } catch {
+            print("[Firebase] ❌ Failed to update pro status: \(error)")
+        }
+    }
+    
+    /// Called after a successful credits purchase to add the purchased amount to the user's balance in Firestore.
+    func addCredits(amount: Int) async {
+        guard let uid = auth.currentUser?.uid else {
+            print("[Firebase] addCredits: No authenticated user — skipping Firestore write.")
+            return
+        }
+        do {
+            try await firestore.collection("users").document(uid).updateData([
+                "credits": FieldValue.increment(Int64(amount))
+            ])
+            print("[Firebase] ✅ Credits incremented by \(amount)")
+        } catch {
+            print("[Firebase] ❌ Failed to add credits: \(error)")
+        }
+    }
 }
