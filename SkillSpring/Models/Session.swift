@@ -34,4 +34,5 @@ struct Session: Identifiable {
     var recordingAvailable: Bool = false
     var recordingDuration: String?
     var lessonCount: Int?
+    var calendarEventId: String?
 }

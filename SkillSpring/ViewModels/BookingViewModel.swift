@@ -6,8 +6,8 @@ class BookingViewModel: ObservableObject {
     let instructor: MatchProfile
     
     @Published var isOnline: Bool = true
-    @Published var selectedDate: Int = 25
-    @Published var selectedTime: String = "10:00 AM"
+    @Published var selectedDate: Date = Date() // Real today's date
+    @Published var selectedTime: String = "09:00 AM"
     @Published var selectedDuration: Int = 60
     @Published var topicsAndGoals: String = ""
     
@@ -66,7 +66,6 @@ class BookingViewModel: ObservableObject {
             )
             
             // 2. Reminder 30 min before the session
-            // Build a representative date for Oct selectedDate at selectedTime
             let sessionDate = buildSessionDate(day: selectedDate, timeString: selectedTime)
             notificationManager.scheduleSessionReminder(
                 identifier: "\(instructor.id)-\(selectedDate)-\(selectedTime)",
@@ -86,12 +85,9 @@ class BookingViewModel: ObservableObject {
     
     // MARK: - Helpers
     
-    /// Builds a Date for the selected day + time string (e.g. "10:00 AM") in October of the current year.
-    private func buildSessionDate(day: Int, timeString: String) -> Date {
-        var components = DateComponents()
-        components.year   = Calendar.current.component(.year, from: Date())
-        components.month  = 10 // October (hardcoded to match UI)
-        components.day    = day
+    /// Builds a Date for the selected day (a real Date) + time string (e.g. "10:00 AM").
+    func buildSessionDate(day: Date, timeString: String) -> Date {
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: day)
         
         // Parse time string like "10:00 AM" or "2:30 PM"
         let formatter = DateFormatter()
@@ -105,7 +101,19 @@ class BookingViewModel: ObservableObject {
             components.minute = 0
         }
         
-        return Calendar.current.date(from: components) ?? Date().addingTimeInterval(86400)
+        return Calendar.current.date(from: components) ?? day
     }
+    
+    /// Computed helper: next 7 available dates from today
+    var availableDates: [Date] {
+        (0..<7).compactMap { Calendar.current.date(byAdding: .day, value: $0, to: Calendar.current.startOfDay(for: Date())) }
+    }
+    
+    /// Formatted month/year header for the date strip
+    var dateStripHeader: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter.string(from: selectedDate)
+    }
+    
 }
-
