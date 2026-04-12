@@ -171,4 +171,16 @@ class NotificationManager: ObservableObject {
     func clearBadge() {
         UNUserNotificationCenter.current().setBadgeCount(0) { _ in }
     }
+    
+    /// Fires a motivational notification after the user successfully upgrades to SkillSpryng Pro.
+    func schedulePremiumWelcomeNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Welcome to SkillSpryng Pro! 👑"
+        content.body = "You now have unlimited matches, priority discovery, and access to host paid sessions. Let's grow!"
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+        let request = UNNotificationRequest(identifier: "pro.welcome", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request)
+    }
 }

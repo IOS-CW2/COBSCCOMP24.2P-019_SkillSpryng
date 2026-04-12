@@ -1,42 +1,51 @@
 import SwiftUI
+import StoreKit
 
 struct PremiumView: View {
-    @State private var billingCycle = "Monthly"
+    @StateObject private var storeKit = StoreKitService.shared
+    @State private var selectedPlan: PlanType = .monthly
+    @State private var showToast = false
     @Environment(\.dismiss) var dismiss
-    
+
+    enum PlanType { case monthly, yearly }
+
+    private var selectedProduct: Product? {
+        selectedPlan == .monthly ? storeKit.proMonthly : storeKit.proYearly
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 32) {
-                // Header
+            VStack(spacing: 28) {
+
+                // MARK: Header
                 AppHeader(title: "Go Premium", backAction: { dismiss() })
                     .padding(.top, 8)
-                
-                // Elevation Hero Card
+
+                // MARK: Hero Banner (#34C759 → #FF9F0A per spec)
                 ZStack {
                     RoundedRectangle(cornerRadius: 32)
                         .fill(
                             LinearGradient(
-                                gradient: Gradient(colors: [Color(hex: "27E246"), Color(hex: "1D9E75")]),
+                                colors: [Color(hex: "34C759"), Color(hex: "FF9F0A")],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
-                    
+
                     VStack(spacing: 16) {
                         ZStack {
                             Circle()
-                                .fill(Color.white.opacity(0.1))
+                                .fill(Color.white.opacity(0.15))
                                 .frame(width: 80, height: 80)
                             Image(systemName: "crown.fill")
                                 .font(.system(size: 40))
                                 .foregroundColor(.white)
                         }
-                        
                         VStack(spacing: 8) {
-                            Text("Elevate Your Growth")
-                                .font(.system(size: 26, weight: .bold))
+                            Text("SkillSpryng Pro")
+                                .font(.system(size: 28, weight: .bold))
                                 .foregroundColor(.white)
-                            Text("Unlock exclusive courses, direct mentorship, and advanced career analytics.")
+                            Text("Unlock unlimited potential. Learn, teach, and earn without limits.")
                                 .font(.system(size: 14))
                                 .foregroundColor(.white.opacity(0.85))
                                 .multilineTextAlignment(.center)
@@ -45,160 +54,272 @@ struct PremiumView: View {
                     }
                     .padding(40)
                 }
-                .frame(height: 280)
+                .frame(height: 260)
                 .padding(.horizontal)
-                
-                // Toggle Switcher
-                HStack(spacing: 0) {
-                    ForEach(["Monthly", "Yearly"], id: \.self) { cycle in
-                        Button(action: { billingCycle = cycle }) {
-                            Text(cycle)
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(billingCycle == cycle ? .primary : .gray)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .background(billingCycle == cycle ? Color.white : Color.clear)
-                                .cornerRadius(10)
-                                .padding(4)
+
+                // MARK: Plan Toggle
+                ZStack(alignment: .trailing) {
+                    HStack(spacing: 0) {
+                        ForEach([PlanType.monthly, .yearly], id: \.self) { plan in
+                            Button(action: {
+                                withAnimation(.spring(response: 0.3)) { selectedPlan = plan }
+                            }) {
+                                Text(plan == .monthly ? "Monthly" : "Yearly")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(selectedPlan == plan ? .primary : .gray)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(selectedPlan == plan ? Color.white : Color.clear)
+                                    .cornerRadius(10)
+                                    .padding(4)
+                            }
                         }
                     }
-                }
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
-                .padding(.horizontal, 60)
-                
-                // Plans Stack
-                VStack(spacing: 24) {
-                    // Free Plan
-                    PlanHeaderView(title: "STANDARD", price: "Free", isRecommended: false)
-                        .overlay(
-                            VStack(alignment: .leading, spacing: 12) {
-                                BulletRow(text: "Basic Course Access")
-                                BulletRow(text: "Community Forums")
-                                BulletRow(text: "1-on-1 Mentorship")
-                                BulletRow(text: "Advanced Career Labs")
-                                
-                                Button(action: { }) {
-                                    Text("Current Plan")
-                                        .font(.system(size: 14, weight: .bold))
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 14)
-                                        .background(AppTheme.Colors.primary)
-                                        .cornerRadius(12)
-                                }
-                                .padding(.top, 10)
-                            }
-                            .padding(24)
-                            .background(Color.white)
-                            .cornerRadius(24, corners: [.bottomLeft, .bottomRight])
-                            .shadow(color: Color.black.opacity(0.02), radius: 5, x: 0, y: 5)
-                            .offset(y: 140)
-                        )
-                        .padding(.bottom, 220) // Spacer for the overlay
-                    
-                    // Recommended Plan
-                    PlanHeaderView(title: "RECOMMENDED", price: "Rs.2000 /mo", isRecommended: true)
-                        .overlay(
-                            VStack(alignment: .leading, spacing: 12) {
-                                BulletRow(text: "Unlimited Course Access", isPro: true)
-                                BulletRow(text: "Priority Mentorship Chats", isPro: true)
-                                BulletRow(text: "Skill Assessment Badges", isPro: true)
-                                BulletRow(text: "Exclusive Networking Events", isPro: true)
-                                
-                                Button(action: { }) {
-                                    Text("Go Premium")
-                                        .font(.system(size: 14, weight: .bold))
-                                        .foregroundColor(AppTheme.Colors.primary)
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 14)
-                                        .background(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.Colors.primary, lineWidth: 1))
-                                }
-                                .padding(.top, 10)
-                            }
-                            .padding(24)
-                            .background(Color.white)
-                            .cornerRadius(24, corners: [.bottomLeft, .bottomRight])
-                            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 10)
-                            .offset(y: 140)
-                        )
-                        .padding(.bottom, 220)
-                }
-                .padding(.horizontal)
-                
-                // Why Pro features
-                VStack(alignment: .leading, spacing: 24) {
-                    Text("WHY SKILLSPRYNG PRO?")
-                        .font(.system(size: 12, weight: .black))
-                        .foregroundColor(AppTheme.Colors.primary)
-                    
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        BenefitCard(icon: "sparkles", title: "AI Career Paths", subtitle: "Personalized learning routes driven by market trends.", color: .purple)
-                        BenefitCard(icon: "person.2.fill", title: "Elite Network", subtitle: "Direct access to industry-top mentors.", color: .orange)
-                        BenefitCard(icon: "doc.text.fill", title: "Certificates", subtitle: "Industry-recognized credentials.", color: .blue)
-                        BenefitCard(icon: "bolt.fill", title: "Fast-Track Content", subtitle: "Condensed modules for busy professionals.", color: .green)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(12)
+
+                    // "Save 40%" badge on yearly tab
+                    if selectedPlan == .yearly {
+                        Text("SAVE 40%")
+                            .font(.system(size: 8, weight: .black))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(Color.green)
+                            .cornerRadius(4)
+                            .offset(x: -8, y: -18)
+                            .transition(.scale.combined(with: .opacity))
                     }
                 }
-                .padding(.horizontal)
-                
-                VStack(spacing: 8) {
-                    Text("Cancel anytime. No hidden commitments.")
-                    Text("14-day money-back guarantee.")
+                .padding(.horizontal, 60)
+
+                // MARK: Free vs Pro Comparison Cards
+                HStack(spacing: 12) {
+                    // Free Card
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("FREE")
+                            .font(.system(size: 10, weight: .black))
+                            .foregroundColor(.gray)
+                        Text("Standard")
+                            .font(.system(size: 18, weight: .bold))
+
+                        Divider()
+
+                        ProFeatureRow(text: "5 matches / month", isIncluded: true)
+                        ProFeatureRow(text: "Basic discovery", isIncluded: true)
+                        ProFeatureRow(text: "Limited analytics", isIncluded: true)
+                        ProFeatureRow(text: "Host paid sessions", isIncluded: false)
+                        ProFeatureRow(text: "Verified badge", isIncluded: false)
+                        ProFeatureRow(text: "Ad-free experience", isIncluded: false)
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(20)
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(.systemGray4), lineWidth: 1))
+
+                    // Pro Card
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Text("PRO")
+                                .font(.system(size: 10, weight: .black))
+                                .foregroundColor(.white)
+                            Spacer()
+                            Text("POPULAR")
+                                .font(.system(size: 8, weight: .black))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
+                                .background(Color(hex: "FF9F0A"))
+                                .cornerRadius(4)
+                        }
+                        Text("Pro")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.white)
+
+                        Divider().background(Color.white.opacity(0.3))
+
+                        ProFeatureRow(text: "Unlimited matches", isIncluded: true, isPro: true)
+                        ProFeatureRow(text: "Priority discovery", isIncluded: true, isPro: true)
+                        ProFeatureRow(text: "Full analytics", isIncluded: true, isPro: true)
+                        ProFeatureRow(text: "Host paid sessions", isIncluded: true, isPro: true)
+                        ProFeatureRow(text: "Verified badge", isIncluded: true, isPro: true)
+                        ProFeatureRow(text: "Ad-free experience", isIncluded: true, isPro: true)
+                    }
+                    .padding()
+                    .background(Color(hex: "34C759").gradient)
+                    .cornerRadius(20)
                 }
-                .font(.system(size: 10))
-                .foregroundColor(.gray)
-                .padding(.vertical, 20)
+                .padding(.horizontal)
+
+                // MARK: Price Display
+                VStack(spacing: 6) {
+                    if selectedPlan == .monthly {
+                        Text(storeKit.proMonthly?.displayPrice ?? "$6.99")
+                            .font(.system(size: 36, weight: .bold))
+                        + Text(" / month")
+                            .font(.system(size: 16))
+                            .foregroundColor(.gray)
+                        Text("7-day free trial included")
+                            .font(.system(size: 13))
+                            .foregroundColor(.green)
+                            .fontWeight(.semibold)
+                    } else {
+                        HStack(spacing: 8) {
+                            Text(storeKit.proYearly?.displayPrice ?? "$49.99")
+                                .font(.system(size: 36, weight: .bold))
+                            Text("$83.88")
+                                .font(.system(size: 18))
+                                .foregroundColor(.gray)
+                                .strikethrough()
+                        }
+                        Text(" / year")
+                            .font(.system(size: 16))
+                            .foregroundColor(.gray)
+                        Text("You save $33.89 annually")
+                            .font(.system(size: 13))
+                            .foregroundColor(.green)
+                            .fontWeight(.semibold)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal)
+
+                // MARK: CTA Button
+                VStack(spacing: 16) {
+                    Button(action: {
+                        guard let product = selectedProduct else { return }
+                        Task {
+                            let success = await storeKit.purchase(product)
+                            if success {
+                                withAnimation { showToast = true }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                    withAnimation { showToast = false }
+                                }
+                            }
+                        }
+                    }) {
+                        HStack {
+                            if storeKit.isPurchasing {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Image(systemName: "crown.fill")
+                            }
+                            Text(selectedPlan == .monthly ? "Start 7-Day Free Trial" : "Get Pro Yearly")
+                                .font(.system(size: 16, weight: .bold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                colors: [Color(hex: "34C759"), Color(hex: "FF9F0A")],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(16)
+                    }
+                    .disabled(storeKit.isPurchasing)
+
+                    // Products loading state
+                    if storeKit.products.isEmpty {
+                        HStack(spacing: 10) {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .orange))
+                            Text("Loading products…")
+                                .font(.system(size: 14))
+                                .foregroundColor(.orange)
+                        }
+                        .padding(.vertical, 4)
+                    }
+
+                    // Diagnostic error if StoreKit config not linked
+                    if storeKit.products.isEmpty, let error = storeKit.purchaseError {
+                        Text("⚠️ " + error)
+                            .font(.system(size: 12))
+                            .foregroundColor(.red)
+                            .multilineTextAlignment(.center)
+                    } else if let error = storeKit.purchaseError {
+                        Text(error)
+                            .font(.system(size: 12))
+                            .foregroundColor(.red)
+                            .multilineTextAlignment(.center)
+                    }
+
+                    // Restore Purchases
+                    Button(action: {
+                        Task { await storeKit.restorePurchases() }
+                    }) {
+                        Text("Restore Purchases")
+                            .font(.system(size: 14))
+                            .foregroundColor(AppTheme.Colors.primary)
+                    }
+
+                    // Footer
+                    VStack(spacing: 4) {
+                        HStack(spacing: 16) {
+                            Button("Terms of Use") { }
+                                .font(.system(size: 10))
+                                .foregroundColor(.gray)
+                            Button("Privacy Policy") { }
+                                .font(.system(size: 10))
+                                .foregroundColor(.gray)
+                        }
+                        Text("Subscription auto-renews unless cancelled at least 24 hours before the end of the current period.")
+                            .font(.system(size: 9))
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
+                    }
+                    .padding(.bottom, 40)
+                }
+                .padding(.horizontal)
             }
             .padding(.top)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
-    }
-}
-
-struct PlanHeaderView: View {
-    let title: String
-    let price: String
-    let isRecommended: Bool
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Text(title)
-                .font(.system(size: 10, weight: .black))
-                .foregroundColor(isRecommended ? .white : .gray)
-            
-            Text(price)
-                .font(.system(size: 24, weight: .bold))
-                .foregroundColor(isRecommended ? .white : .primary)
-            
-            if isRecommended {
-                Text("BEST VALUE")
-                    .font(.system(size: 8, weight: .black))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.white.opacity(0.15))
-                    .foregroundColor(.white)
-                    .cornerRadius(4)
+        .task { await storeKit.loadProducts() }
+        .overlay(alignment: .top) {
+            if showToast || storeKit.isUserPro {
+                HStack(spacing: 12) {
+                    Image(systemName: "crown.fill")
+                        .foregroundColor(.white)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Welcome to Pro! 👑")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("Your subscription is now active.")
+                            .font(.system(size: 11))
+                            .foregroundColor(.white.opacity(0.85))
+                    }
+                    Spacer()
+                }
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color(hex: "34C759").gradient))
+                .padding(.horizontal)
+                .padding(.top, 60)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .animation(.spring(response: 0.4, dampingFraction: 0.7), value: showToast)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 30)
-        .background(isRecommended ? Color(hex: "1D9E75") : Color.white)
-        .cornerRadius(24, corners: [.topLeft, .topRight])
     }
 }
 
-struct BulletRow: View {
+// MARK: - ProFeatureRow
+struct ProFeatureRow: View {
     let text: String
+    let isIncluded: Bool
     var isPro: Bool = false
-    
+
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 14))
-                .foregroundColor(isPro ? AppTheme.Colors.primary : .green)
+        HStack(spacing: 8) {
+            Image(systemName: isIncluded ? "checkmark" : "xmark")
+                .font(.system(size: 11, weight: .bold))
+                .foregroundColor(isIncluded ? (isPro ? .white : .green) : Color(.systemGray3))
             Text(text)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundColor(.black.opacity(0.7))
+                .font(.system(size: 12))
+                .foregroundColor(isPro ? .white.opacity(0.9) : (isIncluded ? .primary : Color(.systemGray3)))
         }
     }
 }

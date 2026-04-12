@@ -1,9 +1,11 @@
 import SwiftUI
+import Combine
 
 struct WalletView: View {
     @State private var balance = MockDataProvider.shared.currentUser.walletBalance
     @Environment(\.dismiss) var dismiss
     let data = MockDataProvider.shared
+    @StateObject private var storeKit = StoreKitService.shared
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -107,9 +109,19 @@ struct WalletView: View {
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                     
-                    VStack(spacing: 16) {
-                        ForEach(data.creditPacks) { pack in
-                            CreditPackCard(pack: pack)
+                    if storeKit.creditPacks.isEmpty {
+                        // Fallback to mock data while StoreKit loads
+                        VStack(spacing: 16) {
+                            ForEach(data.creditPacks) { pack in
+                                CreditPackCard(pack: pack)
+                            }
+                        }
+                    } else {
+                        // Real StoreKit products
+                        VStack(spacing: 16) {
+                            ForEach(storeKit.creditPacks, id: \.id) { product in
+                                StoreKitCreditCard(product: product, storeKit: storeKit)
+                            }
                         }
                     }
                 }
@@ -143,6 +155,28 @@ struct WalletView: View {
             }
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .task { await storeKit.loadProducts() }
+        .onReceive(storeKit.$creditsToast.compactMap { $0 }) { _ in
+            balance = MockDataProvider.shared.currentUser.walletBalance
+        }
+        .overlay(alignment: .top) {
+            if let toast = storeKit.creditsToast {
+                HStack(spacing: 12) {
+                    Image(systemName: "creditcard.fill")
+                        .foregroundColor(.white)
+                    Text(toast)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                    Spacer()
+                }
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color.green.gradient))
+                .padding(.horizontal)
+                .padding(.top, 60)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .animation(.spring(response: 0.4), value: toast)
+            }
+        }
     }
 }
 
