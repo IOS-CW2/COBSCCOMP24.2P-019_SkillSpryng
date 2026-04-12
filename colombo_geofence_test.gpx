@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<gpx>
+  <wpt lat="6.9271" lon="79.8612">
+    <name>1 - Session Venue (Colombo, Inside Fence)</name>
+  </wpt>
+  <wpt lat="6.9285" lon="79.8612">
+    <name>2 - Still inside (~150m)</name>
+  </wpt>
+  <wpt lat="6.9310" lon="79.8612">
+    <name>3 - Near boundary (~430m)</name>
+  </wpt>
+  <wpt lat="6.9325" lon="79.8612">
+    <name>4 - OUTSIDE fence (~600m) - EXIT fires here</name>
+  </wpt>
+  <wpt lat="6.9350" lon="79.8612">
+    <name>5 - Far outside (~870m)</name>
+  </wpt>
+  <wpt lat="6.9310" lon="79.8612">
+    <name>6 - Returning (~430m)</name>
+  </wpt>
+  <wpt lat="6.9271" lon="79.8612">
+    <name>7 - Back at venue - RETURN fires here</name>
+  </wpt>
+</gpx>
