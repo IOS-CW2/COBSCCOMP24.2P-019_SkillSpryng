@@ -78,8 +78,16 @@ struct NotificationsView: View {
                                     .foregroundColor(.gray)
                                     .padding(.horizontal)
                                 
-                                ForEach(MockDataProvider.shared.mockConversations) { conv in
-                                    if conv.participant.fullName == "Marcus Chen" || conv.participant.fullName == "Sim V" {
+                            let todayConversations = MockDataProvider.shared.mockConversations.filter {
+                                    ($0.participant.fullName == "Marcus Chen" || $0.participant.fullName == "Sim V") &&
+                                    (searchText.isEmpty || $0.participant.fullName.localizedCaseInsensitiveContains(searchText) || $0.lastMessage.localizedCaseInsensitiveContains(searchText))
+                                }
+
+                                if todayConversations.isEmpty && !searchText.isEmpty {
+                                    EmptyMessagesView(searchText: searchText)
+                                        .padding(.top, 40)
+                                } else {
+                                    ForEach(todayConversations) { conv in
                                         NavigationLink(destination: ChatDetailView(conversation: conv)) {
                                             ConversationCard(conversation: conv)
                                         }
@@ -279,5 +287,45 @@ struct NotificationItemCard: View {
         .background(Color.white)
         .cornerRadius(16)
         .accessibilityElement(children: .combine)
+    }
+}
+
+// MARK: - Empty State
+
+struct EmptyMessagesView: View {
+    let searchText: String
+
+    var body: some View {
+        VStack(spacing: 20) {
+            ZStack {
+                Circle()
+                    .fill(AppTheme.Colors.primary.opacity(0.08))
+                    .frame(width: 110, height: 110)
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 44))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [AppTheme.Colors.primary, AppTheme.Colors.primary.opacity(0.5)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+
+            VStack(spacing: 8) {
+                Text("No Results Found")
+                    .font(.system(size: 18, weight: .bold))
+
+                Text("No conversations match \"\(searchText)\".\nTry a different name or keyword.")
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("No conversations match \(searchText).")
     }
 }
