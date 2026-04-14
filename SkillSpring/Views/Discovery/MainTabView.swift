@@ -13,6 +13,7 @@ struct MainTabView: View {
                 Label("HOME", systemImage: "house.fill")
             }
             .tag(0)
+            .accessibilityIdentifier("homeTab")
             
             // Tab 2: Sessions
             NavigationStack {
@@ -22,6 +23,7 @@ struct MainTabView: View {
                 Label("SESSIONS", systemImage: "calendar")
             }
             .tag(1)
+            .accessibilityIdentifier("sessionsTab")
             
             // Tab 3: Chat
             NavigationStack {
@@ -33,6 +35,7 @@ struct MainTabView: View {
                 Label("MESSAGES", systemImage: "message.fill")
             }
             .tag(2)
+            .accessibilityIdentifier("messagesTab")
             
             // Tab 4: Rewards
             NavigationStack {
@@ -42,6 +45,7 @@ struct MainTabView: View {
                 Label("REWARDS", systemImage: "crown.fill")
             }
             .tag(3)
+            .accessibilityIdentifier("rewardsTab")
             
             // Tab 5: Profile
             NavigationStack {

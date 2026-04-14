@@ -26,9 +26,11 @@ struct SignInView: View {
                 
                 VStack(spacing: 16) {
                     CustomTextField(iconName: "person", placeholder: "Full Name", text: $viewModel.fullName)
+                        .accessibilityIdentifier("fullNameTextField")
                     
                     CustomTextField(iconName: "phone", placeholder: "Phone number (+1234...)", text: $viewModel.phoneNumber, keyboardType: .phonePad)
                         .textContentType(.telephoneNumber)
+                        .accessibilityIdentifier("phoneTextField")
                     
                     if let error = viewModel.errorMessage {
                         Text(error)
@@ -40,6 +42,7 @@ struct SignInView: View {
                     PrimaryButton(title: "Send OTP", action: {
                         viewModel.sendOTP()
                     }, isLoading: viewModel.isLoading)
+                    .accessibilityIdentifier("sendOTPButton")
                     .padding(.top, 10)
                 }
                 .padding(.horizontal, 24)
