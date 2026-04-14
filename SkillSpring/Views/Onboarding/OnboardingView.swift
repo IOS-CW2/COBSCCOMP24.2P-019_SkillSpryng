@@ -14,6 +14,7 @@ struct OnboardingView: View {
                             .foregroundColor(.gray)
                             .padding()
                     }
+                    .accessibilityIdentifier("onboardingSkipButton")
                 }
                 
                 Spacer()
@@ -38,6 +39,7 @@ struct OnboardingView: View {
                 PrimaryButton(title: "Next", action: {
                     navigateToSignIn = true
                 })
+                .accessibilityIdentifier("onboardingNextButton")
                 .padding(.horizontal, 24)
                 .padding(.bottom, 20)
             }

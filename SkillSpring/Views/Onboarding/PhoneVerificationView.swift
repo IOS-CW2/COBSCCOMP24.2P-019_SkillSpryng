@@ -21,6 +21,7 @@ struct PhoneVerificationView: View {
             
             OTPInputField(verificationCode: $viewModel.verificationCode)
                 .padding(.horizontal, 40)
+                .accessibilityIdentifier("otpInputField")
             
             if let error = viewModel.errorMessage {
                 Text(error)
@@ -33,6 +34,7 @@ struct PhoneVerificationView: View {
                 HapticManager.light()
                 viewModel.verifyCode()
             }, isLoading: viewModel.isLoading)
+            .accessibilityIdentifier("verifyOTPButton")
             .padding(.horizontal, 24)
             .padding(.top, 20)
             

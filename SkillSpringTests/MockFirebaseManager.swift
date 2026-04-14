@@ -4,7 +4,7 @@ import FirebaseAuth
 
 class MockFirebaseManager: FirebaseService {
     var shouldSucceed: Bool = true
-    var mockUser: User?
+    var mockUser: SkillSpring.User?
     
     func sendPhoneNumberOTP(phoneNumber: String) async throws -> String {
         if shouldSucceed {
@@ -28,14 +28,14 @@ class MockFirebaseManager: FirebaseService {
         // No-op
     }
     
-    func saveUser(_ user: User) async throws {
+    func saveUser(_ user: SkillSpring.User) async throws {
         if !shouldSucceed {
             throw NSError(domain: "MockError", code: -1, userInfo: nil)
         }
         self.mockUser = user
     }
     
-    func fetchUser() async throws -> User? {
+    func fetchUser() async throws -> SkillSpring.User? {
         if !shouldSucceed {
             throw NSError(domain: "MockError", code: -1, userInfo: nil)
         }
