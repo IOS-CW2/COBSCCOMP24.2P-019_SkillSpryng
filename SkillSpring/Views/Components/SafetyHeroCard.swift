@@ -20,11 +20,11 @@ struct SafetyHeroCard: View {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text(title)
-                            .font(.system(size: 20, weight: .bold))
+                            .font(AppTheme.Typography.title3)
                             .foregroundColor(.white)
                         
                         Text("ACTIVE")
-                            .font(.system(size: 8, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
                             .background(Color.white.opacity(0.2))
@@ -33,7 +33,7 @@ struct SafetyHeroCard: View {
                     }
                     
                     Text(subtitle)
-                        .font(.system(size: 13))
+                        .font(AppTheme.Typography.footnote)
                         .foregroundColor(.white.opacity(0.9))
                         .lineSpacing(4)
                 }

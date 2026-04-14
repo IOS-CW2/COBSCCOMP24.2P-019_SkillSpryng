@@ -27,15 +27,15 @@ private struct StatItem: View {
         VStack(spacing: 4) {
             HStack(spacing: 2) {
                 Text(value)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(AppTheme.Typography.title3)
                 if let suffix = suffix {
                     Text(suffix)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(.orange)
                 }
             }
             Text(label)
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
         }
         .frame(maxWidth: .infinity)

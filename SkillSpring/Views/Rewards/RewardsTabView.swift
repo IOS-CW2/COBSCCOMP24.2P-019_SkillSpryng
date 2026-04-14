@@ -21,7 +21,7 @@ struct RewardsTabView: View {
                     Spacer()
                     NavigationLink(destination: NotificationsView()) {
                         Image(systemName: "bell")
-                            .font(.system(size: 20))
+                            .font(AppTheme.Typography.title3)
                             .foregroundColor(.gray)
                     }
                 }
@@ -30,7 +30,7 @@ struct RewardsTabView: View {
                 // Mastery Title Area
                 VStack(alignment: .leading, spacing: 4) {
                     Text("My Rewards")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(AppTheme.Typography.title)
                     Text("You are in the top 10% this month")
                         .font(.subheadline)
                         .foregroundColor(.gray)
@@ -73,22 +73,22 @@ struct RewardsTabView: View {
                                     Circle()
                                         .fill(Color.white)
                                         .frame(width: 14, height: 14)
-                                        .overlay(Text("\(index + 1)").font(.system(size: 8, weight: .bold)))
+                                        .overlay(Text("\(index + 1)").font(AppTheme.Typography.badge))
                                         .offset(x: 16, y: -16)
                                 }
                                 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(curator.fullName)
-                                        .font(.system(size: 14, weight: .bold))
+                                        .font(AppTheme.Typography.subheadline)
                                     Text("Expert Mentor")
-                                        .font(.system(size: 10))
+                                        .font(AppTheme.Typography.caption2)
                                         .foregroundColor(.gray)
                                 }
                                 
                                 Spacer()
                                 
                                 Text("\(String(format: "%.1fk", Double(curator.points)/1000.0))")
-                                    .font(.system(size: 14, weight: .bold))
+                                    .font(AppTheme.Typography.subheadline)
                                     .foregroundColor(.primary)
                                 Text("POINTS")
                                     .font(.system(size: 8, weight: .black))
@@ -104,7 +104,7 @@ struct RewardsTabView: View {
                     
                     Button(action: { showLeaderboard = true }) {
                         Text("View Full Leaderboard")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(AppTheme.Colors.primary)
                             .padding(.vertical, 14)
                             .frame(maxWidth: .infinity)
@@ -120,7 +120,7 @@ struct RewardsTabView: View {
                             .font(.headline)
                         Spacer()
                         Text("12 of 30 collected")
-                            .font(.system(size: 11, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                     }
                     
@@ -166,13 +166,13 @@ struct RewardsTabView: View {
                         }
                         
                         Text("Detailed Learning Analytics")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                             .foregroundColor(.white)
                         
                         Spacer()
                         
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                             .foregroundColor(.white.opacity(0.6))
                     }
                     .padding(20)
@@ -208,11 +208,11 @@ struct BadgeCell: View {
                     .fill(color.opacity(0.1))
                     .frame(width: 50, height: 50)
                 Image(systemName: icon)
-                    .font(.system(size: 20))
+                    .font(AppTheme.Typography.title3)
                     .foregroundColor(color)
             }
             Text(title)
-                .font(.system(size: 9, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
         }

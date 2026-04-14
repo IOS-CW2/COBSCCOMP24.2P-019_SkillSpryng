@@ -18,9 +18,9 @@ struct InsufficientFundsSheet: View {
                 
                 VStack(spacing: 4) {
                     Text("Not Enough SkillCredits")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(AppTheme.Typography.title3)
                     Text("You need 52 more SKP to book this session.")
-                        .font(.system(size: 14))
+                        .font(AppTheme.Typography.callout)
                         .foregroundColor(.gray)
                 }
             }
@@ -32,7 +32,7 @@ struct InsufficientFundsSheet: View {
             
             Button(action: { }) {
                 Text("Top Up Now")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -42,12 +42,12 @@ struct InsufficientFundsSheet: View {
             
             Button(action: { dismiss() }) {
                 Text("Maybe Later")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                     .foregroundColor(.gray)
             }
             
             Text("Earn credits faster by completing your **Weekly Skills Challenge**.")
-                .font(.system(size: 10))
+                .font(AppTheme.Typography.caption2)
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
                 .padding(.bottom, 20)
@@ -63,9 +63,9 @@ struct QuickTopUpCard: View {
     var body: some View {
         VStack(spacing: 4) {
             Text("\(amount) SKP")
-                .font(.system(size: 14, weight: .bold))
+                .font(AppTheme.Typography.subheadline)
             Text(price)
-                .font(.system(size: 10))
+                .font(AppTheme.Typography.caption2)
                 .foregroundColor(.gray)
         }
         .frame(maxWidth: .infinity)

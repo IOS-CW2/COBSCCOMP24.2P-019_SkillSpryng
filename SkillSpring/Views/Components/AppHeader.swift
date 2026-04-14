@@ -38,7 +38,7 @@ struct AppHeader: View {
                 } else if let actionText = actionText {
                     Button(action: { action?() }) {
                         Text(actionText)
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(AppTheme.Colors.primary)
                             .padding(8)
                     }

@@ -10,7 +10,7 @@ struct CreditPackCard: View {
                 if pack.isBestValue {
                     HStack(spacing: 4) {
                         Image(systemName: "sparkles")
-                            .font(.system(size: 8))
+                            .font(AppTheme.Typography.caption2)
                         Text("BEST VALUE")
                             .font(.system(size: 8, weight: .black))
                     }
@@ -23,15 +23,15 @@ struct CreditPackCard: View {
                 
                 HStack(alignment: .center, spacing: 8) {
                     Text("\(pack.amount.formatted())")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(AppTheme.Typography.title)
                     Text("SKP")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(.gray)
                 }
                 
                 if let bonus = pack.bonusAmount {
                     Text("+\(bonus) Bonus Credits")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                 }
             }
@@ -40,7 +40,7 @@ struct CreditPackCard: View {
             
             Button(action: { }) {
                 Text("Buy for \(pack.price)")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(.white)
                     .frame(width: 140)
                     .padding(.vertical, 14)
@@ -76,7 +76,7 @@ struct StoreKitCreditCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 if isBestValue {
                     HStack(spacing: 4) {
-                        Image(systemName: "sparkles").font(.system(size: 8))
+                        Image(systemName: "sparkles").font(AppTheme.Typography.caption2)
                         Text("BEST VALUE").font(.system(size: 8, weight: .black))
                     }
                     .foregroundColor(AppTheme.Colors.primary)
@@ -88,14 +88,14 @@ struct StoreKitCreditCard: View {
 
                 HStack(alignment: .center, spacing: 8) {
                     Text("\(creditsAmount)")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(AppTheme.Typography.title)
                     Text("SKP")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(.gray)
                 }
 
                 Text(product.description)
-                    .font(.system(size: 11))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.gray)
                     .lineLimit(1)
             }
@@ -115,7 +115,7 @@ struct StoreKitCreditCard: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     } else {
                         Text("Buy \(product.displayPrice)")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                     }
                 }

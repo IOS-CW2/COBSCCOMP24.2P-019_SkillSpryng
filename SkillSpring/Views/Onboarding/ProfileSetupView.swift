@@ -81,7 +81,7 @@ struct ProfileSetupView: View {
                     // Bio Section
                     VStack(alignment: .leading, spacing: 12) {
                         Text("TELL US ABOUT YOURSELF")
-                            .font(.system(size: 13, weight: .bold))
+                            .font(AppTheme.Typography.sectionHeader)
                             .foregroundColor(.gray)
                         
                         ZStack(alignment: .topLeading) {
@@ -122,9 +122,9 @@ struct ProfileSetupView: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Enable Location")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                             Text("To find skills in your area")
-                                .font(.system(size: 13))
+                                .font(AppTheme.Typography.footnote)
                                 .foregroundColor(.gray)
                         }
                         
@@ -157,7 +157,7 @@ struct ProfileSetupView: View {
                 ) { EmptyView() }
 
                 Text("You can update these details anytime in Settings.")
-                    .font(.system(size: 13))
+                    .font(AppTheme.Typography.footnote)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
             }

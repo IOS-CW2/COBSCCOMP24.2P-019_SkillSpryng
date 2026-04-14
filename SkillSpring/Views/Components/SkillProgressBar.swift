@@ -10,10 +10,10 @@ struct SkillProgressBar: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text(name)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 Spacer()
                 Text("\(Int(percentage))%")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
             }
             
             GeometryReader { geometry in
@@ -31,7 +31,7 @@ struct SkillProgressBar: View {
             
             if let sub = subheadline {
                 Text(sub)
-                    .font(.system(size: 12))
+                    .font(AppTheme.Typography.caption)
                     .foregroundColor(.gray)
             }
         }

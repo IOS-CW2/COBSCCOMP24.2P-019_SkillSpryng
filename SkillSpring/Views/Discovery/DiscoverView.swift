@@ -394,7 +394,7 @@ struct NearbyMapBannerCard: View {
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(AppTheme.Typography.footnote)
                     .foregroundColor(.gray.opacity(0.5))
             }
             .padding(16)

@@ -20,9 +20,9 @@ struct PaymentFailedSheet: View {
                 
                 VStack(spacing: 8) {
                     Text("Payment Failed")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(AppTheme.Typography.title2)
                     Text("Transaction failed — your SKP was not deducted.")
-                        .font(.system(size: 14))
+                        .font(AppTheme.Typography.callout)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                 }
@@ -35,7 +35,7 @@ struct PaymentFailedSheet: View {
                     retryAction()
                 }) {
                     Text("Try Again")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -45,7 +45,7 @@ struct PaymentFailedSheet: View {
                 
                 Button(action: { }) {
                     Text("Contact Support")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -54,7 +54,7 @@ struct PaymentFailedSheet: View {
                 
                 Button(action: { dismiss() }) {
                     Text("Cancel Booking")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.red)
                         .padding(.top, 12)
                 }
@@ -85,7 +85,7 @@ struct PaymentConfirmationSheet: View {
                     .accessibilityHidden(true)
                 
                 Text("Confirm Payment")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(AppTheme.Typography.title3)
             }
             
             VStack(spacing: 16) {
@@ -114,7 +114,7 @@ struct PaymentConfirmationSheet: View {
                 confirmAction()
             }) {
                 Text("Pay Now")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -124,7 +124,7 @@ struct PaymentConfirmationSheet: View {
             
             Button(action: { dismiss() }) {
                 Text("Cancel")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                     .foregroundColor(.gray)
             }
             .padding(.bottom, 20)

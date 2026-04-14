@@ -29,9 +29,9 @@ struct SessionBookingView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Book a Session")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(AppTheme.Typography.title3)
                         Text("with \(instructor.fullName) • \(instructor.role)")
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.caption)
                             .foregroundColor(.gray)
                     }
                     Spacer()
@@ -39,7 +39,7 @@ struct SessionBookingView: View {
                         Image(systemName: "star.fill")
                             .foregroundColor(.orange)
                         Text(String(format: "%.1f", instructor.rating))
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -63,7 +63,7 @@ struct SessionBookingView: View {
                         SectionHeader(title: "SELECT DATE")
                         Spacer()
                         Text(viewModel.dateStripHeader)
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(AppTheme.Colors.primary)
                             .animation(.easeInOut, value: viewModel.selectedDate)
                     }
@@ -105,7 +105,7 @@ struct SessionBookingView: View {
                                     if isAvailable { viewModel.selectedTime = time }
                                 }) {
                                     Text(time)
-                                        .font(.system(size: 14, weight: .bold))
+                                        .font(AppTheme.Typography.subheadline)
                                         .foregroundColor(viewModel.selectedTime == time ? .white : (isAvailable ? AppTheme.Colors.primary : .secondary))
                                         .strikethrough(!isAvailable)
                                         .padding(.horizontal, 20)
@@ -156,7 +156,7 @@ struct SessionBookingView: View {
                             VStack {
                                 if viewModel.topicsAndGoals.isEmpty {
                                     Text("What would you like to learn and share specific challenges or project details...")
-                                        .font(.system(size: 12))
+                                        .font(AppTheme.Typography.caption)
                                         .foregroundColor(.gray)
                                         .padding(.top, 24)
                                         .padding(.horizontal, 16)
@@ -175,27 +175,27 @@ struct SessionBookingView: View {
                     VStack(spacing: 12) {
                         HStack {
                             Text("Session (\(viewModel.selectedDuration) min)")
-                                .font(.system(size: 14))
+                                .font(AppTheme.Typography.callout)
                                 .foregroundColor(.gray)
                             Spacer()
                             Text("\(viewModel.sessionPrice) SKP")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(AppTheme.Typography.subheadline)
                         }
                         HStack {
                             Text("Platform Fee")
-                                .font(.system(size: 14))
+                                .font(AppTheme.Typography.callout)
                                 .foregroundColor(.gray)
                             Spacer()
                             Text("\(viewModel.platformFee) SKP")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(AppTheme.Typography.subheadline)
                         }
                         Divider()
                         HStack {
                             Text("Total Cost")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                             Spacer()
                             Text("\(viewModel.totalPrice) SKP")
-                                .font(.system(size: 20, weight: .bold))
+                                .font(AppTheme.Typography.title3)
                                 .foregroundColor(AppTheme.Colors.primary)
                         }
                     }
@@ -208,7 +208,7 @@ struct SessionBookingView: View {
                 // Action Button
                 Button(action: { viewModel.initiateBooking() }) {
                     Text(instructor.status == .active ? "Confirm & Pay \(viewModel.totalPrice) SKP ->" : "Send Request ->")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()

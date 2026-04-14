@@ -13,12 +13,12 @@ struct BadgeIcon: View {
                     .frame(width: 50, height: 50)
                 
                 Image(systemName: icon)
-                    .font(.system(size: 20))
+                    .font(AppTheme.Typography.title3)
                     .foregroundColor(color)
             }
             
             Text(title)
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
                 .frame(width: 60)

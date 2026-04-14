@@ -27,7 +27,7 @@ struct MasteryHeroCard: View {
                 
                 VStack(spacing: 4) {
                     Text("TOTAL MASTERY POINTS")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.white.opacity(0.7))
                     
                     Text("\(data.total)")
@@ -36,20 +36,20 @@ struct MasteryHeroCard: View {
                     
                     Image(systemName: "star.fill")
                         .foregroundColor(.yellow)
-                        .font(.system(size: 14))
+                        .font(AppTheme.Typography.callout)
                 }
             }
             .padding(.top, 20)
             
             HStack {
                 Text("Level \(data.level) Curator")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.white)
                 
                 Spacer()
                 
                 Text("\(Int(data.progressTowardsNextLevel * 100))% to Level \(data.level + 1)")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.white.opacity(0.8))
             }
             .padding(.horizontal)

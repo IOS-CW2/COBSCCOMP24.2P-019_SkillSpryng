@@ -23,10 +23,10 @@ struct LiveSessionView: View {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("SkillSpryng")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                         Label(session.title, systemImage: "sparkles")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.white.opacity(0.8))
                     }
                     .accessibilityElement(children: .combine)
@@ -64,9 +64,9 @@ struct LiveSessionView: View {
                             
                             HStack {
                                 Image(systemName: "mic.fill")
-                                    .font(.system(size: 8))
+                                    .font(AppTheme.Typography.caption2)
                                 Text("You")
-                                    .font(.system(size: 10, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                             }
                             .foregroundColor(.white)
                             .padding(6)

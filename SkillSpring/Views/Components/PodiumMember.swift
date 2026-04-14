@@ -31,7 +31,7 @@ struct PodiumMember: View {
                         .frame(width: 24, height: 24)
                         .overlay(
                             Text("\(rank)")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(AppTheme.Typography.badge)
                                 .foregroundColor(.white)
                         )
                 }
@@ -41,11 +41,11 @@ struct PodiumMember: View {
             
             VStack(spacing: 2) {
                 Text(name)
-                    .font(.system(size: 13, weight: .bold))
+                    .font(AppTheme.Typography.sectionHeader)
                     .foregroundColor(.primary)
                 
                 Text("\(points.formatted())")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(AppTheme.Colors.primary)
             }
             

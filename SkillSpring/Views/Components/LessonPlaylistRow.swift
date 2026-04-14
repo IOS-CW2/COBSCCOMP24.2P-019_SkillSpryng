@@ -22,17 +22,17 @@ struct LessonPlaylistRow: View {
                         .foregroundColor(AppTheme.Colors.primary)
                 } else {
                     Text("\(index)")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                 }
             }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(isCurrent ? AppTheme.Colors.primary : .black)
                 Text(isCurrent ? "\(duration) • In Progress" : duration)
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.gray)
             }
             

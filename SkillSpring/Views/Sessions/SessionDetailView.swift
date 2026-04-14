@@ -28,11 +28,11 @@ struct SessionDetailView: View {
                             .opacity(0.8)
                         
                         Text(session.title)
-                            .font(.system(size: 24, weight: .bold))
+                            .font(AppTheme.Typography.title2)
                             .foregroundColor(.white)
                         
                         Text("With \(session.instructorName)")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.white.opacity(0.9))
                         
                         HStack(spacing: 12) {
@@ -60,9 +60,9 @@ struct SessionDetailView: View {
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(session.instructorName)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                         Text(session.instructorRole)
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.caption)
                             .foregroundColor(.gray)
                     }
                     
@@ -70,7 +70,7 @@ struct SessionDetailView: View {
                     
                     if let match = session.matchPercentage {
                         Text("MATCH \(match)%")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.green)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
@@ -88,7 +88,7 @@ struct SessionDetailView: View {
                         SectionHeader(title: "SESSION NOTES")
                         
                         Text("\"\(notes)\"")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                             .italic()
                             .lineSpacing(6)
@@ -118,7 +118,7 @@ struct SessionDetailView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Label("Available for 30 days", systemImage: "clock.arrow.2.circlepath")
-                                    .font(.system(size: 10, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                     .foregroundColor(AppTheme.Colors.primary)
                             }
                             
@@ -126,7 +126,7 @@ struct SessionDetailView: View {
                             
                             NavigationLink(destination: LessonPlayerView(session: session)) {
                                 Text("Watch")
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, 8)
@@ -147,7 +147,7 @@ struct SessionDetailView: View {
                     if session.status == .completed {
                         Button(action: { showRating = true }) {
                             Text("Rate Session")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -158,7 +158,7 @@ struct SessionDetailView: View {
                     
                     Button(action: { showCancel = true }) {
                         Text(session.status == .upcoming ? "Cancel Session" : "Remove from History")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.red)
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -187,9 +187,9 @@ struct DetailsInfoLabel: View {
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 12))
+                .font(AppTheme.Typography.caption)
             Text(text)
-                .font(.system(size: 12, weight: .bold))
+                .font(AppTheme.Typography.badge)
         }
         .foregroundColor(.white)
     }

@@ -31,9 +31,9 @@ struct SessionSuccessView: View {
             
             VStack(spacing: 12) {
                 Text("Session Confirmed!")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(AppTheme.Typography.title)
                 Text("Your mentorship session with \(viewModel.instructor.fullName) has been successfully scheduled and added to your learning path.")
-                    .font(.system(size: 14))
+                    .font(AppTheme.Typography.callout)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
@@ -50,14 +50,14 @@ struct SessionSuccessView: View {
                 
                 VStack(spacing: 4) {
                     Text(viewModel.instructor.skillsToTeach.first ?? "Expert Session")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                     Text(viewModel.instructor.fullName)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                     Text(formattedDate)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                     Text("\(viewModel.selectedTime) - 11:30 AM")
-                        .font(.system(size: 12))
+                        .font(AppTheme.Typography.caption)
                         .foregroundColor(.gray)
                 }
                 
@@ -67,14 +67,14 @@ struct SessionSuccessView: View {
                     Image(systemName: "video.fill")
                         .foregroundColor(AppTheme.Colors.primary)
                     Text("MEETING LINK")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     Text("google.com/asdf-ghjk")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                     Button(action: { }) {
                         Text("Copy")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                 }
@@ -82,11 +82,11 @@ struct SessionSuccessView: View {
                 
                 HStack {
                     Text("STATUS")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     Text("BOOKED")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -154,7 +154,7 @@ struct SessionSuccessView: View {
                     }
                 }) {
                     Label(calendarSuccess ? "Added to Calendar" : "Add to Calendar", systemImage: calendarSuccess ? "calendar.badge.checkmark" : "calendar.badge.plus")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(calendarSuccess ? .gray : AppTheme.Colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -164,7 +164,7 @@ struct SessionSuccessView: View {
                 
                 Button(action: { }) {
                     Label("Set Reminder", systemImage: "bell.fill")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -172,7 +172,7 @@ struct SessionSuccessView: View {
                 
                 Button(action: { dismiss() }) {
                     Text("Go to Home")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -193,14 +193,14 @@ struct SessionSuccessView: View {
             if showCalendarToast {
                 HStack(spacing: 12) {
                     Image(systemName: "calendar.badge.checkmark")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Added to Calendar!")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                         Text("Check \(formattedDate) in your Calendar app")
-                            .font(.system(size: 11))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(.white.opacity(0.85))
                     }
                     Spacer()

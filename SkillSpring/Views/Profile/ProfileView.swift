@@ -56,13 +56,13 @@ struct ProfileView: View {
                     
                     VStack(spacing: 4) {
                         Text(user.fullName)
-                            .font(.system(size: 24, weight: .bold))
+                            .font(AppTheme.Typography.title2)
                         Text("\(user.role) • Level \(user.level)")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                         
                         Label(user.location, systemImage: "mappin.circle.fill")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                             .padding(.top, 4)
                     }
@@ -70,7 +70,7 @@ struct ProfileView: View {
                     
                     NavigationLink(destination: EditProfileView()) {
                         Text("Edit Profile")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -84,10 +84,10 @@ struct ProfileView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("Profile Completeness")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                         Spacer()
                         Text("\(user.profileCompleteness)%")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                     
@@ -108,7 +108,7 @@ struct ProfileView: View {
                             Text("See what's missing")
                             Image(systemName: "arrow.right")
                         }
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     }
                 }
@@ -130,16 +130,16 @@ struct ProfileView: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Balance")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(AppTheme.Typography.badge)
                                 .foregroundColor(.gray)
                             Text("\(user.walletBalance) SKP")
-                                .font(.system(size: 18, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                         }
                         
                         Spacer()
                         
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.gray.opacity(0.5))
                     }
                     .padding()
@@ -153,7 +153,7 @@ struct ProfileView: View {
                 // View Analytics Link
                 NavigationLink(destination: LearningAnalyticsView()) {
                     Label("View Analytics", systemImage: "chart.bar.fill")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -176,14 +176,14 @@ struct ProfileView: View {
                         Spacer()
                         NavigationLink(destination: MySkillsView()) {
                             Text("View All")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(AppTheme.Typography.badge)
                                 .foregroundColor(AppTheme.Colors.primary)
                         }
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {
                         Text("TEACHES")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                         
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -197,7 +197,7 @@ struct ProfileView: View {
                     
                     VStack(alignment: .leading, spacing: 12) {
                         Text("LEARNS")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                         
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -219,7 +219,7 @@ struct ProfileView: View {
                             .fontWeight(.bold)
                         Spacer()
                         Button("View All") { }
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                     
@@ -264,9 +264,9 @@ struct SimplifiedStatCard: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(size: 20, weight: .bold))
+                .font(AppTheme.Typography.title3)
             Text(label)
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
         }
         .frame(maxWidth: .infinity)

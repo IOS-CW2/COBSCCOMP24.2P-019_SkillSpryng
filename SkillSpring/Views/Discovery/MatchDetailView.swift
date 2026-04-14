@@ -22,7 +22,7 @@ struct MatchDetailView: View {
                                 Circle().fill(Color.white).frame(width: 24, height: 24)
                                 Image(systemName: "checkmark.seal.fill")
                                     .foregroundColor(AppTheme.Colors.primary)
-                                    .font(.system(size: 20))
+                                    .font(AppTheme.Typography.title3)
                             }
                             .offset(x: 45, y: 45),
                             alignment: .center
@@ -41,17 +41,17 @@ struct MatchDetailView: View {
                         .font(.system(size: 26, weight: .bold))
                     
                     Text(profile.role)
-                        .font(.system(size: 14))
+                        .font(AppTheme.Typography.callout)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                     
                     HStack(spacing: 12) {
                         Label(profile.onlineStatus ? "ONLINE" : "OFFLINE", systemImage: "circle.fill")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(profile.onlineStatus ? .green : .gray)
                         Label(profile.city, systemImage: "mappin.circle.fill")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                     }
                     .padding(.top, 4)
@@ -65,7 +65,7 @@ struct MatchDetailView: View {
                     Image(systemName: "bolt.fill")
                     Text("\(profile.matchPercentage)% SKILL MATCH")
                 }
-                .font(.system(size: 14, weight: .bold))
+                .font(AppTheme.Typography.subheadline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
@@ -109,7 +109,7 @@ struct MatchDetailView: View {
                         .fontWeight(.bold)
                     
                     Text(profile.bio)
-                        .font(.system(size: 14))
+                        .font(AppTheme.Typography.callout)
                         .foregroundColor(.gray)
                         .lineSpacing(6)
                 }
@@ -124,7 +124,7 @@ struct MatchDetailView: View {
                     HStack(spacing: 10) {
                         ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { day in
                             Text(day)
-                                .font(.system(size: 12, weight: .bold))
+                                .font(AppTheme.Typography.badge)
                                 .frame(width: 36, height: 36)
                                 .background(profile.availability.contains(day) ? AppTheme.Colors.primary : Color(.systemGray6))
                                 .foregroundColor(profile.availability.contains(day) ? .white : .gray)
@@ -142,7 +142,7 @@ struct MatchDetailView: View {
                         VStack(alignment: .leading) {
                             SectionHeader(title: "NEXT OPENING")
                             Text("Tue, Oct 24")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                         }
                         
                         Spacer()
@@ -156,7 +156,7 @@ struct MatchDetailView: View {
                         VStack(alignment: .leading) {
                             SectionHeader(title: "PAST MATCHES")
                             Text("14 Students")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                         }
                     }
                 }
@@ -181,7 +181,7 @@ struct MatchDetailView: View {
                 HStack(spacing: 16) {
                     NavigationLink(destination: ChatDetailView(conversation: MockDataProvider.shared.mockConversations.first(where: { $0.participant.fullName == profile.fullName }) ?? MockDataProvider.shared.mockConversations[0])) {
                         Label("Message", systemImage: "bubble.left.fill")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                             .foregroundColor(AppTheme.Colors.primary)
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -190,7 +190,7 @@ struct MatchDetailView: View {
                     
                     NavigationLink(destination: SessionBookingView(instructor: profile)) {
                         Text("Book Session ->")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -215,14 +215,14 @@ struct DetailStatCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
             HStack(alignment: .bottom, spacing: 2) {
                 Text(value)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(AppTheme.Typography.title3)
                 if let suffix = suffix {
                     Text(suffix)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.orange)
                 }
             }
@@ -249,11 +249,11 @@ struct ReviewCard: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(review.reviewerName)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                     HStack(spacing: 2) {
                         ForEach(0..<5) { i in
                             Image(systemName: "star.fill")
-                                .font(.system(size: 10))
+                                .font(AppTheme.Typography.caption2)
                                 .foregroundColor(i < review.rating ? .orange : .gray.opacity(0.3))
                         }
                     }
@@ -261,7 +261,7 @@ struct ReviewCard: View {
             }
             
             Text("\"\(review.comment)\"")
-                .font(.system(size: 14))
+                .font(AppTheme.Typography.callout)
                 .foregroundColor(.gray)
                 .italic()
         }

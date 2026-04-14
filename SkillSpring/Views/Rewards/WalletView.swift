@@ -16,7 +16,7 @@ struct WalletView: View {
                 // My Wallet Title Area
                 VStack(alignment: .leading, spacing: 4) {
                     Text("My Wallet")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(AppTheme.Typography.title)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
@@ -36,7 +36,7 @@ struct WalletView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Current Balance")
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .font(AppTheme.Typography.subheadline)
                                     .foregroundColor(.white.opacity(0.8))
                                 Text("\(balance) SKP")
                                     .font(.system(size: 32, weight: .bold))
@@ -72,13 +72,13 @@ struct WalletView: View {
                                         .fill(Color.white.opacity(0.2))
                                         .frame(width: 32, height: 32)
                                     Text("+12")
-                                        .font(.system(size: 10, weight: .bold))
+                                        .font(AppTheme.Typography.badge)
                                         .foregroundColor(.white)
                                 }
                             }
                             
                             Text("Trusted by 14 local mentors")
-                                .font(.system(size: 11, weight: .medium))
+                                .font(AppTheme.Typography.caption2)
                                 .foregroundColor(.white.opacity(0.9))
                         }
                         .accessibilityElement(children: .combine)
@@ -103,7 +103,7 @@ struct WalletView: View {
                             .font(.headline)
                         Spacer()
                         Button("VIEW ALL") { }
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                     
@@ -132,12 +132,12 @@ struct WalletView: View {
                             Text("Skill Missions")
                                 .font(.headline)
                             Text("Earn while you grow")
-                                .font(.system(size: 11))
+                                .font(AppTheme.Typography.caption2)
                                 .foregroundColor(.gray)
                         }
                         Spacer()
                         Image(systemName: "chevron.down")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                     }
                     
@@ -163,7 +163,7 @@ struct WalletView: View {
                     Image(systemName: "creditcard.fill")
                         .foregroundColor(.white)
                     Text(toast)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(.white)
                     Spacer()
                 }

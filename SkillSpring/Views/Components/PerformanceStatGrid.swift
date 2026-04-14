@@ -26,17 +26,17 @@ struct PerformanceStatCard: View {
                     .fill(AppTheme.Colors.primary.opacity(0.1))
                     .frame(width: 32, height: 32)
                 Image(systemName: icon)
-                    .font(.system(size: 14))
+                    .font(AppTheme.Typography.callout)
                     .foregroundColor(AppTheme.Colors.primary)
             }
             .accessibilityHidden(true)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.gray)
                 Text(value)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

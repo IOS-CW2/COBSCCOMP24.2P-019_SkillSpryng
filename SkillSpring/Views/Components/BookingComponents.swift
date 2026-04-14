@@ -27,7 +27,7 @@ struct FormatCard: View {
                 Image(systemName: icon)
                     .font(.title3)
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
@@ -50,7 +50,7 @@ struct SelectionChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 14, weight: .bold))
+                .font(AppTheme.Typography.subheadline)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
                 .background(isSelected ? AppTheme.Colors.primary : Color.white)
@@ -74,10 +74,10 @@ struct DateChip: View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Text(day)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(isSelected ? .white.opacity(0.8) : .gray)
                 Text("\(date)")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                     .foregroundColor(isSelected ? .white : .black)
             }
             .frame(width: 50, height: 70)

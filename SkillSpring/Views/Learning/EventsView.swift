@@ -23,7 +23,7 @@ struct EventsView: View {
                 HStack(spacing: 0) {
                     Button(action: { selectedTab = "Courses" }) {
                         Text("Courses")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(AppTheme.Typography.subheadline)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                             .foregroundColor(.gray)
@@ -32,7 +32,7 @@ struct EventsView: View {
                     
                     Button(action: { selectedTab = "Events" }) {
                         Text("Events")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(AppTheme.Typography.subheadline)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                             .background(AppTheme.Colors.primary.opacity(0.1))
@@ -59,7 +59,7 @@ struct EventsView: View {
                             ForEach(filters, id: \.self) { filter in
                                 Button(action: { selectedFilter = filter }) {
                                     Text(filter)
-                                        .font(.system(size: 14, weight: .medium))
+                                        .font(AppTheme.Typography.subheadline)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
                                         .background(selectedFilter == filter ? AppTheme.Colors.primary : Color(.systemGray6))
@@ -129,7 +129,7 @@ struct EventHeroCard: View {
                 
                 if event.isFree {
                     Text("FREE")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -140,7 +140,7 @@ struct EventHeroCard: View {
             }
             
             Text(event.title)
-                .font(.system(size: 22, weight: .bold))
+                .font(AppTheme.Typography.title2)
             
             HStack {
                 // Instructor
@@ -230,7 +230,7 @@ struct EventHeroCard: View {
                             Image(systemName: "checkmark")
                         }
                         Text(hasJoined ? "Joined" : "Join Event")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                     }
                     .foregroundColor(hasJoined ? AppTheme.Colors.primary : .white)
                     .padding(.horizontal, 24)
@@ -296,7 +296,7 @@ struct UpcomingEventRow: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(event.title)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                 HStack {
                     Text("\(event.date) • \(event.time)")
                     Spacer()

@@ -28,7 +28,7 @@ struct SettingsRow: View {
     var body: some View {
         HStack(spacing: 16) {
             Image(systemName: icon)
-                .font(.system(size: 18))
+                .font(AppTheme.Typography.callout)
                 .foregroundColor(AppTheme.Colors.primary)
                 .frame(width: 32, height: 32)
                 .background(AppTheme.Colors.primary.opacity(0.1))
@@ -36,7 +36,7 @@ struct SettingsRow: View {
                 .accessibilityHidden(true)
             
             Text(title)
-                .font(.system(size: 16, weight: .medium))
+                .font(AppTheme.Typography.callout)
             
             Spacer()
             
@@ -46,11 +46,11 @@ struct SettingsRow: View {
             } else {
                 if let value = value {
                     Text(value)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(AppTheme.Colors.primary)
                 }
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(.gray.opacity(0.5))
             }
         }

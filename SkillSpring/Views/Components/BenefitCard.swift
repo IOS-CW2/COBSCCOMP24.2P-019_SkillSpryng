@@ -14,13 +14,13 @@ struct BenefitCard: View {
                     .frame(width: 44, height: 44)
                 
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(AppTheme.Typography.title3)
                     .foregroundColor(color)
             }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(.black)
                 
                 Text(subtitle)

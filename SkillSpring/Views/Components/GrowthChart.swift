@@ -87,7 +87,7 @@ struct GrowthChart: View {
             HStack {
                 ForEach(points, id: \.day) { point in
                     Text(point.day)
-                        .font(.system(size: 9, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                         .frame(maxWidth: .infinity)
                 }

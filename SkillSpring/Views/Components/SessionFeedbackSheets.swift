@@ -30,15 +30,15 @@ struct RateSessionSheet: View {
                 
                 VStack(spacing: 4) {
                     Text(instructor)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(AppTheme.Typography.title3)
                     Text("UX Design Mastery Session")
-                        .font(.system(size: 14))
+                        .font(AppTheme.Typography.callout)
                         .foregroundColor(.gray)
                 }
                 .accessibilityElement(children: .combine)
                 
                 Text("How was your session?")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(AppTheme.Typography.title2)
                     .padding(.top, 10)
                 
                 // Stars
@@ -57,7 +57,7 @@ struct RateSessionSheet: View {
                 
                 if rating > 0 {
                     Text(["Poor", "Fair", "Good", "Great", "Exceptional!"][rating-1])
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(AppTheme.Colors.primary)
                 }
             }
@@ -65,7 +65,7 @@ struct RateSessionSheet: View {
             // Text Feedback
             VStack(alignment: .leading, spacing: 8) {
                 Text("TELL US MORE")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.gray)
                 
                 TextEditor(text: $feedback)
@@ -78,7 +78,7 @@ struct RateSessionSheet: View {
                         VStack {
                             if feedback.isEmpty {
                                 Text("\(instructor) was incredibly insightful about user flow optimization...")
-                                    .font(.system(size: 12))
+                                    .font(AppTheme.Typography.caption)
                                     .foregroundColor(.gray)
                                     .padding(.top, 24)
                                     .padding(.horizontal, 16)
@@ -94,7 +94,7 @@ struct RateSessionSheet: View {
             VStack(spacing: 12) {
                 Button(action: { dismiss() }) {
                     Text("Submit Review")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -105,7 +105,7 @@ struct RateSessionSheet: View {
                 
                 Button(action: { dismiss() }) {
                     Text("Skip")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -133,9 +133,9 @@ struct CancelSessionSheet: View {
             
             VStack(spacing: 16) {
                 Text("Cancel Session")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(AppTheme.Typography.title2)
                 Text("This cannot be undone.")
-                    .font(.system(size: 14))
+                    .font(AppTheme.Typography.callout)
                     .foregroundColor(.red)
             }
             
@@ -150,15 +150,15 @@ struct CancelSessionSheet: View {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(session.instructorName)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                     Text(session.instructorRole)
-                        .font(.system(size: 10))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.gray)
                     HStack(spacing: 6) {
                         Image(systemName: "calendar")
                         Text("\(session.date) • \(session.time)")
                     }
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.gray)
                 }
                 Spacer()
@@ -173,24 +173,24 @@ struct CancelSessionSheet: View {
             // Refund Section
             VStack(alignment: .leading, spacing: 16) {
                 Text("CANCELLATION POLICY")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.gray)
                 
                 HStack {
                     ZStack {
                         Circle().fill(Color.green.opacity(0.1)).frame(width: 24, height: 24)
-                        Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundColor(.green)
+                        Image(systemName: "checkmark").font(AppTheme.Typography.badge).foregroundColor(.green)
                     }
                     VStack(alignment: .leading) {
                         Text("Full Refund")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                         Text("Cancel by Oct 22, 10:00 AM")
-                            .font(.system(size: 10))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(.gray)
                     }
                     Spacer()
                     Text("ACTIVE")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
                         .background(Color.green.opacity(0.1))
@@ -205,9 +205,9 @@ struct CancelSessionSheet: View {
                     Circle().fill(Color(.systemGray5)).frame(width: 24, height: 24)
                     VStack(alignment: .leading) {
                         Text("No Refund")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                         Text("After Oct 23, 10:00 AM")
-                            .font(.system(size: 10))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(.gray)
                     }
                     Spacer()
@@ -221,14 +221,14 @@ struct CancelSessionSheet: View {
             
             HStack {
                 Text("Estimated Refund")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 Spacer()
                 VStack(alignment: .trailing) {
                     Text("\(MockDataProvider.shared.currentUser.walletBalance) SKP")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.primary)
                     Text("Returned to your SkillSpryng wallet")
-                        .font(.system(size: 8))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.gray)
                 }
             }
@@ -238,7 +238,7 @@ struct CancelSessionSheet: View {
             VStack(spacing: 12) {
                 Button(action: { dismiss() }) {
                     Text("Keep My Session")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -266,7 +266,7 @@ struct CancelSessionSheet: View {
                             ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .red))
                         }
                         Text("Confirm Cancellation")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                             .foregroundColor(.red)
                     }
                     .frame(maxWidth: .infinity)

@@ -117,25 +117,28 @@ enum AppTheme {
     // -------------------------------------------------------------------------
     enum Typography {
         // Page-level titles
+        static let displayTitle = Font.largeTitle.weight(.bold)   // ~34pt — hero headings
         static let largeTitle  = Font.largeTitle.weight(.bold)
-        static let title       = Font.title.weight(.bold)
-        static let title2      = Font.title2.weight(.bold)
-        static let title3      = Font.title3.weight(.semibold)
+        static let title       = Font.title.weight(.bold)         // ~28pt
+        static let title2      = Font.title2.weight(.bold)        // ~22pt
+        static let title3      = Font.title3.weight(.semibold)    // ~20pt
+        static let sectionTitle = Font.title3.weight(.bold)       // ~20pt bold — section headers
 
         // Body
-        static let headline    = Font.headline             // .semibold by default
-        static let body        = Font.body
-        static let callout     = Font.callout
+        static let headline    = Font.headline                    // ~17pt semibold
+        static let body        = Font.body                        // ~17pt regular
+        static let callout     = Font.callout                     // ~16pt
 
         // Supporting
-        static let subheadline = Font.subheadline
-        static let footnote    = Font.footnote
-        static let caption     = Font.caption
-        static let caption2    = Font.caption2
+        static let subheadline = Font.subheadline                 // ~15pt
+        static let footnote    = Font.footnote                    // ~13pt
+        static let caption     = Font.caption                     // ~12pt
+        static let caption2    = Font.caption2                    // ~11pt
 
         // Labels / badges — kept small but still scalable
-        static let badge       = Font.system(.caption2).weight(.bold)
+        static let badge         = Font.system(.caption2).weight(.bold)
         static let sectionHeader = Font.system(.footnote).weight(.bold)
+        static let micro         = Font.system(.caption2)         // ~11pt — smallest readable text
     }
 
     // -------------------------------------------------------------------------
