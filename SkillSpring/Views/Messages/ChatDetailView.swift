@@ -4,17 +4,13 @@ struct ChatDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let conversation: Conversation
 
-    // Local, in-session message history — seeded from the conversation snapshot.
-    // A production implementation would replace this with a Firestore listener
-    // on the messages sub-collection of this conversation document.
-    @State private var messages: [ChatMessage]
+    @StateObject private var viewModel: ChatViewModel
     @State private var messageText = ""
-    @State private var isTyping   = false
     @FocusState private var isInputFocused: Bool
 
     init(conversation: Conversation) {
         self.conversation = conversation
-        _messages = State(initialValue: conversation.messages)
+        _viewModel = StateObject(wrappedValue: ChatViewModel(conversation: conversation))
     }
 
     var body: some View {
@@ -42,15 +38,15 @@ struct ChatDetailView: View {
                         Circle()
                             .fill(Color.green)
                             .frame(width: 8, height: 8)
-                        Text(isTyping ? "Typing…" : "Online")
+                        Text(viewModel.isTyping ? "Typing…" : "Online")
                             .font(.system(size: 12))
                             .foregroundColor(.gray)
-                            .animation(.easeInOut(duration: 0.3), value: isTyping)
+                            .animation(.easeInOut(duration: 0.3), value: viewModel.isTyping)
                     }
                 }
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(
-                    "\(conversation.participant.fullName), \(isTyping ? "typing" : "online")"
+                    "\(conversation.participant.fullName), \(viewModel.isTyping ? "typing" : "online")"
                 )
 
                 Spacer()
@@ -84,38 +80,37 @@ struct ChatDetailView: View {
                             .padding(.top)
                             .accessibilityLabel("Chat history for today")
 
-                        ForEach(messages) { message in
+                        ForEach(viewModel.messages) { message in
                             MessageBubble(message: message)
                                 .id(message.id)
                         }
 
-                        if isTyping {
-                            HStack(spacing: 8) {
-                                // Animated dots
-                                ForEach(0..<3) { i in
-                                    Circle()
-                                        .fill(Color.gray.opacity(0.5))
-                                        .frame(width: 7, height: 7)
-                                        .scaleEffect(isTyping ? 1.0 : 0.5)
-                                        .animation(
-                                            .easeInOut(duration: 0.4)
-                                                .repeatForever()
-                                                .delay(Double(i) * 0.15),
-                                            value: isTyping
-                                        )
-                                }
-                                Text("\(conversation.participant.fullName.split(separator: " ").first ?? "") is typing")
-                                    .font(.system(size: 12).italic())
-                                    .foregroundColor(.gray)
-                                Spacer()
+                        // Typing indicator — always in the hierarchy, shown/hidden via opacity
+                        HStack(spacing: 6) {
+                            ForEach(0..<3, id: \.self) { i in
+                                Circle()
+                                    .fill(Color.gray.opacity(0.5))
+                                    .frame(width: 7, height: 7)
+                                    .scaleEffect(viewModel.isTyping ? 1.0 : 0.6)
+                                    .animation(
+                                        viewModel.isTyping
+                                            ? .easeInOut(duration: 0.45).repeatForever().delay(Double(i) * 0.15)
+                                            : .default,
+                                        value: viewModel.isTyping
+                                    )
                             }
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
-                            .id("typingAnchor")
+                            Text("\(conversation.participant.fullName.split(separator: " ").first.map(String.init) ?? "") is typing")
+                                .font(.system(size: 12).italic())
+                                .foregroundColor(.gray)
+                            Spacer()
                         }
+                        .padding(.horizontal)
+                        .padding(.vertical, 6)
+                        .opacity(viewModel.isTyping ? 1 : 0)
+                        .allowsHitTesting(false)
+                        .id("typingAnchor")
 
-                        // Invisible anchor — always scrolled into view after a new message
+                        // Invisible bottom anchor
                         Color.clear
                             .frame(height: 1)
                             .id("bottomAnchor")
@@ -123,18 +118,11 @@ struct ChatDetailView: View {
                     .padding(.bottom, 20)
                 }
                 .onAppear {
-                    proxy.scrollTo("bottomAnchor", anchor: .bottom)
+                    proxy.scrollTo("typingAnchor", anchor: .bottom)
                 }
-                .onChange(of: messages.count) { _ in
+                .onChange(of: viewModel.messages.count) { _ in
                     withAnimation(.easeOut(duration: 0.2)) {
-                        proxy.scrollTo("bottomAnchor", anchor: .bottom)
-                    }
-                }
-                .onChange(of: isTyping) { typing in
-                    if typing {
-                        withAnimation(.easeOut(duration: 0.2)) {
-                            proxy.scrollTo("typingAnchor", anchor: .bottom)
-                        }
+                        proxy.scrollTo("typingAnchor", anchor: .bottom)
                     }
                 }
             }
@@ -155,11 +143,11 @@ struct ChatDetailView: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(24)
                     .focused($isInputFocused)
-                    .onSubmit { sendMessage() }
+                    .onSubmit { viewModel.send(text: messageText); messageText = ""; isInputFocused = false }
                     .accessibilityIdentifier("chatMessageTextField")
                     .accessibilityLabel("Message input field")
 
-                Button(action: sendMessage) {
+                Button(action: { viewModel.send(text: messageText); messageText = ""; isInputFocused = false }) {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 32))
                         .foregroundColor(
@@ -179,42 +167,7 @@ struct ChatDetailView: View {
         .navigationBarHidden(true)
     }
 
-    // MARK: - Send Logic
-
-    private func sendMessage() {
-        let trimmed = messageText.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
-
-        // 1. Append the outgoing bubble immediately
-        let outgoing = ChatMessage(
-            text: trimmed,
-            timestamp: Date(),
-            isFromMe: true,
-            type: .text,
-            imageName: nil,
-            fileName: nil,
-            fileSize: nil
-        )
-        messages.append(outgoing)
-        messageText = ""
-        isInputFocused = false
-        HapticManager.light()
-
-        // 2. Show a "typing…" indicator for 1.5 s to simulate a live conversation.
-        //    When Firestore integration is added, replace this block with a real-time
-        //    listener on the messages sub-collection:
-        //
-        //      db.collection("conversations/\(conversationId)/messages")
-        //        .addSnapshotListener { snapshot, _ in ... }
-        //
-        withAnimation(.easeInOut(duration: 0.3)) { isTyping = true }
-        Task {
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 s
-            await MainActor.run {
-                withAnimation(.easeInOut(duration: 0.3)) { isTyping = false }
-            }
-        }
-    }
+    // sendMessage is handled by ChatViewModel.send(text:)
 }
 
 // MARK: - MessageBubble

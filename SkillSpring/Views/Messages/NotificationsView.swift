@@ -1,13 +1,9 @@
 import SwiftUI
 
 struct NotificationsView: View {
-    @State private var searchText = ""
-    @State private var selectedFilter = "All"
+    @StateObject private var viewModel = MessagesViewModel()
     @State private var selectedConversation: Conversation?
     @State private var navigateToMatches = false
-    
-    let filters = ["All", "Unread", "Matches", "Groups"]
-    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
@@ -44,7 +40,7 @@ struct NotificationsView: View {
                             HStack {
                                 Image(systemName: "magnifyingglass")
                                     .foregroundColor(.gray)
-                                TextField("Search conversations...", text: $searchText)
+                                TextField("Search conversations...", text: $viewModel.searchText)
                                     .font(AppTheme.Typography.body)
                             }
                             .padding()
@@ -55,17 +51,17 @@ struct NotificationsView: View {
                             // Filters
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
-                                    ForEach(filters, id: \.self) { filter in
-                                        Button(action: { selectedFilter = filter }) {
+                                    ForEach(viewModel.filters, id: \.self) { filter in
+                                        Button(action: { viewModel.selectedFilter = filter }) {
                                             Text(filter)
                                                 .font(.system(size: 14, weight: .medium))
                                                 .padding(.horizontal, 20)
                                                 .padding(.vertical, 10)
-                                                .background(selectedFilter == filter ? AppTheme.Colors.primary : Color(.systemGray6))
-                                                .foregroundColor(selectedFilter == filter ? .white : .gray)
+                                                .background(viewModel.selectedFilter == filter ? AppTheme.Colors.primary : Color(.systemGray6))
+                                                .foregroundColor(viewModel.selectedFilter == filter ? .white : .gray)
                                                 .cornerRadius(20)
                                         }
-                                        .accessibilityAddTraits(selectedFilter == filter ? .isSelected : [])
+                                        .accessibilityAddTraits(viewModel.selectedFilter == filter ? .isSelected : [])
                                     }
                                 }
                                 .padding(.horizontal)
@@ -78,13 +74,10 @@ struct NotificationsView: View {
                                     .foregroundColor(.gray)
                                     .padding(.horizontal)
                                 
-                            let todayConversations = MockDataProvider.shared.mockConversations.filter {
-                                    ($0.participant.fullName == "Marcus Chen" || $0.participant.fullName == "Sim V") &&
-                                    (searchText.isEmpty || $0.participant.fullName.localizedCaseInsensitiveContains(searchText) || $0.lastMessage.localizedCaseInsensitiveContains(searchText))
-                                }
+                            let todayConversations = viewModel.todayConversations
 
-                                if todayConversations.isEmpty && !searchText.isEmpty {
-                                    EmptyMessagesView(searchText: searchText)
+                                if viewModel.isTodayEmpty {
+                                    EmptyMessagesView(searchText: viewModel.searchText)
                                         .padding(.top, 40)
                                 } else {
                                     ForEach(todayConversations) { conv in
@@ -134,13 +127,11 @@ struct NotificationsView: View {
                                 )
                                 .padding(.horizontal)
                                 
-                                ForEach(MockDataProvider.shared.mockConversations) { conv in
-                                    if conv.participant.fullName == "Aria Sterling" {
-                                        NavigationLink(destination: ChatDetailView(conversation: conv)) {
-                                            ConversationCard(conversation: conv)
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
+                                ForEach(viewModel.yesterdayConversations) { conv in
+                                    NavigationLink(destination: ChatDetailView(conversation: conv)) {
+                                        ConversationCard(conversation: conv)
                                     }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
                             

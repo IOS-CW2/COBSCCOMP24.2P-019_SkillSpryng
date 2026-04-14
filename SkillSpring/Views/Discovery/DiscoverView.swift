@@ -1,13 +1,8 @@
 import SwiftUI
 
 struct DiscoverView: View {
-    @State private var searchText = ""
-    @State private var selectedCategory = "All Learners"
-    @State private var navigateToCourses = false
-    @State private var navigateToSkillMatches = false
-    @State private var navigateToMap = false
-    let categories = ["All Learners", "Design", "Coding", "Marketing", "Arts", "Music"]
-    
+    @StateObject private var viewModel = DiscoverViewModel()
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
@@ -44,7 +39,7 @@ struct DiscoverView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
                         .accessibilityHidden(true)
-                    TextField("What do you want to learn?", text: $searchText)
+                    TextField("What do you want to learn?", text: $viewModel.searchText)
                         .font(AppTheme.Typography.body)
                     
                     Button(action: { /* Filter action */ }) {
@@ -61,9 +56,9 @@ struct DiscoverView: View {
                 // Category Filters
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        ForEach(categories, id: \.self) { category in
-                            CategoryChip(title: category, isSelected: selectedCategory == category) {
-                                selectedCategory = category
+                        ForEach(viewModel.categories, id: \.self) { category in
+                            CategoryChip(title: category, isSelected: viewModel.selectedCategory == category) {
+                                viewModel.selectedCategory = category
                             }
                         }
                     }
@@ -71,20 +66,20 @@ struct DiscoverView: View {
                 }
                 
                 // Perfect Match Card
-                HeroMatchCard(action: { navigateToSkillMatches = true })
+                HeroMatchCard(action: { viewModel.navigateToSkillMatches = true })
                     .padding(.horizontal)
-                    .onTapGesture { navigateToSkillMatches = true }
+                    .onTapGesture { viewModel.navigateToSkillMatches = true }
                 
                 // Streak Card
                 StreakCard(streakCount: 7, subheadline: "1,240 Karma • Top 5%")
                     .padding(.horizontal)
                 
                 // Nearby Skills Map Banner
-                NearbyMapBannerCard(action: { navigateToMap = true })
+                NearbyMapBannerCard(action: { viewModel.navigateToMap = true })
                     .padding(.horizontal)
                 
                 // Most Popular Skills
-                SkillSection(title: "Most Popular Skills", items: MockDataProvider.shared.recommendedSkills)
+                SkillSection(title: "Most Popular Skills", items: viewModel.filteredSkills)
                 
                 // Recommended for you
                 VStack(alignment: .leading, spacing: 16) {
@@ -92,14 +87,14 @@ struct DiscoverView: View {
                         Text("Recommended for you")
                             .font(AppTheme.Typography.title3)
                         Spacer()
-                        Button("See all") { navigateToCourses = true }
+                        Button("See all") { viewModel.navigateToCourses = true }
                             .font(AppTheme.Typography.caption)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                     .padding(.horizontal)
-                    
+
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        ForEach(MockDataProvider.shared.recommendedSkills.prefix(2)) { skill in
+                        ForEach(viewModel.filteredSkills.prefix(2)) { skill in
                             RecommendedSkillCard(skill: skill)
                         }
                     }
@@ -114,15 +109,13 @@ struct DiscoverView: View {
             }
             .padding(.top)
             
-            NavigationLink(destination: SkillMatchesView(), isActive: $navigateToSkillMatches) {
+            NavigationLink(destination: SkillMatchesView(), isActive: $viewModel.navigateToSkillMatches) {
                 EmptyView()
             }
-            
-            NavigationLink(destination: CoursesView(), isActive: $navigateToCourses) {
+            NavigationLink(destination: CoursesView(), isActive: $viewModel.navigateToCourses) {
                 EmptyView()
             }
-            
-            NavigationLink(destination: LocationMapView(), isActive: $navigateToMap) {
+            NavigationLink(destination: LocationMapView(), isActive: $viewModel.navigateToMap) {
                 EmptyView()
             }
         }
@@ -140,7 +133,7 @@ struct CategoryChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 14, weight: .medium))
+                .font(AppTheme.Typography.subheadline)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
                 .background(isSelected ? AppTheme.Colors.primary : Color(.systemGray6))
@@ -191,7 +184,7 @@ struct HeroMatchCard: View {
                     
                     Button(action: action) {
                         Text("Connect Now")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.white)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
@@ -258,7 +251,7 @@ struct LargeSkillCard: View {
                 
                 if skill.isTopRated {
                     Text("TOP RATED")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -271,14 +264,15 @@ struct LargeSkillCard: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(skill.title)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
+                        .lineLimit(1)
                     Text("With \(skill.instructor) • " + String(format: "%.1f", skill.rating) + " ★")
-                        .font(.caption)
+                        .font(AppTheme.Typography.caption)
                         .foregroundColor(.gray)
                 }
                 Spacer()
                 Text(skill.price)
-                    .font(.system(size: 12, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(AppTheme.Colors.primary.opacity(0.1))
@@ -289,9 +283,9 @@ struct LargeSkillCard: View {
             
             HStack {
                 Label("Expert", systemImage: "star.fill")
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                 Label("Materials Included", systemImage: "briefcase.fill")
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
             }
             .foregroundColor(.gray)
         }
@@ -311,7 +305,7 @@ struct RecommendedSkillCard: View {
                 .aspectRatio(1.2, contentMode: .fit)
             
             Text(skill.title)
-                .font(.system(size: 14, weight: .bold))
+                .font(AppTheme.Typography.subheadline)
                 .lineLimit(1)
             
             Text("\(skill.instructor)")
@@ -340,7 +334,7 @@ struct PostSkillCard: View {
             
             Button(action: { /* Post action */ }) {
                 Text("Post a Skill")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(AppTheme.Colors.primary)
                     .padding(.bottom, 8)
             }
@@ -375,9 +369,9 @@ struct NearbyMapBannerCard: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Skills Near You")
-                        .font(.system(size: 15, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                     Text("See instructors on the map in your area")
-                        .font(.system(size: 12))
+                        .font(AppTheme.Typography.caption)
                         .foregroundColor(.gray)
                     
                     HStack(spacing: -8) {
@@ -390,7 +384,7 @@ struct NearbyMapBannerCard: View {
                                 .overlay(Circle().stroke(Color.white, lineWidth: 1.5))
                         }
                         Text("  +3 nearby")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(AppTheme.Typography.footnote)
                             .foregroundColor(AppTheme.Colors.primary)
                             .padding(.leading, 12)
                     }

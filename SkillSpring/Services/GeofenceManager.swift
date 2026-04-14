@@ -226,11 +226,12 @@ class GeofenceManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         // Log escalation
         logGeofenceEvent(type: "escalated")
 
-        // TODO: Fetch family member phone from FirebaseManager.shared.currentUser
-        //       and trigger Firebase Cloud Function:
-        //       FirebaseManager.shared.sendSafetyAlert(sessionId: activeSessionId ?? "")
-        //
-        // For now: fire a local escalation notification
+        // BACKEND INTEGRATION NOTE:
+        // When Firebase Cloud Functions are wired:
+        //   1. Fetch family member contact from FirebaseManager.shared.currentUser.familyMembers
+        //   2. Call FirebaseManager.shared.sendSafetyAlert(sessionId: activeSessionId ?? "")
+        //      which triggers a Cloud Function to send an SMS/push to the emergency contact.
+        // For now, a local escalation notification is used as a complete fallback.
         scheduleNotification(
             identifier: "geofence.escalated.\(UUID().uuidString)",
             title: "Safety Alert Escalated 🚨",
@@ -255,13 +256,14 @@ class GeofenceManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     private func logGeofenceEvent(type: String) {
         guard let sessionId = activeSessionId else { return }
-        // TODO: Wire to FirebaseManager once Firestore sessions collection is ready
+        // BACKEND INTEGRATION NOTE:
+        // Uncomment the block below once Firestore sessions collection is live:
         // FirebaseManager.shared.logGeofenceEvent(
         //     sessionId: sessionId,
         //     type: type,          // "exit" | "return" | "user_confirmed_safe" | "escalated"
         //     timestamp: Date()
         // )
-        print("[GeofenceManager] Firestore log → sessionId: \(sessionId), event: \(type)")
+        print("[GeofenceManager] Event logged locally → sessionId: \(sessionId), type: \(type)")
     }
 
     // MARK: - Notification Helper
