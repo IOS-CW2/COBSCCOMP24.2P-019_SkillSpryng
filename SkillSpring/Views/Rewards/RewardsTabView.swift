@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RewardsTabView: View {
-    let data = MockDataProvider.shared
+        @StateObject private var vm = RewardsViewModel()
     @State private var showLeaderboard = false
     @State private var showAnalytics = false
     
@@ -39,7 +39,7 @@ struct RewardsTabView: View {
                 .padding(.horizontal)
                 
                 // Mastery Hero Card Refinement
-                MasteryHeroCard(data: data.masteryData)
+                MasteryHeroCard(data: vm.masteryData)
                     .padding(.horizontal)
                 
                 // Top Curators League Preview
@@ -58,7 +58,7 @@ struct RewardsTabView: View {
                     }
                     
                     VStack(spacing: 12) {
-                        ForEach(Array(data.leaderboardWeekly.prefix(3).enumerated()), id: \.offset) { index, curator in
+                        ForEach(Array(vm.leaderboard.prefix(3).enumerated()), id: \.offset) { index, curator in
                             HStack(spacing: 12) {
                                 ZStack {
                                     Circle()
@@ -147,7 +147,7 @@ struct RewardsTabView: View {
                     }
                     
                     VStack(spacing: 12) {
-                        ForEach(data.milestones) { milestone in
+                        ForEach(vm.milestones) { milestone in
                             MilestoneRow(milestone: milestone)
                         }
                     }

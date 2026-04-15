@@ -8,7 +8,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         // Initialize Firebase
         FirebaseApp.configure()
-        
+
+        // 🔥 DEBUG: Print Firestore collection counts to console on every launch
+        // Remove this block before App Store submission
+        Task {
+            await DataSeeder.shared.seedAll()
+            await FirebaseDataService.shared.debugPrintAll()
+        }
+
         // Force-initialize FirebaseManager
         let manager = FirebaseManager.shared
         // Disable APNs requirement on Simulator

@@ -1,18 +1,18 @@
 import Foundation
 
-enum SessionStatus: String {
-    case upcoming = "UPCOMING"
+enum SessionStatus: String, Codable {
+    case upcoming  = "UPCOMING"
     case completed = "COMPLETED"
     case cancelled = "CANCELLED"
 }
 
-enum SessionType: String {
-    case online = "ONLINE"
+enum SessionType: String, Codable {
+    case online   = "ONLINE"
     case inPerson = "IN-PERSON"
 }
 
-struct Session: Identifiable {
-    let id = UUID()
+struct Session: Identifiable, Codable {
+    var id: String = UUID().uuidString
     let title: String
     let instructorName: String
     let instructorRole: String
@@ -26,7 +26,7 @@ struct Session: Identifiable {
     let type: SessionType
     let category: String
     let rating: Int?
-    
+
     // Detailed fields
     var notes: String?
     var creditsEarned: Int?
@@ -35,4 +35,9 @@ struct Session: Identifiable {
     var recordingDuration: String?
     var lessonCount: Int?
     var calendarEventId: String?
+
+    // Timestamps for Firestore ordering & status tracking
+    var scheduledAt: Date = Date()
+    var createdAt: Date = Date()
+    var completedAt: Date?
 }

@@ -2,8 +2,7 @@ import Foundation
 import Combine
 
 // MARK: - DiscoverViewModel
-// Drives DiscoverView — owns skill data, category filtering, and navigation flags.
-// The View should never reference MockDataProvider directly.
+// Drives DiscoverView — skill data loaded from Firestore via FirebaseDataService.
 
 @MainActor
 final class DiscoverViewModel: ObservableObject {
@@ -12,6 +11,7 @@ final class DiscoverViewModel: ObservableObject {
 
     @Published var searchText: String = ""
     @Published var selectedCategory: String = "All Learners"
+    @Published var isLoading: Bool = false
 
     @Published var navigateToCourses: Bool = false
     @Published var navigateToSkillMatches: Bool = false
@@ -19,25 +19,35 @@ final class DiscoverViewModel: ObservableObject {
 
     let categories = ["All Learners", "Design", "Coding", "Marketing", "Arts", "Music"]
 
-    // MARK: - Data (loaded from mock service)
-    // Replace with async fetch calls to FirebaseManager / API when backend is ready.
+    // MARK: - Data (loaded from Firestore, fallback to mock)
 
-    let recommendedSkills: [RecommendedSkill] = MockDataProvider.shared.recommendedSkills
+    @Published var recommendedSkills: [RecommendedSkill] = []
+    @Published var profiles: [MatchProfile] = []
+
+    // MARK: - Init
+
+    init() {
+        Task { await loadData() }
+    }
+
+    // MARK: - Data Loading
+
+    func loadData() async {
+        isLoading = true
+        async let skills    = FirebaseDataService.shared.fetchRecommendedSkills()
+        async let profs     = FirebaseDataService.shared.fetchProfiles()
+        (recommendedSkills, profiles) = await (skills, profs)
+        isLoading = false
+    }
 
     // MARK: - Derived
 
-    /// Skills filtered by the active category chip.
     var filteredSkills: [RecommendedSkill] {
-        guard selectedCategory != "All Learners" else { return recommendedSkills }
-        return recommendedSkills.filter {
-            $0.category.localizedCaseInsensitiveContains(selectedCategory)
-        }
-    }
-
-    /// Skills filtered by the search bar text.
-    var searchFilteredSkills: [RecommendedSkill] {
-        guard !searchText.isEmpty else { return filteredSkills }
-        return filteredSkills.filter {
+        let byCat = selectedCategory == "All Learners"
+            ? recommendedSkills
+            : recommendedSkills.filter { $0.category.localizedCaseInsensitiveContains(selectedCategory) }
+        guard !searchText.isEmpty else { return byCat }
+        return byCat.filter {
             $0.title.localizedCaseInsensitiveContains(searchText) ||
             $0.instructor.localizedCaseInsensitiveContains(searchText)
         }

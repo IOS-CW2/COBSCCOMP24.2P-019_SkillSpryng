@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @State private var user = PersistenceService.shared.fetchUser() ?? MockDataProvider.shared.currentUser
+    @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -22,8 +22,8 @@ struct ProfileView: View {
                 // Profile Hero 
                 VStack(spacing: 16) {
                     ZStack(alignment: .bottomTrailing) {
-                        if !user.profileImageURL.isEmpty {
-                            Image(user.profileImageURL)
+                        if !vm.user.profileImageURL.isEmpty {
+                            Image(vm.user.profileImageURL)
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 100, height: 100)
@@ -55,13 +55,13 @@ struct ProfileView: View {
                     }
                     
                     VStack(spacing: 4) {
-                        Text(user.fullName)
+                        Text(vm.user.fullName)
                             .font(AppTheme.Typography.title2)
-                        Text("\(user.role) • Level \(user.level)")
+                        Text("\(vm.user.role) • Level \(vm.user.level)")
                             .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                         
-                        Label(user.location, systemImage: "mappin.circle.fill")
+                        Label(vm.user.location, systemImage: "mappin.circle.fill")
                             .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                             .padding(.top, 4)
@@ -86,7 +86,7 @@ struct ProfileView: View {
                         Text("Profile Completeness")
                             .font(AppTheme.Typography.subheadline)
                         Spacer()
-                        Text("\(user.profileCompleteness)%")
+                        Text("\(vm.user.profileCompleteness)%")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
@@ -98,7 +98,7 @@ struct ProfileView: View {
                                 .frame(height: 8)
                             Capsule()
                                 .fill(AppTheme.Colors.primary)
-                                .frame(width: geo.size.width * CGFloat(user.profileCompleteness) / 100, height: 8)
+                                .frame(width: geo.size.width * CGFloat(vm.user.profileCompleteness) / 100, height: 8)
                         }
                     }
                     .frame(height: 8)
@@ -132,7 +132,7 @@ struct ProfileView: View {
                             Text("Balance")
                                 .font(AppTheme.Typography.badge)
                                 .foregroundColor(.gray)
-                            Text("\(user.walletBalance) SKP")
+                            Text("\(vm.user.walletBalance) SKP")
                                 .font(AppTheme.Typography.headline)
                         }
                         
@@ -161,9 +161,9 @@ struct ProfileView: View {
                 
                 // Stats Grid
                 HStack(spacing: 12) {
-                    SimplifiedStatCard(value: "\(user.sessionsCount)", label: "SESSIONS")
-                    SimplifiedStatCard(value: String(format: "%.1f", user.rating), label: "RATING")
-                    SimplifiedStatCard(value: "\(user.skillsToTeach.count + user.skillsToLearn.count)", label: "SKILLS")
+                    SimplifiedStatCard(value: "\(vm.user.sessionsCount)", label: "SESSIONS")
+                    SimplifiedStatCard(value: String(format: "%.1f", vm.user.rating), label: "RATING")
+                    SimplifiedStatCard(value: "\(vm.user.skillsToTeach.count + vm.user.skillsToLearn.count)", label: "SKILLS")
                 }
                 .padding(.horizontal)
                 
@@ -188,7 +188,7 @@ struct ProfileView: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(user.skillsToTeach, id: \.self) { skill in
+                                ForEach(vm.user.skillsToTeach, id: \.self) { skill in
                                     SkillBadge.teaching(skill)
                                 }
                             }
@@ -202,7 +202,7 @@ struct ProfileView: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(user.skillsToLearn, id: \.self) { skill in
+                                ForEach(vm.user.skillsToLearn, id: \.self) { skill in
                                     SkillBadge.learning(skill)
                                 }
                             }
@@ -251,7 +251,7 @@ struct ProfileView: View {
         .navigationBarHidden(true)
         .onAppear {
             if let cachedUser = PersistenceService.shared.fetchUser() {
-                self.user = cachedUser
+                self.vm.user = cachedUser
             }
         }
     }

@@ -3,7 +3,27 @@ import SwiftUI
 struct MatchDetailView: View {
     let profile: MatchProfile
     @Environment(\.dismiss) private var dismiss
-    
+
+    /// Build a live Conversation from this MatchProfile.
+    /// In production, MessagesViewModel fetches or creates this in Firestore.
+    private var conversation: Conversation {
+        let participant = User(
+            id: profile.id,
+            fullName: profile.fullName,
+            email: "",
+            phoneNumber: "",
+            profileImageURL: profile.imageUrl
+        )
+        return Conversation(
+            id: profile.id,
+            participant: participant,
+            lastMessage: "Start a conversation",
+            lastMessageTime: "Now",
+            unreadCount: 0,
+            messages: []
+        )
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
@@ -179,7 +199,7 @@ struct MatchDetailView: View {
             VStack {
                 Spacer()
                 HStack(spacing: 16) {
-                    NavigationLink(destination: ChatDetailView(conversation: MockDataProvider.shared.mockConversations.first(where: { $0.participant.fullName == profile.fullName }) ?? MockDataProvider.shared.mockConversations[0])) {
+                    NavigationLink(destination: ChatDetailView(conversation: conversation)) {
                         Label("Message", systemImage: "bubble.left.fill")
                             .font(AppTheme.Typography.headline)
                             .foregroundColor(AppTheme.Colors.primary)

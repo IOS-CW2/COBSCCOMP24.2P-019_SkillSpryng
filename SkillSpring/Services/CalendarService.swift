@@ -153,7 +153,7 @@ class CalendarService: ObservableObject {
             locationName: session.location,
             latitude: nil, // If session captures coordinates, pass them here
             longitude: nil,
-            sessionId: session.id.uuidString
+            sessionId: session.id
         )
     }
 

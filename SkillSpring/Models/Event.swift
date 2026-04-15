@@ -1,7 +1,7 @@
 import Foundation
 
-struct Event: Identifiable {
-    let id = UUID()
+struct Event: Identifiable, Codable {
+    var id: String = UUID().uuidString
     let title: String
     let instructor: String
     let date: String

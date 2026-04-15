@@ -1,7 +1,7 @@
 import Foundation
 
-struct UserReview: Identifiable {
-    let id = UUID()
+struct UserReview: Identifiable, Codable {
+    var id: String = UUID().uuidString
     let reviewerName: String
     let rating: Int
     let comment: String

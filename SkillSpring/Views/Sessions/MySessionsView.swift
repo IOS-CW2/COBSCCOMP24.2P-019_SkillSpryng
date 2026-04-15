@@ -1,18 +1,17 @@
 import SwiftUI
 
 struct MySessionsView: View {
+    @StateObject private var vm = SessionsViewModel()
     @State private var selectedFilter = "All"
     @Namespace private var animation
     let filters = ["All", "Upcoming", "Completed", "Cancelled"]
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            // Custom Navigation Header
             AppHeader(title: "My Sessions", showBackButton: true)
-            
+
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
-                    // Category Filters
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(filters, id: \.self) { filter in
@@ -23,24 +22,22 @@ struct MySessionsView: View {
                         }
                         .padding(.horizontal)
                     }
-                    
+
                     if selectedFilter == "All" || selectedFilter == "Upcoming" {
-                        UpcomingSessionsSection()
+                        UpcomingSessionsSection(vm: vm)
                     }
-                    
+
                     if selectedFilter == "All" || selectedFilter == "Completed" || selectedFilter == "Cancelled" {
-                        let historySessions = MockDataProvider.shared.mockSessions.filter {
-                            $0.date != "Oct 24" && $0.date != "Oct 25" &&
-                            (selectedFilter == "All" || $0.status.rawValue == selectedFilter.uppercased())
+                        let historySessions = vm.historySessions.filter {
+                            selectedFilter == "All" || $0.status.rawValue == selectedFilter.uppercased()
                         }
                         if historySessions.isEmpty {
-                            EmptySessionsView(filter: selectedFilter)
-                                .padding(.top, 40)
+                            EmptySessionsView(filter: selectedFilter).padding(.top, 40)
                         } else {
-                            SessionHistorySection(filter: selectedFilter)
+                            SessionHistorySection(vm: vm, filter: selectedFilter)
                         }
                     }
-                    
+
                     Spacer().frame(height: 100)
                 }
                 .padding(.top)
@@ -50,59 +47,53 @@ struct MySessionsView: View {
     }
 }
 
-// MARK: - Upcoming Section
 struct UpcomingSessionsSection: View {
+    @ObservedObject var vm: SessionsViewModel
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            SectionHeader(title: "TODAY")
-                .padding(.horizontal)
-            
-            // Today's Large Card
-            if let todaySession = MockDataProvider.shared.mockSessions.first(where: { $0.date == "Oct 24" && $0.type == .online }) {
-                MainSessionCard(session: todaySession)
+            SectionHeader(title: "TODAY").padding(.horizontal)
+
+            if let todaySession = vm.todaySession {
+                MainSessionCard(session: todaySession).padding(.horizontal)
+            } else {
+                Text("No session today")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(.gray)
                     .padding(.horizontal)
             }
-            
-            SectionHeader(title: "TOMORROW")
-                .padding(.horizontal)
-                .padding(.top, 8)
-            
-            // Tomorrow's In-Person Card
-            if let tomorrowSession = MockDataProvider.shared.mockSessions.first(where: { $0.date == "Oct 25" }) {
-                MainSessionCard(session: tomorrowSession)
+
+            SectionHeader(title: "TOMORROW").padding(.horizontal).padding(.top, 8)
+
+            if let tomorrowSession = vm.tomorrowSession {
+                MainSessionCard(session: tomorrowSession).padding(.horizontal)
+            } else {
+                Text("No session tomorrow")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(.gray)
                     .padding(.horizontal)
             }
-            
-            // Next Week List
+
             VStack(alignment: .leading, spacing: 16) {
-                SectionHeader(title: "NEXT WEEK", actionTitle: "See All", action: { })
-                    .padding(.horizontal)
-                
+                SectionHeader(title: "NEXT WEEK", actionTitle: "See All", action: { }).padding(.horizontal)
                 VStack(spacing: 12) {
-                    if let s1 = MockDataProvider.shared.mockSessions.first {
-                        NavigationLink(destination: SessionDetailView(session: s1)) {
-                            CompactSessionRow(date: "OCT 28", title: "UI Typography Workshop", time: "Virtual • 10:00 AM")
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        
-                        NavigationLink(destination: SessionDetailView(session: s1)) {
-                            CompactSessionRow(date: "OCT 30", title: "Growth Mindset Group", time: "In-Person • 04:00 PM")
+                    ForEach(vm.upcomingSessions.prefix(3)) { session in
+                        NavigationLink(destination: SessionDetailView(session: session)) {
+                            CompactSessionRow(date: session.date, title: session.title, time: session.time)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
                 }
                 .padding(.horizontal)
             }
-            
-            // Bottom Action Cards
+
             HStack(spacing: 16) {
                 ActionCard(title: "Prepare for your next session", subtitle: "Review 3 shared documents", icon: "sparkles", color: Color.blue.opacity(0.1))
                 VStack(spacing: 16) {
                     ActionCard(title: "Notes", subtitle: "", icon: "note.text", color: Color.green.opacity(0.1))
                     NavigationLink(destination: LearningAnalyticsView()) {
                         ActionCard(title: "Progress Overview", subtitle: "", icon: "chart.bar.fill", color: Color.gray.opacity(0.1))
-                    }
-                    .buttonStyle(PlainButtonStyle())
+                    }.buttonStyle(PlainButtonStyle())
                 }
             }
             .padding(.horizontal)
@@ -112,32 +103,21 @@ struct UpcomingSessionsSection: View {
 
 // MARK: - History Section
 struct SessionHistorySection: View {
+    @ObservedObject var vm: SessionsViewModel
     let filter: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            SectionHeader(title: "THIS MONTH")
-                .padding(.horizontal)
-            
+            SectionHeader(title: "THIS MONTH").padding(.horizontal)
+
             VStack(spacing: 16) {
-                ForEach(MockDataProvider.shared.mockSessions.filter { 
-                    $0.date != "Oct 24" && $0.date != "Oct 25" &&
-                    (filter == "All" || $0.status.rawValue == filter.uppercased())
+                ForEach(vm.historySessions.filter {
+                    filter == "All" || $0.status.rawValue == filter.uppercased()
                 }) { session in
                     HistorySessionRow(session: session)
                 }
             }
             .padding(.horizontal)
-            
-            SectionHeader(title: "SEPTEMBER")
-                .padding(.horizontal)
-            
-            if filter == "All" || filter == "Completed" {
-                if let sepSession = MockDataProvider.shared.mockSessions.first(where: { $0.date.contains("Sep") }) {
-                    HistorySessionRow(session: sepSession)
-                        .padding(.horizontal)
-                }
-            }
         }
     }
 }

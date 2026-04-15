@@ -24,7 +24,7 @@ class MockDataProvider {
         rating: 4.9,
         awardsCount: 12,
         walletBalance: 200,
-        isPro: false,
+        isPremium: false,
         isChildMode: false,
         profileCompleteness: 85,
         skillStats: [

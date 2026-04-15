@@ -1,15 +1,15 @@
 import Foundation
 
-enum MatchStatus {
-    case suggested
-    case requestIncoming
-    case requestSent
-    case active
-    case archived
+enum MatchStatus: String, Codable {
+    case suggested = "suggested"
+    case requestIncoming = "requestIncoming"
+    case requestSent = "requestSent"
+    case active = "active"
+    case archived = "archived"
 }
 
-struct MatchProfile: Identifiable {
-    let id = UUID()
+struct MatchProfile: Identifiable, Codable {
+    var id: String = UUID().uuidString
     let fullName: String
     let role: String
     let location: String

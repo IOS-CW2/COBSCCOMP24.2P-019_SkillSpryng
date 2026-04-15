@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var user = MockDataProvider.shared.currentUser
+    @StateObject private var vm = ProfileViewModel()
     @State private var pushNotifications = true
     @State private var darkMode = false
     @ObservedObject private var biometricService = BiometricAuthService.shared
@@ -22,7 +22,7 @@ struct SettingsView: View {
                     
                     // User Profile Brief
                     VStack(spacing: 16) {
-                        Image(user.profileImageURL)
+                        Image(vm.user.profileImageURL)
                             .resizable()
                             .scaledToFill()
                             .frame(width: 80, height: 80)
@@ -31,9 +31,9 @@ struct SettingsView: View {
                             .shadow(radius: 5)
                         
                         VStack(spacing: 4) {
-                            Text(user.fullName)
+                            Text(vm.user.fullName)
                                 .font(AppTheme.Typography.title3)
-                            Text("\(user.role) • Level \(user.level)")
+                            Text("\(vm.user.role) • Level \(vm.user.level)")
                                 .font(AppTheme.Typography.callout)
                                 .foregroundColor(.gray)
                         }
@@ -247,7 +247,7 @@ struct SettingsView: View {
         .onAppear {
             biometricService.checkBiometricSupport()
             if let cachedUser = PersistenceService.shared.fetchUser() {
-                self.user = cachedUser
+                self.vm.user = cachedUser
             }
         }
         // HIG: Confirm destructive logout action with an alert

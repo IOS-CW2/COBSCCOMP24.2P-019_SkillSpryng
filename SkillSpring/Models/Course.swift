@@ -1,7 +1,7 @@
 import Foundation
 
-struct Course: Identifiable {
-    let id = UUID()
+struct Course: Identifiable, Codable {
+    var id: String = UUID().uuidString
     let title: String
     let instructor: String
     let rating: Double
