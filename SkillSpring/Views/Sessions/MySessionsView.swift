@@ -29,7 +29,16 @@ struct MySessionsView: View {
                     }
                     
                     if selectedFilter == "All" || selectedFilter == "Completed" || selectedFilter == "Cancelled" {
-                        SessionHistorySection(filter: selectedFilter)
+                        let historySessions = MockDataProvider.shared.mockSessions.filter {
+                            $0.date != "Oct 24" && $0.date != "Oct 25" &&
+                            (selectedFilter == "All" || $0.status.rawValue == selectedFilter.uppercased())
+                        }
+                        if historySessions.isEmpty {
+                            EmptySessionsView(filter: selectedFilter)
+                                .padding(.top, 40)
+                        } else {
+                            SessionHistorySection(filter: selectedFilter)
+                        }
                     }
                     
                     Spacer().frame(height: 100)
@@ -375,5 +384,83 @@ struct ActionCard: View {
         .padding(20)
         .background(color)
         .cornerRadius(20)
+    }
+}
+
+// MARK: - Empty State
+
+struct EmptySessionsView: View {
+    let filter: String
+
+    var body: some View {
+        VStack(spacing: 20) {
+            ZStack {
+                Circle()
+                    .fill(AppTheme.Colors.primary.opacity(0.08))
+                    .frame(width: 110, height: 110)
+                Image(systemName: icon)
+                    .font(.system(size: 44))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [AppTheme.Colors.primary, AppTheme.Colors.primary.opacity(0.6)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+
+            VStack(spacing: 8) {
+                Text(headline)
+                    .font(.system(size: 18, weight: .bold))
+                    .multilineTextAlignment(.center)
+
+                Text(subtitle)
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+
+            NavigationLink(destination: SkillMatchesView()) {
+                Text("Find a Session")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 14)
+                    .background(AppTheme.Colors.primary)
+                    .cornerRadius(14)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.bottom, 60)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(headline + ". " + subtitle)
+    }
+
+    private var icon: String {
+        switch filter {
+        case "Upcoming": return "calendar.badge.plus"
+        case "Cancelled": return "calendar.badge.exclamationmark"
+        case "Completed": return "checkmark.seal.fill"
+        default:          return "calendar"
+        }
+    }
+
+    private var headline: String {
+        switch filter {
+        case "Upcoming":  return "No Upcoming Sessions"
+        case "Cancelled": return "No Cancelled Sessions"
+        case "Completed": return "No Completed Sessions Yet"
+        default:          return "No Sessions Yet"
+        }
+    }
+
+    private var subtitle: String {
+        switch filter {
+        case "Upcoming":  return "Book a session with a skill match to get started."
+        case "Cancelled": return "You haven't cancelled any sessions. Great commitment!"
+        case "Completed": return "Complete your first session to see it here."
+        default:          return "Your sessions will appear here once you book one."
+        }
     }
 }
