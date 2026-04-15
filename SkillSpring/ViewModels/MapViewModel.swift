@@ -35,6 +35,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var nearbySkills: [SkillLocation] = []
     @Published var isLoadingPins: Bool = false
     @Published var selectedSkill: SkillLocation? = nil
+    @Published var currentUser: User?
 
     /// Observable authorization status for the permission-denied UI state.
     @Published var permissionStatus: CLAuthorizationStatus = .notDetermined
@@ -105,6 +106,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     /// and geocodes their location strings to map coordinates.
     @MainActor
     func loadNearbyUsers() async {
+        self.currentUser = await FirebaseDataService.shared.fetchCurrentUser()
         await geocodeProfiles()
     }
 
@@ -115,7 +117,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         isLoadingPins = true
         nearbySkills = []
 
-        let profiles = MockDataProvider.shared.allProfiles
+        let profiles = await FirebaseDataService.shared.fetchProfiles()
 
         for profile in profiles {
             // Skip "Online" profiles — they have no physical location
@@ -178,7 +180,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     /// - Count skills where currentUser.skillsToLearn ∩ targetUser.skillsToTeach
     /// - Return (matches / max possible) * 100, clamped to 0–100
     func calculateMatchPercentage(with profile: MatchProfile) -> Int {
-        let currentUser = MockDataProvider.shared.currentUser
+        guard let currentUser = self.currentUser else { return 0 }
 
         let iCanTeachWhatTheyLearn = Set(currentUser.skillsToTeach)
             .intersection(Set(profile.skillsToLearn))

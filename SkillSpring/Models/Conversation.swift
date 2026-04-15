@@ -1,7 +1,7 @@
 import Foundation
 
-struct Conversation: Identifiable {
-    let id = UUID()
+struct Conversation: Identifiable, Codable {
+    var id: String = UUID().uuidString
     let participant: User
     let lastMessage: String
     let lastMessageTime: String

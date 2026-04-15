@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MyMatchesInboxView: View {
+    @StateObject private var discoverVM = DiscoverViewModel()
     @State private var selectedTab = 0
     @Namespace private var animation
     let tabs = ["Requests", "Active", "Archived"]
@@ -52,11 +53,11 @@ struct MyMatchesInboxView: View {
                     
                     // Tab Content
                     if selectedTab == 0 {
-                        RequestsView()
+                        RequestsView(discoverVM: discoverVM)
                     } else if selectedTab == 1 {
-                        ActiveMatchesView()
+                        ActiveMatchesView(discoverVM: discoverVM)
                     } else {
-                        ArchivedMatchesView()
+                        ArchivedMatchesView(discoverVM: discoverVM)
                     }
                     
                     Spacer().frame(height: 100)
@@ -70,6 +71,7 @@ struct MyMatchesInboxView: View {
 
 // MARK: - Requests Tab
 struct RequestsView: View {
+    @ObservedObject var discoverVM: DiscoverViewModel
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             // Incoming
@@ -77,7 +79,7 @@ struct RequestsView: View {
                 SectionHeader(title: "INCOMING", actionTitle: "1 NEW", action: { })
                     .padding(.horizontal)
                 
-                ForEach(MockDataProvider.shared.allProfiles.filter { $0.status == .requestIncoming }) { profile in
+                ForEach(discoverVM.profiles.filter { $0.status == .requestIncoming }) { profile in
                     InboxMatchCard(profile: profile, type: .incoming)
                 }
             }
@@ -87,7 +89,7 @@ struct RequestsView: View {
                 SectionHeader(title: "SENT BY YOU")
                     .padding(.horizontal)
                 
-                ForEach(MockDataProvider.shared.allProfiles.filter { $0.status == .requestSent }) { profile in
+                ForEach(discoverVM.profiles.filter { $0.status == .requestSent }) { profile in
                     InboxMatchCard(profile: profile, type: .sent)
                 }
             }
@@ -97,9 +99,10 @@ struct RequestsView: View {
 
 // MARK: - Active Tab
 struct ActiveMatchesView: View {
+    @ObservedObject var discoverVM: DiscoverViewModel
     var body: some View {
         VStack(spacing: 16) {
-            ForEach(MockDataProvider.shared.allProfiles.filter { $0.status == .active }) { profile in
+            ForEach(discoverVM.profiles.filter { $0.status == .active }) { profile in
                 InboxMatchCard(profile: profile, type: .active)
             }
         }
@@ -108,9 +111,10 @@ struct ActiveMatchesView: View {
 
 // MARK: - Archived Tab
 struct ArchivedMatchesView: View {
+    @ObservedObject var discoverVM: DiscoverViewModel
     var body: some View {
         VStack(spacing: 16) {
-            ForEach(MockDataProvider.shared.allProfiles.filter { $0.status == .archived || $0.fullName == "Marcus Chen" }) { profile in
+            ForEach(discoverVM.profiles.filter { $0.status == .archived }) { profile in
                 // Using Marcus Chen as a mock for declined in this demo
                 InboxMatchCard(profile: profile, type: .archived)
             }
@@ -216,7 +220,15 @@ struct InboxMatchCard: View {
                         }
                     }
                 case .active:
-                    NavigationLink(destination: ChatDetailView(conversation: MockDataProvider.shared.mockConversations.first(where: { $0.participant.fullName == profile.fullName }) ?? MockDataProvider.shared.mockConversations[0])) {
+                    let conversation = Conversation(
+                        id: profile.id,
+                        participant: User(id: profile.id, fullName: profile.fullName, phoneNumber: "", profileImageURL: profile.imageUrl),
+                        lastMessage: "Start a conversation",
+                        lastMessageTime: "Now",
+                        unreadCount: 0,
+                        messages: []
+                    )
+                    NavigationLink(destination: ChatDetailView(conversation: conversation)) {
                         Text("Message")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(AppTheme.Colors.primary)

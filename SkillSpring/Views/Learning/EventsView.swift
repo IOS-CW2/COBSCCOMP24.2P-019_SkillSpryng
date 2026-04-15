@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EventsView: View {
+    @StateObject private var vm = LearningViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = "Events"
     @State private var selectedFilter = "All"
@@ -78,8 +79,10 @@ struct EventsView: View {
                             .font(AppTheme.Typography.title3)
                             .padding(.horizontal)
                         
-                        EventHeroCard(event: MockDataProvider.shared.happeningSoonEvent)
-                            .padding(.horizontal)
+                        if let event = vm.happeningSoonEvent {
+                            EventHeroCard(event: event)
+                                .padding(.horizontal)
+                        }
                     }
                     
                     // Upcoming
@@ -89,7 +92,7 @@ struct EventsView: View {
                             .padding(.horizontal)
                         
                         VStack(spacing: 16) {
-                            ForEach(MockDataProvider.shared.upcomingEvents) { event in
+                            ForEach(vm.upcomingEvents) { event in
                                 UpcomingEventRow(event: event)
                             }
                         }

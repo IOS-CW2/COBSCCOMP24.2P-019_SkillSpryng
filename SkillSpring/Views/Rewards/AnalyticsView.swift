@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LearningAnalyticsView: View {
-    let data = MockDataProvider.shared.analyticsData
+        @StateObject private var vm = RewardsViewModel()
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -138,7 +138,7 @@ struct LearningAnalyticsView: View {
                             .cornerRadius(8)
                         }
                         
-                        GrowthChart(points: data.growthHistory)
+                        GrowthChart(points: vm.analyticsData.growthHistory)
                             .frame(height: 180)
                             .padding(.vertical)
                     }

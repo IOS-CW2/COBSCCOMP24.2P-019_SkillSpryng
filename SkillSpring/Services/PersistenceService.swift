@@ -36,7 +36,7 @@ class PersistenceService {
             localUser.rating = user.rating
             localUser.awardsCount = Int32(user.awardsCount)
             localUser.walletBalance = Int32(user.walletBalance)
-            localUser.isPro = user.isPro
+            localUser.isPro = user.isPremium
             localUser.isChildMode = user.isChildMode
             localUser.profileCompleteness = Int16(user.profileCompleteness)
             
@@ -62,28 +62,27 @@ class PersistenceService {
             guard let localUser = results.first else { return nil }
             
             // Map back from Core Data entity to Swift struct
-            return User(
-                id: localUser.id,
-                fullName: localUser.fullName ?? "",
-                phoneNumber: localUser.phoneNumber ?? "",
-                skillsToTeach: localUser.skillsToTeach?.components(separatedBy: ", ").filter { !$0.isEmpty } ?? [],
-                skillsToLearn: localUser.skillsToLearn?.components(separatedBy: ", ").filter { !$0.isEmpty } ?? [],
-                experienceLevel: localUser.experienceLevel ?? "",
-                location: localUser.location ?? "",
-                bio: localUser.bio ?? "",
-                profileImageURL: localUser.profileImageURL ?? "",
-                createdAt: Date(), // Defaulting as createdAt isn't in LocalUser model yet
-                role: localUser.role ?? "Member",
-                level: Int(localUser.level),
-                karmaPoints: Int(localUser.karmaPoints),
-                sessionsCount: Int(localUser.sessionsCount),
-                rating: localUser.rating,
-                awardsCount: Int(localUser.awardsCount),
-                walletBalance: Int(localUser.walletBalance),
-                isPro: localUser.isPro,
-                isChildMode: localUser.isChildMode,
-                profileCompleteness: Int(localUser.profileCompleteness)
-            )
+            var user = User(fullName: localUser.fullName ?? "")
+            user.id = localUser.id
+            user.phoneNumber = localUser.phoneNumber ?? ""
+            user.skillsToTeach = localUser.skillsToTeach?.components(separatedBy: ", ").filter { !$0.isEmpty } ?? []
+            user.skillsToLearn = localUser.skillsToLearn?.components(separatedBy: ", ").filter { !$0.isEmpty } ?? []
+            user.experienceLevel = localUser.experienceLevel ?? ""
+            user.location = localUser.location ?? ""
+            user.bio = localUser.bio ?? ""
+            user.profileImageURL = localUser.profileImageURL ?? ""
+            user.role = localUser.role ?? "Member"
+            user.level = Int(localUser.level)
+            user.karmaPoints = Int(localUser.karmaPoints)
+            user.sessionsCount = Int(localUser.sessionsCount)
+            user.rating = localUser.rating
+            user.awardsCount = Int(localUser.awardsCount)
+            user.walletBalance = Int(localUser.walletBalance)
+            user.isPremium = localUser.isPro
+            user.isChildMode = localUser.isChildMode
+            user.profileCompleteness = Int(localUser.profileCompleteness)
+            
+            return user
         } catch {
             print("ERROR: Failed to fetch from Core Data: \(error)")
             return nil

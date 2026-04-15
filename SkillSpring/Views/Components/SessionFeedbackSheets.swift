@@ -224,7 +224,7 @@ struct CancelSessionSheet: View {
                     .font(AppTheme.Typography.subheadline)
                 Spacer()
                 VStack(alignment: .trailing) {
-                    Text("\(MockDataProvider.shared.currentUser.walletBalance) SKP")
+                    Text("\(0) SKP")
                         .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.primary)
                     Text("Returned to your SkillSpryng wallet")

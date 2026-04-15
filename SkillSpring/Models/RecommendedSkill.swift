@@ -2,8 +2,8 @@ import Foundation
 
 // MARK: - RecommendedSkill
 // Represents a skill listing shown on the Discover (Home) screen.
-struct RecommendedSkill: Identifiable {
-    let id = UUID()
+struct RecommendedSkill: Identifiable, Codable {
+    var id: String = UUID().uuidString
     let title: String
     let instructor: String
     let price: String

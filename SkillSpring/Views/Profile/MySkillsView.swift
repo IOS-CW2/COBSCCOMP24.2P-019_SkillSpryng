@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MySkillsView: View {
     @State private var selectedTab = "Teaching"
-    @State private var user = MockDataProvider.shared.currentUser
+    @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) var dismiss
     
     let tabs = ["Teaching", "Learning"]
@@ -45,8 +45,8 @@ struct MySkillsView: View {
                 
                 if selectedTab == "Teaching" {
                     VStack(spacing: 20) {
-                        ForEach(user.skillsToTeach, id: \.self) { skill in
-                            let stats = user.skillStats[skill]
+                        ForEach(vm.user.skillsToTeach, id: \.self) { skill in
+                            let stats = vm.user.skillStats[skill]
                             CredibilityCard(
                                 title: skill,
                                 score: stats?.credibilityScore ?? 0,
@@ -77,7 +77,7 @@ struct MySkillsView: View {
                 } else {
                     // Learning Tab Content
                     VStack(spacing: 16) {
-                        ForEach(user.skillsToLearn, id: \.self) { skill in
+                        ForEach(vm.user.skillsToLearn, id: \.self) { skill in
                             HStack {
                                 ZStack {
                                     Circle()

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CoursesView: View {
+    @StateObject private var vm = LearningViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = "Courses" // Toggled with "Events"
     @State private var selectedCategory = "All"
@@ -86,7 +87,7 @@ struct CoursesView: View {
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
-                                    ForEach(MockDataProvider.shared.featuredCourses) { course in
+                                    ForEach(vm.featuredCourses) { course in
                                         FeaturedCourseCard(course: course)
                                     }
                                 }
@@ -106,7 +107,7 @@ struct CoursesView: View {
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
-                                    ForEach(MockDataProvider.shared.popularCourses) { course in
+                                    ForEach(vm.popularCourses) { course in
                                         PopularCourseCard(course: course)
                                     }
                                 }
@@ -125,7 +126,7 @@ struct CoursesView: View {
                             .padding(.horizontal)
                             
                             VStack(spacing: 16) {
-                                ForEach(MockDataProvider.shared.learningPath) { course in
+                                ForEach(vm.learningPath) { course in
                                     LearningPathCard(course: course)
                                 }
                             }

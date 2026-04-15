@@ -1,42 +1,52 @@
 import Foundation
 import SwiftUI
 import Combine
+import FirebaseFirestore
+import FirebaseAuth
 
 // MARK: - ChatViewModel
-// Manages the message thread state for ChatDetailView.
-// Follows the MVVM pattern — the View owns no business logic.
-//
-// BACKEND INTEGRATION NOTE:
-// When Firestore is wired, replace the local `messages` array with a
-// real-time listener on:
-//   db.collection("conversations/\(conversationId)/messages")
-//     .order(by: "timestamp")
-//     .addSnapshotListener { ... }
+// Manages a live message thread backed by a Firestore snapshot listener.
+// Architecture: ChatDetailView → ChatViewModel → FirebaseDataService → Firestore
 
 @MainActor
 final class ChatViewModel: ObservableObject {
 
-    // MARK: - Published State (drives the View)
-
-    /// The live message thread seeded from the conversation snapshot.
-    @Published var messages: [ChatMessage]
-
-    /// Controls the "is typing…" indicator.
+    // MARK: - Published State
+    @Published var messages: [ChatMessage] = []
     @Published var isTyping: Bool = false
+    @Published var isLoading: Bool = true
+    @Published var errorMessage: String?
 
-    /// The conversation this ViewModel manages.
     let conversation: Conversation
 
     // MARK: - Init
 
     init(conversation: Conversation) {
         self.conversation = conversation
-        self.messages = conversation.messages
+        attachListener()
     }
 
-    // MARK: - Public Intent
+    deinit {
+        let convId = conversation.id
+        Task { @MainActor in
+            FirebaseDataService.shared.stopListeningToMessages(conversationId: convId)
+        }
+    }
 
-    /// Appends an outgoing message and briefly shows the typing indicator.
+    // MARK: - Real-Time Listener
+
+    private func attachListener() {
+        FirebaseDataService.shared.listenToMessages(
+            conversationId: conversation.id
+        ) { [weak self] liveMessages in
+            guard let self else { return }
+            self.messages = liveMessages
+            self.isLoading = false
+        }
+    }
+
+    // MARK: - Send Message
+
     func send(text: String) {
         let trimmed = text.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
@@ -50,21 +60,42 @@ final class ChatViewModel: ObservableObject {
             fileName: nil,
             fileSize: nil
         )
+
+        // Optimistic UI update
         messages.append(outgoing)
         HapticManager.light()
         showTypingIndicator()
+
+        // Persist to Firestore
+        Task {
+            await FirebaseDataService.shared.sendMessage(outgoing, to: conversation.id)
+        }
+    }
+
+    // MARK: - Delete Message (soft delete)
+
+    func deleteMessage(_ message: ChatMessage) {
+        Task {
+            await FirebaseDataService.shared.deleteMessage(message.id, conversationId: conversation.id)
+        }
+    }
+
+    // MARK: - Mark Read
+
+    func markRead(_ message: ChatMessage) {
+        guard !message.isFromMe else { return }
+        Task {
+            await FirebaseDataService.shared.markMessageRead(message.id, conversationId: conversation.id)
+        }
     }
 
     // MARK: - Private Helpers
 
-    /// Shows the "typing…" indicator for 1.5 s then hides it.
     private func showTypingIndicator() {
         withAnimation(.easeInOut(duration: 0.3)) { isTyping = true }
         Task {
             try? await Task.sleep(nanoseconds: 1_500_000_000)
-            await MainActor.run {
-                withAnimation(.easeInOut(duration: 0.3)) { isTyping = false }
-            }
+            withAnimation(.easeInOut(duration: 0.3)) { isTyping = false }
         }
     }
 }

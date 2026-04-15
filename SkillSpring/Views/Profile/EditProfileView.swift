@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EditProfileView: View {
-    @State private var user = MockDataProvider.shared.currentUser
+    @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -14,7 +14,7 @@ struct EditProfileView: View {
                     // Avatar Header
                     VStack(spacing: 16) {
                         ZStack(alignment: .bottomTrailing) {
-                            Image(user.profileImageURL)
+                            Image(vm.user.profileImageURL)
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 120, height: 120)
@@ -43,16 +43,16 @@ struct EditProfileView: View {
                     
                     // Form Fields
                     VStack(alignment: .leading, spacing: 24) {
-                        EditField(label: "FULL NAME", text: $user.fullName)
-                        EditField(label: "PHONE NUMBER", text: $user.phoneNumber)
-                        EditField(label: "LOCATION", text: $user.location)
+                        EditField(label: "FULL NAME", text: $vm.user.fullName)
+                        EditField(label: "PHONE NUMBER", text: $vm.user.phoneNumber)
+                        EditField(label: "LOCATION", text: $vm.user.location)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             Text("BIO")
                                 .font(AppTheme.Typography.badge)
                                 .foregroundColor(.gray)
                             
-                            TextEditor(text: $user.bio)
+                            TextEditor(text: $vm.user.bio)
                                 .font(AppTheme.Typography.callout)
                                 .padding(12)
                                 .frame(height: 100)

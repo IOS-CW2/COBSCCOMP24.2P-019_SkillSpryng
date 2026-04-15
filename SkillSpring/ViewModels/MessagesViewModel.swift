@@ -2,8 +2,7 @@ import Foundation
 import Combine
 
 // MARK: - MessagesViewModel
-// Drives NotificationsView — owns the conversation list and search/filter logic.
-// The View should never reference MockDataProvider directly.
+// Drives NotificationsView — conversations loaded from Firestore via FirebaseDataService.
 
 @MainActor
 final class MessagesViewModel: ObservableObject {
@@ -12,40 +11,45 @@ final class MessagesViewModel: ObservableObject {
 
     @Published var searchText: String = ""
     @Published var selectedFilter: String = "All"
+    @Published var isLoading: Bool = false
 
     let filters = ["All", "Unread", "Matches", "Groups"]
 
-    // MARK: - Data Source
+    // MARK: - Data (loaded from Firestore, fallback to mock)
 
-    /// All conversations loaded from the mock service.
-    /// Replace `MockDataProvider.shared.mockConversations` with a
-    /// Firestore listener on `db.collection("conversations").whereField("participants", arrayContains: userId)`.
-    private var allConversations: [Conversation] = MockDataProvider.shared.mockConversations
+    @Published private var allConversations: [Conversation] = []
 
-    // MARK: - Derived (computed, reactive)
+    // MARK: - Init
 
-    /// Today's conversations — filtered by name and last message.
+    init() {
+        Task { await loadConversations() }
+    }
+
+    // MARK: - Data Loading
+
+    func loadConversations() async {
+        isLoading = true
+        allConversations = await FirebaseDataService.shared.fetchConversations()
+        isLoading = false
+    }
+
+    // MARK: - Derived
+
     var todayConversations: [Conversation] {
-        allConversations.filter {
-            ($0.participant.fullName == "Marcus Chen" || $0.participant.fullName == "Sim V") &&
-            matchesSearch($0)
-        }
+        allConversations
+            .filter { $0.lastMessageTime != "YESTERDAY" }
+            .filter { matchesSearch($0) }
     }
 
-    /// Yesterday's conversations.
     var yesterdayConversations: [Conversation] {
-        allConversations.filter {
-            $0.participant.fullName == "Aria Sterling" &&
-            matchesSearch($0)
-        }
+        allConversations
+            .filter { $0.lastMessageTime == "YESTERDAY" }
+            .filter { matchesSearch($0) }
     }
 
-    /// True when a search is active and no results are found.
     var isTodayEmpty: Bool {
         !searchText.isEmpty && todayConversations.isEmpty
     }
-
-    // MARK: - Private Helpers
 
     private func matchesSearch(_ conversation: Conversation) -> Bool {
         guard !searchText.isEmpty else { return true }

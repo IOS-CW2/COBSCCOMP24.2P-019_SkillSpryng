@@ -146,8 +146,11 @@ class StoreKitService: ObservableObject {
             // Sync to Firestore
             await FirebaseManager.shared.addCredits(amount: credits)
 
-            // Update local mock balance
-            MockDataProvider.shared.currentUser.walletBalance += credits
+            // Update live balance using FirebaseDataService
+            if var user = await FirebaseDataService.shared.fetchCurrentUser() {
+                user.walletBalance += credits
+                try? await FirebaseDataService.shared.saveUser(user)
+            }
 
             // Show toast
             creditsToast = "+\(credits) Credits added!"

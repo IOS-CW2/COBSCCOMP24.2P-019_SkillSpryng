@@ -1,13 +1,13 @@
 import Foundation
 
-enum MessageType {
-    case text
-    case image
-    case attachment
+enum MessageType: String, Codable {
+    case text = "text"
+    case image = "image"
+    case attachment = "attachment"
 }
 
-struct ChatMessage: Identifiable {
-    let id = UUID()
+struct ChatMessage: Identifiable, Codable {
+    var id: String = UUID().uuidString
     let text: String?
     let timestamp: Date
     let isFromMe: Bool

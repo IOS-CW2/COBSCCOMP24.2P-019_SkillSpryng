@@ -2,9 +2,9 @@ import SwiftUI
 import Combine
 
 struct WalletView: View {
-    @State private var balance = MockDataProvider.shared.currentUser.walletBalance
+    @State private var balance: Int = 0
     @Environment(\.dismiss) var dismiss
-    let data = MockDataProvider.shared
+    @StateObject private var rewardsVM = RewardsViewModel()
     @StateObject private var storeKit = StoreKitService.shared
     
     var body: some View {
@@ -108,9 +108,9 @@ struct WalletView: View {
                     }
                     
                     if storeKit.creditPacks.isEmpty {
-                        // Fallback to mock data while StoreKit loads
+                        // Fallback to Firestore data while StoreKit loads
                         VStack(spacing: 16) {
-                            ForEach(data.creditPacks) { pack in
+                            ForEach(rewardsVM.creditPacks) { pack in
                                 CreditPackCard(pack: pack)
                             }
                         }
@@ -142,7 +142,7 @@ struct WalletView: View {
                     }
                     
                     VStack(spacing: 12) {
-                        ForEach(data.skillMissions) { mission in
+                        ForEach(rewardsVM.skillMissions) { mission in
                             MissionRow(mission: mission)
                         }
                     }
@@ -153,9 +153,18 @@ struct WalletView: View {
             }
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
-        .task { await storeKit.loadProducts() }
+        .task { 
+            await storeKit.loadProducts() 
+            if let user = await FirebaseDataService.shared.fetchCurrentUser() {
+                balance = user.walletBalance
+            }
+        }
         .onReceive(storeKit.$creditsToast.compactMap { $0 }) { _ in
-            balance = MockDataProvider.shared.currentUser.walletBalance
+            Task {
+                if let user = await FirebaseDataService.shared.fetchCurrentUser() {
+                    balance = user.walletBalance
+                }
+            }
         }
         .overlay(alignment: .top) {
             if let toast = storeKit.creditsToast {

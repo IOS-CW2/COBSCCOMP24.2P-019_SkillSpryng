@@ -3,7 +3,7 @@ import SwiftUI
 struct LeaderboardView: View {
     @State private var selectedTab = "Weekly"
     @Environment(\.dismiss) var dismiss
-    let data = MockDataProvider.shared
+        @StateObject private var vm = RewardsViewModel()
     
     var body: some View {
         VStack(spacing: 0) {
@@ -78,7 +78,7 @@ struct LeaderboardView: View {
                                     .foregroundColor(AppTheme.Colors.primary)
                             }
                             
-                            Image(data.currentUser.profileImageURL)
+                            Image(vm.analyticsData.growthHistory.first?.day ?? "")
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 48, height: 48)

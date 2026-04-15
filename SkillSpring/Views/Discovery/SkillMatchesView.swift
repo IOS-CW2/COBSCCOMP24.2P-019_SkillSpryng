@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SkillMatchesView: View {
+    @StateObject private var vm = DiscoverViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
     @State private var selectedCategory = "All Matches"
@@ -48,7 +49,7 @@ struct SkillMatchesView: View {
                 
                 // Matches List
                 VStack(spacing: 20) {
-                    ForEach(MockDataProvider.shared.matchProfiles) { profile in
+                    ForEach(vm.profiles) { profile in
                         NavigationLink(destination: MatchDetailView(profile: profile)) {
                             SkillMatchCard(profile: profile)
                         }
