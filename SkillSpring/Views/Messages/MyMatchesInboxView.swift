@@ -46,6 +46,7 @@ struct MyMatchesInboxView: View {
                                 }
                             }
                             .frame(maxWidth: .infinity)
+                            .accessibilityButton(label: "\(tabs[index]) tab")
                             .accessibilityAddTraits(selectedTab == index ? .isSelected : [])
                         }
                     }
@@ -178,6 +179,7 @@ struct InboxMatchCard: View {
                     .foregroundColor(.gray)
             }
             .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(profile.fullName), \(profile.role). \(type == .active ? "Active Match" : "")")
             
             // Action Buttons based on type
             HStack(spacing: 12) {

@@ -1,4 +1,5 @@
 import SwiftUI
+import Charts
 
 struct LearningAnalyticsView: View {
         @StateObject private var vm = RewardsViewModel()
@@ -138,9 +139,60 @@ struct LearningAnalyticsView: View {
                             .cornerRadius(8)
                         }
                         
-                        GrowthChart(points: vm.analyticsData.growthHistory)
-                            .frame(height: 180)
-                            .padding(.vertical)
+                    // MARK: Swift Charts — Growth Trajectory
+                    // Uses the Swift Charts framework (iOS 16+):
+                    //   AreaMark  — shaded fill under the line
+                    //   LineMark  — the trend line
+                    //   PointMark — individual data points
+                    Chart {
+                        ForEach(vm.analyticsData.growthHistory) { point in
+                            AreaMark(
+                                x: .value("Day", point.day),
+                                y: .value("Score", point.value)
+                            )
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [AppTheme.Colors.primary.opacity(0.35), .clear],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .interpolationMethod(.catmullRom)
+
+                            LineMark(
+                                x: .value("Day", point.day),
+                                y: .value("Score", point.value)
+                            )
+                            .foregroundStyle(AppTheme.Colors.primary)
+                            .lineStyle(StrokeStyle(lineWidth: 2.5))
+                            .interpolationMethod(.catmullRom)
+
+                            PointMark(
+                                x: .value("Day", point.day),
+                                y: .value("Score", point.value)
+                            )
+                            .foregroundStyle(AppTheme.Colors.primary)
+                            .symbolSize(30)
+                        }
+                    }
+                    .frame(height: 180)
+                    .chartXAxis {
+                        AxisMarks(values: .automatic) { _ in
+                            AxisValueLabel()
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundStyle(Color.gray)
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { _ in
+                            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
+                                .foregroundStyle(Color.gray.opacity(0.3))
+                            AxisValueLabel()
+                                .font(.system(size: 9))
+                                .foregroundStyle(Color.gray)
+                        }
+                    }
+                    .accessibilityLabel("Growth trajectory chart showing 7-day learning activity")
                     }
                     .padding(.horizontal)
                     

@@ -3,6 +3,9 @@ import SwiftUI
 struct MySessionsView: View {
     @StateObject private var vm = SessionsViewModel()
     @State private var selectedFilter = "All"
+    @State private var sessionToCancel: Session?
+    @State private var showCancelAlert = false
+    @State private var sessionToRate: Session?
     @Namespace private var animation
     let filters = ["All", "Upcoming", "Completed", "Cancelled"]
 
@@ -24,7 +27,14 @@ struct MySessionsView: View {
                     }
 
                     if selectedFilter == "All" || selectedFilter == "Upcoming" {
-                        UpcomingSessionsSection(vm: vm)
+                        UpcomingSessionsSection(vm: vm, onCancel: { session in
+                            sessionToCancel = session
+                            showCancelAlert = true
+                        }, onEndSession: { session in
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                sessionToRate = session
+                            }
+                        })
                     }
 
                     if selectedFilter == "All" || selectedFilter == "Completed" || selectedFilter == "Cancelled" {
@@ -41,21 +51,42 @@ struct MySessionsView: View {
                     Spacer().frame(height: 100)
                 }
                 .padding(.top)
+                .redacted(reason: vm.isLoading ? .placeholder : [])
+            }
+            if vm.sessions.isEmpty && !vm.isLoading {
+                ContentUnavailableView(
+                    "No sessions found.",
+                    systemImage: "calendar.badge.exclamationmark",
+                    description: Text("You may be offline or have not booked any sessions yet.")
+                )
             }
         }
         .navigationBarHidden(true)
+        .alert("Cancel Session?", isPresented: $showCancelAlert, presenting: sessionToCancel) { session in
+            Button("Yes, Cancel", role: .destructive) {
+                vm.cancelSession(session)
+            }
+            Button("Keep Session", role: .cancel) { sessionToCancel = nil }
+        } message: { session in
+            Text("Are you sure you want to cancel \"\(session.title)\"? This cannot be undone.")
+        }
+        .sheet(item: $sessionToRate) { session in
+            RateSessionSheet(instructor: session.instructorName)
+        }
     }
 }
 
 struct UpcomingSessionsSection: View {
     @ObservedObject var vm: SessionsViewModel
+    var onCancel: (Session) -> Void = { _ in }
+    var onEndSession: (Session) -> Void = { _ in }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             SectionHeader(title: "TODAY").padding(.horizontal)
 
             if let todaySession = vm.todaySession {
-                MainSessionCard(session: todaySession).padding(.horizontal)
+                MainSessionCard(session: todaySession, onCancel: onCancel, onEndSession: onEndSession).padding(.horizontal)
             } else {
                 Text("No session today")
                     .font(AppTheme.Typography.caption)
@@ -66,7 +97,7 @@ struct UpcomingSessionsSection: View {
             SectionHeader(title: "TOMORROW").padding(.horizontal).padding(.top, 8)
 
             if let tomorrowSession = vm.tomorrowSession {
-                MainSessionCard(session: tomorrowSession).padding(.horizontal)
+                MainSessionCard(session: tomorrowSession, onCancel: onCancel, onEndSession: onEndSession).padding(.horizontal)
             } else {
                 Text("No session tomorrow")
                     .font(AppTheme.Typography.caption)
@@ -78,10 +109,19 @@ struct UpcomingSessionsSection: View {
                 SectionHeader(title: "NEXT WEEK", actionTitle: "See All", action: { }).padding(.horizontal)
                 VStack(spacing: 12) {
                     ForEach(vm.upcomingSessions.prefix(3)) { session in
-                        NavigationLink(destination: SessionDetailView(session: session)) {
-                            CompactSessionRow(date: session.date, title: session.title, time: session.time)
+                        HStack {
+                            NavigationLink(destination: SessionDetailView(session: session)) {
+                                CompactSessionRow(date: session.date, title: session.title, time: session.time)
+                            }
+                            .buttonStyle(PlainButtonStyle())
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                onCancel(session)
+                            } label: {
+                                Label("Cancel", systemImage: "xmark.circle")
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -126,7 +166,9 @@ struct SessionHistorySection: View {
 
 struct MainSessionCard: View {
     let session: Session
-    
+    var onCancel: (Session) -> Void = { _ in }
+    var onEndSession: (Session) -> Void = { _ in }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
@@ -147,11 +189,16 @@ struct MainSessionCard: View {
                     .fontWeight(.bold)
                 
                 HStack(spacing: 8) {
-                    Image("instructor1")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 24, height: 24)
-                        .clipShape(Circle())
+                    // Use a system icon so there are no hardcoded asset references
+                    ZStack {
+                        Circle()
+                            .fill(AppTheme.Colors.primary.opacity(0.12))
+                            .frame(width: 24, height: 24)
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 11))
+                            .foregroundColor(AppTheme.Colors.primary)
+                    }
+                    .accessibilityHidden(true)
                     
                     VStack(alignment: .leading, spacing: 0) {
                         Text(session.instructorName)
@@ -162,6 +209,7 @@ struct MainSessionCard: View {
                     }
                 }
                 .accessibilityElement(children: .combine)
+                .accessibilityLabel("Instructor: \(session.instructorName), \(session.instructorRole)")
             }
             
             HStack(spacing: 12) {
@@ -209,7 +257,10 @@ struct MainSessionCard: View {
                 }
                 
                 if session.type == .online {
-                    NavigationLink(destination: LiveSessionView(session: session)) {
+                    NavigationLink(destination: LiveSessionView(session: session, onEndSession: {
+                        // Bubble up to MySessionsView to present RateSessionSheet
+                        onEndSession(session)
+                    })) {
                         Text("Join Session")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
@@ -230,6 +281,19 @@ struct MainSessionCard: View {
                     }
                 }
             }
+            // Cancel session
+            Button {
+                onCancel(session)
+            } label: {
+                Text("Cancel Session")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(.red.opacity(0.8))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.red.opacity(0.06))
+                    .cornerRadius(10)
+            }
+            .accessibilityLabel("Cancel this session")
         }
         .padding(24)
         .background(Color.white)

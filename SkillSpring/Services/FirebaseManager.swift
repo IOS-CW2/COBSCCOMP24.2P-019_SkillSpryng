@@ -160,7 +160,10 @@ class FirebaseManager: FirebaseService {
         }
     }
     
-    /// Called after a successful credits purchase to add the purchased amount to the user's balance in Firestore.
+    /// Called after a successful credits purchase to add the purchased amount to the user's wallet in Firestore.
+    /// NOTE: writes to the "walletBalance" field — same field used by FirebaseDataService.updateWalletBalance()
+    ///       and fetchCurrentUser(). Previously this wrote to a separate "credits" field which caused the
+    ///       wallet UI to show the wrong balance after a StoreKit purchase.
     func addCredits(amount: Int) async {
         guard let uid = auth.currentUser?.uid else {
             print("[Firebase] addCredits: No authenticated user — skipping Firestore write.")
@@ -168,9 +171,9 @@ class FirebaseManager: FirebaseService {
         }
         do {
             try await firestore.collection("users").document(uid).updateData([
-                "credits": FieldValue.increment(Int64(amount))
+                "walletBalance": FieldValue.increment(Int64(amount))
             ])
-            print("[Firebase] ✅ Credits incremented by \(amount)")
+            print("[Firebase] ✅ walletBalance incremented by \(amount)")
         } catch {
             print("[Firebase] ❌ Failed to add credits: \(error)")
         }

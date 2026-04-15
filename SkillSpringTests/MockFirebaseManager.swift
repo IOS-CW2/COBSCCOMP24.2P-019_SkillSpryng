@@ -6,11 +6,17 @@ class MockFirebaseManager: FirebaseService {
     var shouldSucceed: Bool = true
     var mockUser: SkillSpring.User?
     
+    // Result for specific error mocking in sendOTP
+    var sendOTPResult: Result<String, Error> = .success("MOCK_VERIFICATION_ID")
+    
     func sendPhoneNumberOTP(phoneNumber: String) async throws -> String {
-        if shouldSucceed {
-            return "MOCK_VERIFICATION_ID"
-        } else {
-            throw NSError(domain: "MockError", code: -1, userInfo: nil)
+        switch sendOTPResult {
+        case .success(let id):
+            // Fallback for older tests using shouldSucceed
+            if !shouldSucceed { throw NSError(domain: "MockError", code: -1, userInfo: nil) }
+            return id
+        case .failure(let error):
+            throw error
         }
     }
     
