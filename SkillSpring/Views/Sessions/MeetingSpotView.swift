@@ -76,9 +76,9 @@ struct MeetingSpotView: View {
                     // Subtitle
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Safe Public Venues")
-                            .font(.system(size: 22, weight: .bold))
+                            .font(AppTheme.Typography.title2)
                         Text("We suggest public libraries, cafés, and community centres within 2km of your location.")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                     }
                     .padding(.horizontal)
@@ -95,12 +95,12 @@ struct MeetingSpotView: View {
                                                   : Color.green)
                                             .frame(width: 32, height: 32)
                                         Image(systemName: spot.categoryIcon)
-                                            .font(.system(size: 13))
+                                            .font(AppTheme.Typography.footnote)
                                             .foregroundColor(.white)
                                     }
                                     .accessibilityHidden(true)
                                     Image(systemName: "arrowtriangle.down.fill")
-                                        .font(.system(size: 8))
+                                        .font(AppTheme.Typography.caption2)
                                         .foregroundColor(selectedSpot?.id == spot.id
                                                          ? AppTheme.Colors.primary : .green)
                                         .offset(y: -2)
@@ -124,10 +124,10 @@ struct MeetingSpotView: View {
                     // "Approximate locations" privacy note
                     HStack(spacing: 6) {
                         Image(systemName: "lock.fill")
-                            .font(.system(size: 11))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(.green)
                         Text("Approximate venue locations only. Your exact address is never shared.")
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.caption)
                             .foregroundColor(.gray)
                     }
                     .padding(.horizontal)
@@ -136,7 +136,7 @@ struct MeetingSpotView: View {
                     // Horizontal scroll cards
                     if spots.isEmpty && !isLoading {
                         Text("No public venues found nearby. Try on a physical device.")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                             .padding(.horizontal)
                     } else {
@@ -292,31 +292,31 @@ struct MeetingSpotCard: View {
                           : Color.green.opacity(0.1))
                     .frame(width: 44, height: 44)
                 Image(systemName: spot.categoryIcon)
-                    .font(.system(size: 20))
+                    .font(AppTheme.Typography.title3)
                     .foregroundColor(isSelected ? AppTheme.Colors.primary : .green)
             }
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(spot.name)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .lineLimit(2)
                 Text(spot.category)
-                    .font(.system(size: 11))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.gray)
             }
 
             HStack(spacing: 4) {
                 Image(systemName: "location.fill")
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(AppTheme.Colors.primary)
                 Text(spot.approximateDistance)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(AppTheme.Colors.primary)
             }
 
             Button(action: onSelect) {
                 Text(isSelected ? "Selected ✓" : "Select")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(isSelected ? .white : AppTheme.Colors.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)

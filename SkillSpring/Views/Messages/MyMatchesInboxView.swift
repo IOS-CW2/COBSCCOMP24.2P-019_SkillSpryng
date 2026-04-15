@@ -121,7 +121,7 @@ struct ArchivedMatchesView: View {
                     .foregroundColor(.gray.opacity(0.3))
                     .accessibilityHidden(true)
                 Text("Archived matches are stored for 90 days before being permanently removed.")
-                    .font(.system(size: 12))
+                    .font(AppTheme.Typography.caption)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
@@ -151,7 +151,7 @@ struct InboxMatchCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(profile.fullName)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                         
                         if type == .archived && profile.fullName == "Marcus Chen" {
                              StatusBadge(text: "DECLINED", color: .red)
@@ -159,18 +159,18 @@ struct InboxMatchCard: View {
                     }
                     
                     Text(profile.role)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                     
                     Text("\"\(profile.bio.prefix(60))...\"")
-                        .font(.system(size: 12))
+                        .font(AppTheme.Typography.caption)
                         .foregroundColor(.gray)
                 }
                 
                 Spacer()
                 
                 Text(type == .active ? "YESTERDAY" : "2H AGO")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.gray)
             }
             .accessibilityElement(children: .combine)
@@ -181,7 +181,7 @@ struct InboxMatchCard: View {
                 case .incoming:
                     Button(action: { }) {
                         Text("Accept")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -190,7 +190,7 @@ struct InboxMatchCard: View {
                     }
                     Button(action: { }) {
                         Text("Decline")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.red)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -201,12 +201,12 @@ struct InboxMatchCard: View {
                 case .sent:
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Expires in 18h 23m", systemImage: "clock")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.orange)
                         
                         Button(action: { }) {
                             Text("Cancel Request")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(AppTheme.Typography.subheadline)
                                 .foregroundColor(.red)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
@@ -218,7 +218,7 @@ struct InboxMatchCard: View {
                 case .active:
                     NavigationLink(destination: ChatDetailView(conversation: MockDataProvider.shared.mockConversations.first(where: { $0.participant.fullName == profile.fullName }) ?? MockDataProvider.shared.mockConversations[0])) {
                         Text("Message")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(AppTheme.Colors.primary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -227,7 +227,7 @@ struct InboxMatchCard: View {
                     }
                     NavigationLink(destination: SessionBookingView(instructor: profile)) {
                         Text("Book Now")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -237,7 +237,7 @@ struct InboxMatchCard: View {
                 case .archived:
                     NavigationLink(destination: MatchDetailView(profile: profile)) {
                         Text(profile.fullName == "Sarah Jenkins" ? "Request Match Again" : "View Profile")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(profile.fullName == "Sarah Jenkins" ? AppTheme.Colors.primary : .gray)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)

@@ -33,13 +33,13 @@ struct ChatDetailView: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(conversation.participant.fullName)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                     HStack(spacing: 4) {
                         Circle()
                             .fill(Color.green)
                             .frame(width: 8, height: 8)
                         Text(viewModel.isTyping ? "Typing…" : "Online")
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.caption)
                             .foregroundColor(.gray)
                             .animation(.easeInOut(duration: 0.3), value: viewModel.isTyping)
                     }
@@ -75,7 +75,7 @@ struct ChatDetailView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         Text("TODAY")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                             .padding(.top)
                             .accessibilityLabel("Chat history for today")
@@ -183,7 +183,7 @@ struct MessageBubble: View {
                 switch message.type {
                 case .text:
                     Text(message.text ?? "")
-                        .font(.system(size: 15))
+                        .font(AppTheme.Typography.body)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
                         .background(
@@ -222,9 +222,9 @@ struct MessageBubble: View {
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(message.fileName ?? "")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(AppTheme.Typography.subheadline)
                             Text(message.fileSize ?? "")
-                                .font(.system(size: 10))
+                                .font(AppTheme.Typography.caption2)
                                 .foregroundColor(.gray)
                         }
 
@@ -241,7 +241,7 @@ struct MessageBubble: View {
                 }
 
                 Text(message.timeString)
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.gray)
                     .padding(.horizontal, 4)
             }

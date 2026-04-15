@@ -87,12 +87,12 @@ struct LeaderboardView: View {
                             
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("You (Alex)")
-                                    .font(.system(size: 16, weight: .bold))
+                                    .font(AppTheme.Typography.headline)
                                 HStack(spacing: 4) {
                                     Image(systemName: "arrow.up.right")
-                                        .font(.system(size: 8, weight: .bold))
+                                        .font(AppTheme.Typography.badge)
                                     Text("+3 this week")
-                                        .font(.system(size: 10, weight: .bold))
+                                        .font(AppTheme.Typography.badge)
                                 }
                                 .foregroundColor(AppTheme.Colors.primary)
                             }
@@ -141,7 +141,7 @@ struct LeaderboardListRow: View {
     var body: some View {
         HStack(spacing: 16) {
             Text("\(rank)")
-                .font(.system(size: 14, weight: .bold))
+                .font(AppTheme.Typography.subheadline)
                 .foregroundColor(.gray)
                 .frame(width: 24)
             
@@ -153,9 +153,9 @@ struct LeaderboardListRow: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 Text(role)
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.gray)
             }
             

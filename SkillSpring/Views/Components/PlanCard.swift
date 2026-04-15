@@ -11,15 +11,15 @@ struct PlanCard: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Text(price)
-                        .font(.system(size: 28, weight: .bold))
+                        .font(AppTheme.Typography.title)
                 }
                 Spacer()
                 if isRecommended {
                     Text("BEST VALUE")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(Color.orange)
@@ -37,7 +37,7 @@ struct PlanCard: View {
                             .foregroundColor(isRecommended ? AppTheme.Colors.primary : .gray)
                             .accessibilityHidden(true)
                         Text(feature)
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.caption)
                             .foregroundColor(.gray)
                     }
                 }
@@ -45,7 +45,7 @@ struct PlanCard: View {
             
             Button(action: { }) {
                 Text(isRecommended ? "Go Premium" : "Current Plan")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(isRecommended ? .white : AppTheme.Colors.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)

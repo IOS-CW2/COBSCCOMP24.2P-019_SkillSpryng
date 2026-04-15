@@ -26,7 +26,7 @@ struct NotificationsView: View {
                                 Spacer()
                                 Button(action: { }) {
                                     Label("CALENDAR", systemImage: "calendar")
-                                        .font(.system(size: 10, weight: .bold))
+                                        .font(AppTheme.Typography.badge)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 8)
                                         .background(AppTheme.Colors.primary.opacity(0.1))
@@ -54,7 +54,7 @@ struct NotificationsView: View {
                                     ForEach(viewModel.filters, id: \.self) { filter in
                                         Button(action: { viewModel.selectedFilter = filter }) {
                                             Text(filter)
-                                                .font(.system(size: 14, weight: .medium))
+                                                .font(AppTheme.Typography.subheadline)
                                                 .padding(.horizontal, 20)
                                                 .padding(.vertical, 10)
                                                 .background(viewModel.selectedFilter == filter ? AppTheme.Colors.primary : Color(.systemGray6))
@@ -70,7 +70,7 @@ struct NotificationsView: View {
                             // Today Section
                             VStack(alignment: .leading, spacing: 16) {
                                 Text("TODAY")
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                     .foregroundColor(.gray)
                                     .padding(.horizontal)
                                 
@@ -113,7 +113,7 @@ struct NotificationsView: View {
                             // Yesterday Section
                             VStack(alignment: .leading, spacing: 16) {
                                 Text("YESTERDAY")
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                     .foregroundColor(.gray)
                                     .padding(.horizontal)
                                 
@@ -187,9 +187,9 @@ struct ConversationCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(conversation.participant.fullName)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                 Text(conversation.lastMessage)
-                    .font(.system(size: 14))
+                    .font(AppTheme.Typography.callout)
                     .foregroundColor(.gray)
                     .lineLimit(1)
             }
@@ -198,12 +198,12 @@ struct ConversationCard: View {
             
             VStack(alignment: .trailing, spacing: 8) {
                 Text(conversation.lastMessageTime)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(conversation.unreadCount > 0 ? AppTheme.Colors.primary : .gray)
                 
                 if conversation.unreadCount > 0 {
                     Text("\(conversation.unreadCount)")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.white)
                         .frame(width: 18, height: 18)
                         .background(AppTheme.Colors.primary)
@@ -261,9 +261,9 @@ struct NotificationItemCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 Text(subtitle)
-                    .font(.system(size: 12))
+                    .font(AppTheme.Typography.caption)
                     .foregroundColor(.gray)
                     .lineLimit(2)
             }
@@ -271,7 +271,7 @@ struct NotificationItemCard: View {
             Spacer()
             
             Text(time)
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
         }
         .padding()
@@ -305,10 +305,10 @@ struct EmptyMessagesView: View {
 
             VStack(spacing: 8) {
                 Text("No Results Found")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(AppTheme.Typography.headline)
 
                 Text("No conversations match \"\(searchText)\".\nTry a different name or keyword.")
-                    .font(.system(size: 14))
+                    .font(AppTheme.Typography.callout)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)

@@ -14,16 +14,16 @@ struct PaySessionView: View {
             
             VStack(alignment: .leading, spacing: 24) {
                 Text("Pay Session")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(AppTheme.Typography.title2)
                 
                 // Details Card
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(viewModel.instructor.skillsToTeach.first ?? "Skill Session")
-                                .font(.system(size: 18, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                             Text("Online • Oct \(viewModel.selectedDate), \(viewModel.selectedTime)")
-                                .font(.system(size: 12))
+                                .font(AppTheme.Typography.caption)
                                 .foregroundColor(.gray)
                         }
                         Spacer()
@@ -40,10 +40,10 @@ struct PaySessionView: View {
                             .foregroundColor(.gray)
                         VStack(alignment: .leading) {
                             Text("YOUR SKP BALANCE")
-                                .font(.system(size: 8, weight: .bold))
+                                .font(AppTheme.Typography.badge)
                                 .foregroundColor(.gray)
                             Text("\(viewModel.userBalance) SKP")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(AppTheme.Typography.subheadline)
                         }
                         Spacer()
                         if viewModel.userBalance < viewModel.totalPrice {
@@ -74,7 +74,7 @@ struct PaySessionView: View {
                     dismiss()
                 }) {
                     Text("Confirm & Pay \(viewModel.totalPrice) SKP ->")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -83,7 +83,7 @@ struct PaySessionView: View {
                 }
                 
                 Text("SKP will be held in escrow and only released to the mentor after the session is successfully completed.")
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding(.top, 8)

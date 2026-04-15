@@ -15,7 +15,7 @@ struct MilestoneRow: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(milestone.title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
@@ -31,7 +31,7 @@ struct MilestoneRow: View {
             }
             
             Text("\(milestone.progress)/\(milestone.total)")
-                .font(.system(size: 12, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
         }
         .padding()

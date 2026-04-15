@@ -17,7 +17,7 @@ struct OTPInputField: View {
                             .frame(width: 45, height: 55)
                         
                         Text(getDigit(at: index))
-                            .font(.system(size: 24, weight: .bold))
+                            .font(AppTheme.Typography.title2)
                             .foregroundColor(.black)
                     }
                 }

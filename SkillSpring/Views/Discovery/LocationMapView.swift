@@ -52,7 +52,7 @@ struct LocationMapView: View {
                                 Image(systemName: "magnifyingglass")
                                     .foregroundColor(.gray)
                                 Text("Search nearby skills...")
-                                    .font(.system(size: 15))
+                                    .font(AppTheme.Typography.body)
                                     .foregroundColor(.gray)
                                 Spacer()
                             }
@@ -77,10 +77,10 @@ struct LocationMapView: View {
                         if showPrivacyBanner {
                             HStack(spacing: 10) {
                                 Image(systemName: "location.fill")
-                                    .font(.system(size: 12))
+                                    .font(AppTheme.Typography.caption)
                                     .foregroundColor(.white)
                                 Text("Showing approximate locations only")
-                                    .font(.system(size: 13, weight: .semibold))
+                                    .font(AppTheme.Typography.footnote)
                                     .foregroundColor(.white)
                                 Spacer()
                                 Button(action: {
@@ -89,7 +89,7 @@ struct LocationMapView: View {
                                     }
                                 }) {
                                     Image(systemName: "xmark")
-                                        .font(.system(size: 11, weight: .bold))
+                                        .font(AppTheme.Typography.badge)
                                         .foregroundColor(.white.opacity(0.8))
                                 }
                             }
@@ -158,7 +158,7 @@ struct LocationMapView: View {
                     }
                 }) {
                     Image(systemName: sheetExpanded ? "chevron.down" : "chevron.up")
-                        .font(.system(size: 13, weight: .bold))
+                        .font(AppTheme.Typography.sectionHeader)
                         .foregroundColor(.gray)
                         .padding(8)
                         .background(Color(.systemGray6))
@@ -227,11 +227,11 @@ struct LocationMapView: View {
 
                 VStack(spacing: 8) {
                     Text("Enable location to see nearby learners")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .multilineTextAlignment(.center)
 
                     Text("SkillSpryng uses approximate location to show you instructors and learners in your area. Your exact address is never stored.")
-                        .font(.system(size: 14))
+                        .font(AppTheme.Typography.callout)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                 }
@@ -283,10 +283,10 @@ struct NearbyUserCard: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(skill.name)
-                        .font(.system(size: 13, weight: .bold))
+                        .font(AppTheme.Typography.sectionHeader)
                         .lineLimit(1)
                     Text(skill.skills)
-                        .font(.system(size: 11))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.gray)
                         .lineLimit(1)
                 }
@@ -301,13 +301,13 @@ struct NearbyUserCard: View {
                 Spacer()
 
                 Text("\(viewModel.calculateMatchPercentage(with: skill.profile))% match")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.green)
             }
 
             NavigationLink(destination: Text("Profile: \(skill.name)")) {
                 Text("View")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 7)
@@ -342,17 +342,17 @@ struct NearbyUserRow: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(skill.name)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 Text("Teaches: \(skill.skills)")
-                    .font(.system(size: 12))
+                    .font(AppTheme.Typography.caption)
                     .foregroundColor(.gray)
                 HStack(spacing: 6) {
                     Label(viewModel.calculateDistance(to: skill.profile),
                           systemImage: "location.fill")
-                        .font(.system(size: 11))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(AppTheme.Colors.primary)
                     Text("• \(viewModel.calculateMatchPercentage(with: skill.profile))% match")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.green)
                 }
             }
@@ -360,7 +360,7 @@ struct NearbyUserRow: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12))
+                .font(AppTheme.Typography.caption)
                 .foregroundColor(.gray.opacity(0.5))
         }
         .padding(.horizontal)
@@ -383,7 +383,7 @@ struct SkillPinView: View {
             // Name label bubble when selected
             if isSelected {
                 Text(skill.name)
-                    .font(.system(size: 11, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -412,7 +412,7 @@ struct SkillPinView: View {
 
             // Pin triangle
             Image(systemName: "arrowtriangle.down.fill")
-                .font(.system(size: 10))
+                .font(AppTheme.Typography.caption2)
                 .foregroundColor(isSelected ? AppTheme.Colors.primary : .white)
                 .offset(y: -2)
         }
@@ -440,21 +440,21 @@ struct SelectedSkillCard: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(skill.name)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 Text("Teaches: \(skill.skills)")
-                    .font(.system(size: 12))
+                    .font(AppTheme.Typography.caption)
                     .foregroundColor(.gray)
                 HStack(spacing: 4) {
                     Image(systemName: "star.fill")
-                        .font(.system(size: 9))
+                        .font(AppTheme.Typography.micro)
                         .foregroundColor(.orange)
                     Text(String(format: "%.1f", skill.profile.rating))
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(AppTheme.Typography.footnote)
                     Text("• \(skill.profile.matchPercentage)% match")
-                        .font(.system(size: 11))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.green)
                     Text("• \(skill.profile.distance)")
-                        .font(.system(size: 11))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.gray)
                 }
             }

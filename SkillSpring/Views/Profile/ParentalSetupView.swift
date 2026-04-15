@@ -64,7 +64,7 @@ struct ParentalSetupView: View {
                             
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Parent / Guardian Full Name")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTheme.Typography.footnote)
                                     .foregroundColor(.gray)
                                 
                                 TextField("Enter name", text: $parentName)
@@ -77,7 +77,7 @@ struct ParentalSetupView: View {
                             
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Parent / Guardian Email")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTheme.Typography.footnote)
                                     .foregroundColor(.gray)
                                 
                                 TextField("email@example.com", text: $parentEmail)

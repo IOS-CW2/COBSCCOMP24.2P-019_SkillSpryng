@@ -69,7 +69,7 @@ struct SkillMatchesView: View {
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("WEEKLY WORKSHOP")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(AppTheme.Typography.badge)
                                 .foregroundColor(AppTheme.Colors.accent)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
@@ -86,14 +86,14 @@ struct SkillMatchesView: View {
                     
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Join 12 others this Saturday in Central Park for an open-air speech workshop. Beginners welcome!")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                             .lineSpacing(4)
                         
                         HStack {
                             Button(action: { }) {
                                 Text("Join Group")
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, 10)
@@ -102,7 +102,7 @@ struct SkillMatchesView: View {
                             }
                             
                             Label("8 slots left", systemImage: "person.2.fill")
-                                .font(.system(size: 12))
+                                .font(AppTheme.Typography.caption)
                                 .foregroundColor(.gray)
                                 .padding(.leading, 8)
                         }
@@ -136,9 +136,9 @@ struct SkillMatchCard: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(profile.fullName)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                     Text("\(profile.location) • \(profile.distance)")
-                        .font(.system(size: 12))
+                        .font(AppTheme.Typography.caption)
                         .foregroundColor(.gray)
                 }
                 
@@ -146,11 +146,11 @@ struct SkillMatchCard: View {
                 
                 VStack(spacing: 2) {
                     Image(systemName: "bolt.fill")
-                        .font(.system(size: 14))
+                        .font(AppTheme.Typography.callout)
                     Text("\(profile.matchPercentage)%")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                     Text("Match")
-                        .font(.system(size: 8))
+                        .font(AppTheme.Typography.caption2)
                 }
                 .foregroundColor(AppTheme.Colors.accent)
                 .padding(8)
@@ -164,7 +164,7 @@ struct SkillMatchCard: View {
             }
             
             Text("\"\(profile.bio.prefix(80))...\"")
-                .font(.system(size: 14))
+                .font(AppTheme.Typography.callout)
                 .foregroundColor(.gray)
                 .italic()
         }

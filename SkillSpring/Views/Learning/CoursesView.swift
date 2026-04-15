@@ -20,7 +20,7 @@ struct CoursesView: View {
             HStack(spacing: 0) {
                 Button(action: { selectedTab = "Courses" }) {
                     Text("Courses")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(AppTheme.Typography.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
                         .background(selectedTab == "Courses" ? AppTheme.Colors.primary.opacity(0.1) : Color.clear)
@@ -34,7 +34,7 @@ struct CoursesView: View {
                 
                 Button(action: { selectedTab = "Events" }) {
                     Text("Events")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(AppTheme.Typography.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
                         .background(selectedTab == "Events" ? AppTheme.Colors.primary.opacity(0.1) : Color.clear)
@@ -61,7 +61,7 @@ struct CoursesView: View {
                                 ForEach(categories, id: \.self) { cat in
                                     Button(action: { selectedCategory = cat }) {
                                         Text(cat)
-                                            .font(.system(size: 14, weight: .medium))
+                                            .font(AppTheme.Typography.subheadline)
                                             .padding(.horizontal, 16)
                                             .padding(.vertical, 8)
                                             .background(selectedCategory == cat ? AppTheme.Colors.primary : Color(.systemGray6))
@@ -156,7 +156,7 @@ struct FeaturedCourseCard: View {
                     .frame(width: 300, height: 180)
                 
                 Text(course.category)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -167,7 +167,7 @@ struct FeaturedCourseCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(course.title)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                     .lineLimit(2)
                 
                 HStack {
@@ -187,7 +187,7 @@ struct FeaturedCourseCard: View {
             
             HStack {
                 Text(course.price)
-                    .font(.system(size: 12, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(AppTheme.Colors.primary.opacity(0.1))
@@ -197,7 +197,7 @@ struct FeaturedCourseCard: View {
                 Spacer()
                 
                 Text("\(course.studentsCount) STUDENTS")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.red)
             }
             .frame(width: 300)
@@ -217,7 +217,7 @@ struct PopularCourseCard: View {
                     .frame(width: 160, height: 100)
                 
                 Text(course.category)
-                    .font(.system(size: 8, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.white)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 3)
@@ -227,7 +227,7 @@ struct PopularCourseCard: View {
             }
             
             Text(course.title)
-                .font(.system(size: 14, weight: .bold))
+                .font(AppTheme.Typography.subheadline)
                 .lineLimit(2)
                 .frame(width: 160, alignment: .leading)
             
@@ -268,7 +268,7 @@ struct LearningPathCard: View {
                             }
                             .overlay(
                                 Text("\(Int(progress * 100))% DONE")
-                                    .font(.system(size: 8, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                     .foregroundColor(.white)
                                     .padding(.bottom, 8)
                             )
@@ -279,7 +279,7 @@ struct LearningPathCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(course.title)
-                    .font(.system(size: 15, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 Text(course.instructor)
                     .font(.caption)
                     .foregroundColor(.gray)

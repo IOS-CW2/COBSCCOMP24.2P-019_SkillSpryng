@@ -22,7 +22,7 @@ struct OnboardingView: View {
                     .accessibilityHidden(true)
                 
                 Text("Share What You Know")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(AppTheme.Typography.title)
                     .padding(.bottom, 8)
                 
                 Text("Give your skills to others and let your intuition create a mentor.")

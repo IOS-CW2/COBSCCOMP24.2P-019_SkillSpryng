@@ -27,9 +27,9 @@ struct ReportUserSheet: View {
                     
                     VStack(spacing: 8) {
                         Text("Report User")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(AppTheme.Typography.title3)
                         Text("Please let us know why you are reporting this user. Your feedback helps keep SkillSpryng safe.")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 20)
@@ -45,9 +45,9 @@ struct ReportUserSheet: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Alex Rivera")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                             Text("@rivera_design")
-                                .font(.system(size: 12))
+                                .font(AppTheme.Typography.caption)
                                 .foregroundColor(.gray)
                         }
                         Spacer()
@@ -60,7 +60,7 @@ struct ReportUserSheet: View {
                     // Select Reason
                     VStack(alignment: .leading, spacing: 16) {
                         Text("SELECT A REASON")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                         
                         VStack(spacing: 0) {
@@ -68,7 +68,7 @@ struct ReportUserSheet: View {
                                 Button(action: { selectedReason = reason }) {
                                     HStack {
                                         Text(reason)
-                                            .font(.system(size: 14, weight: .medium))
+                                            .font(AppTheme.Typography.subheadline)
                                             .foregroundColor(.primary)
                                         Spacer()
                                         
@@ -83,7 +83,7 @@ struct ReportUserSheet: View {
                                                     .frame(width: 14, height: 14)
                                                 
                                                 Image(systemName: "checkmark")
-                                                    .font(.system(size: 8, weight: .bold))
+                                                    .font(AppTheme.Typography.badge)
                                                     .foregroundColor(.white)
                                             }
                                         }
@@ -107,7 +107,7 @@ struct ReportUserSheet: View {
                     // Additional Details
                     VStack(alignment: .leading, spacing: 12) {
                         Text("ADDITIONAL DETAILS")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                         
                         ZStack(alignment: .topLeading) {
@@ -120,7 +120,7 @@ struct ReportUserSheet: View {
                             
                             if details.isEmpty {
                                 Text("Tell us more about the incident (optional)...")
-                                    .font(.system(size: 13))
+                                    .font(AppTheme.Typography.footnote)
                                     .foregroundColor(.gray)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 20)
@@ -141,9 +141,9 @@ struct ReportUserSheet: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Block Alex Rivera")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(AppTheme.Typography.subheadline)
                             Text("They won't be able to message you or see your profile.")
-                                .font(.system(size: 11))
+                                .font(AppTheme.Typography.caption2)
                                 .foregroundColor(.gray)
                         }
                         
@@ -163,7 +163,7 @@ struct ReportUserSheet: View {
                     VStack(spacing: 12) {
                         Button(action: { dismiss() }) {
                             Text("Submit Report")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
@@ -173,7 +173,7 @@ struct ReportUserSheet: View {
                         
                         Button(action: { dismiss() }) {
                             Text("Cancel")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                                 .foregroundColor(AppTheme.Colors.primary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)

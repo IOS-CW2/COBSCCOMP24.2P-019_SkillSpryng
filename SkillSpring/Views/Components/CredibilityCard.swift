@@ -12,10 +12,10 @@ struct CredibilityCard: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text(title)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                 Spacer()
                 Text(badge)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(badge == "EXPERT" ? Color.blue.opacity(0.1) : Color.green.opacity(0.1))
@@ -26,11 +26,11 @@ struct CredibilityCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Label("CREDIBILITY SCORE", systemImage: "shield.fill")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     Text("\(score)%")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                 }
                 
@@ -63,7 +63,7 @@ struct CredibilityCard: View {
                         }
                         .accessibilityHidden(true)
                         Text("+4")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                             .padding(.leading, 12)
                         
@@ -87,7 +87,7 @@ struct CredibilityCard: View {
                         Text("Find Learners")
                         Image(systemName: "arrow.right")
                     }
-                    .font(.system(size: 12, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(AppTheme.Colors.primary)
                 }
             }

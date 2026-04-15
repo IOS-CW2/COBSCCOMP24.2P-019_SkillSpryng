@@ -64,14 +64,14 @@ struct MapSelectionView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text("SESSION VENUE")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.blue)
                         Spacer()
                         if geofenceManager.isMonitoring {
                             HStack(spacing: 4) {
                                 Circle().fill(Color.green).frame(width: 6, height: 6)
                                 Text("MONITORING ACTIVE")
-                                    .font(.system(size: 9, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                     .foregroundColor(.green)
                             }
                         } else {
@@ -98,7 +98,7 @@ struct MapSelectionView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "timer")
                             .foregroundColor(AppTheme.Colors.primary)
-                            .font(.system(size: 13))
+                            .font(AppTheme.Typography.footnote)
                         Text(formatDuration(sessionSeconds))
                             .font(.system(size: 15, weight: .bold, design: .monospaced))
                             .foregroundColor(AppTheme.Colors.primary)
@@ -120,7 +120,7 @@ struct MapSelectionView: View {
                         Button(action: { showNeedHelpAlert = true }) {
                             HStack(spacing: 6) {
                                 Image(systemName: "staroflife.fill")
-                                    .font(.system(size: 12))
+                                    .font(AppTheme.Typography.caption)
                                 Text("I Need Help")
                                     .fontWeight(.bold)
                             }
@@ -138,7 +138,7 @@ struct MapSelectionView: View {
                         }) {
                             HStack(spacing: 6) {
                                 Image(systemName: "stop.circle.fill")
-                                    .font(.system(size: 12))
+                                    .font(AppTheme.Typography.caption)
                                 Text("End Session")
                                     .fontWeight(.bold)
                             }
@@ -170,7 +170,7 @@ struct MapSelectionView: View {
                                     Text("Simulate Exit")
                                         .fontWeight(.semibold)
                                 }
-                                .font(.system(size: 12))
+                                .font(AppTheme.Typography.caption)
                                 .foregroundColor(.orange)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
@@ -188,7 +188,7 @@ struct MapSelectionView: View {
                                     Text("Simulate Return")
                                         .fontWeight(.semibold)
                                 }
-                                .font(.system(size: 12))
+                                .font(AppTheme.Typography.caption)
                                 .foregroundColor(.blue)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
@@ -317,7 +317,7 @@ struct MapPointView: View {
                     .resizable()
                     .frame(width: 20, height: 20)
                 Text(point.name)
-                    .font(.system(size: 8, weight: .bold))
+                    .font(AppTheme.Typography.badge)
             }
             .padding(6)
             .background(Color.white)
@@ -359,7 +359,7 @@ struct AmenityView: View {
             Image(systemName: icon)
                 .foregroundColor(color)
             Text(title)
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)

@@ -64,11 +64,11 @@ struct ToastView: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: toast.icon)
-                .font(.system(size: 16, weight: .semibold))
+                .font(AppTheme.Typography.callout)
                 .foregroundColor(toast.style.iconColor)
             
             Text(toast.message)
-                .font(.system(size: 14, weight: .medium))
+                .font(AppTheme.Typography.subheadline)
                 .foregroundColor(.primary)
                 .lineLimit(2)
         }

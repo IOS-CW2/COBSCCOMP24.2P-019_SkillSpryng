@@ -43,10 +43,10 @@ struct PremiumView: View {
                         .accessibilityHidden(true)
                         VStack(spacing: 8) {
                             Text("SkillSpryng Pro")
-                                .font(.system(size: 28, weight: .bold))
+                                .font(AppTheme.Typography.title)
                                 .foregroundColor(.white)
                             Text("Unlock unlimited potential. Learn, teach, and earn without limits.")
-                                .font(.system(size: 14))
+                                .font(AppTheme.Typography.callout)
                                 .foregroundColor(.white.opacity(0.85))
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 20)
@@ -65,7 +65,7 @@ struct PremiumView: View {
                                 withAnimation(.spring(response: 0.3)) { selectedPlan = plan }
                             }) {
                                 Text(plan == .monthly ? "Monthly" : "Yearly")
-                                    .font(.system(size: 14, weight: .bold))
+                                    .font(AppTheme.Typography.subheadline)
                                     .foregroundColor(selectedPlan == plan ? .primary : .gray)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
@@ -102,7 +102,7 @@ struct PremiumView: View {
                             .font(.system(size: 10, weight: .black))
                             .foregroundColor(.gray)
                         Text("Standard")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(AppTheme.Typography.headline)
 
                         Divider()
 
@@ -135,7 +135,7 @@ struct PremiumView: View {
                                 .cornerRadius(4)
                         }
                         Text("Pro")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                             .foregroundColor(.white)
 
                         Divider().background(Color.white.opacity(0.3))
@@ -160,10 +160,10 @@ struct PremiumView: View {
                         Text(storeKit.proMonthly?.displayPrice ?? "$6.99")
                             .font(.system(size: 36, weight: .bold))
                         + Text(" / month")
-                            .font(.system(size: 16))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                         Text("7-day free trial included")
-                            .font(.system(size: 13))
+                            .font(AppTheme.Typography.footnote)
                             .foregroundColor(.green)
                             .fontWeight(.semibold)
                     } else {
@@ -171,15 +171,15 @@ struct PremiumView: View {
                             Text(storeKit.proYearly?.displayPrice ?? "$49.99")
                                 .font(.system(size: 36, weight: .bold))
                             Text("$83.88")
-                                .font(.system(size: 18))
+                                .font(AppTheme.Typography.callout)
                                 .foregroundColor(.gray)
                                 .strikethrough()
                         }
                         Text(" / year")
-                            .font(.system(size: 16))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                         Text("You save $33.89 annually")
-                            .font(.system(size: 13))
+                            .font(AppTheme.Typography.footnote)
                             .foregroundColor(.green)
                             .fontWeight(.semibold)
                     }
@@ -209,7 +209,7 @@ struct PremiumView: View {
                                 Image(systemName: "crown.fill")
                             }
                             Text(selectedPlan == .monthly ? "Start 7-Day Free Trial" : "Get Pro Yearly")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -231,7 +231,7 @@ struct PremiumView: View {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .orange))
                             Text("Loading products…")
-                                .font(.system(size: 14))
+                                .font(AppTheme.Typography.callout)
                                 .foregroundColor(.orange)
                         }
                         .padding(.vertical, 4)
@@ -240,12 +240,12 @@ struct PremiumView: View {
                     // Diagnostic error if StoreKit config not linked
                     if storeKit.products.isEmpty, let error = storeKit.purchaseError {
                         Text("⚠️ " + error)
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.caption)
                             .foregroundColor(.red)
                             .multilineTextAlignment(.center)
                     } else if let error = storeKit.purchaseError {
                         Text(error)
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.caption)
                             .foregroundColor(.red)
                             .multilineTextAlignment(.center)
                     }
@@ -255,7 +255,7 @@ struct PremiumView: View {
                         Task { await storeKit.restorePurchases() }
                     }) {
                         Text("Restore Purchases")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
 
@@ -263,14 +263,14 @@ struct PremiumView: View {
                     VStack(spacing: 4) {
                         HStack(spacing: 16) {
                             Button("Terms of Use") { }
-                                .font(.system(size: 10))
+                                .font(AppTheme.Typography.caption2)
                                 .foregroundColor(.gray)
                             Button("Privacy Policy") { }
-                                .font(.system(size: 10))
+                                .font(AppTheme.Typography.caption2)
                                 .foregroundColor(.gray)
                         }
                         Text("Subscription auto-renews unless cancelled at least 24 hours before the end of the current period.")
-                            .font(.system(size: 9))
+                            .font(AppTheme.Typography.micro)
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 20)
@@ -290,10 +290,10 @@ struct PremiumView: View {
                         .foregroundColor(.white)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Welcome to Pro! 👑")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                         Text("Your subscription is now active.")
-                            .font(.system(size: 11))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(.white.opacity(0.85))
                     }
                     Spacer()
@@ -318,10 +318,10 @@ struct ProFeatureRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: isIncluded ? "checkmark" : "xmark")
-                .font(.system(size: 11, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(isIncluded ? (isPro ? .white : .green) : Color(.systemGray3))
             Text(text)
-                .font(.system(size: 12))
+                .font(AppTheme.Typography.caption)
                 .foregroundColor(isPro ? .white.opacity(0.9) : (isIncluded ? .primary : Color(.systemGray3)))
         }
         .accessibilityElement(children: .combine)

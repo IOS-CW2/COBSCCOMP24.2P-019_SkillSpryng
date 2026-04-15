@@ -15,18 +15,18 @@ struct StatCard: View {
                     .accessibilityHidden(true)
             } else {
                 Text(title.uppercased())
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.gray)
             }
             
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(value)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                     .foregroundColor(.black)
                 
                 if let sub = subValue {
                     Text(sub)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.black)
                 }
             }

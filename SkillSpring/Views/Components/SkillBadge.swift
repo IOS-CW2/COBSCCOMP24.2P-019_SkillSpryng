@@ -10,11 +10,11 @@ struct SkillBadge: View {
         HStack(spacing: 4) {
             if let icon = icon {
                 Image(systemName: icon)
-                    .font(.system(size: 8))
+                    .font(AppTheme.Typography.caption2)
                     .accessibilityHidden(true)
             }
             Text(title.uppercased())
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)

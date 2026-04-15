@@ -36,9 +36,9 @@ struct BookingRequestSentView: View {
             
             VStack(spacing: 12) {
                 Text("Request Sent!")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(AppTheme.Typography.title)
                 Text("Waiting for \(instructor.fullName) to accept your request.")
-                    .font(.system(size: 14))
+                    .font(AppTheme.Typography.callout)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
@@ -49,16 +49,16 @@ struct BookingRequestSentView: View {
             VStack(spacing: 20) {
                 HStack {
                     Text("FORMAT")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     Text("Online • Jitsi Meet")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                 }
                 
                 HStack {
                     Text("MENTOR")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     HStack {
@@ -68,44 +68,44 @@ struct BookingRequestSentView: View {
                             .frame(width: 24, height: 24)
                             .clipShape(Circle())
                         Text(instructor.fullName)
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                     }
                 }
                 
                 HStack {
                     Text("DATE")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     Text(formattedDate)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                 }
                 
                 HStack {
                     Text("TIME")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     Text("\(time) - 11:30 AM")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                 }
                 
                 HStack {
                     Text("DURATION")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     Text("60 min")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                 }
                 
                 HStack {
                     Text("COST")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
                     Text("FREE (Request based)")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                 }
             }
@@ -117,7 +117,7 @@ struct BookingRequestSentView: View {
             .accessibilityElement(children: .combine)
             
             Text("Coach has 24 hours to respond. You'll be notified.")
-                .font(.system(size: 12))
+                .font(AppTheme.Typography.caption)
                 .foregroundColor(.gray)
             
             Spacer()
@@ -178,7 +178,7 @@ struct BookingRequestSentView: View {
                     }
                 }) {
                     Label(calendarSuccess ? "Added to Calendar" : "Add to Calendar", systemImage: calendarSuccess ? "calendar.badge.checkmark" : "calendar.badge.plus")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(calendarSuccess ? AppTheme.Colors.primary : .white)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -194,7 +194,7 @@ struct BookingRequestSentView: View {
                 // Done Button
                 Button(action: { dismiss() }) {
                     Text("Done")
-                        .font(.system(size: 16, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -215,14 +215,14 @@ struct BookingRequestSentView: View {
             if showCalendarToast {
                 HStack(spacing: 12) {
                     Image(systemName: "calendar.badge.checkmark")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                         .foregroundColor(.white)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Added to Calendar!")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                         Text("Check \(formattedDate) in your Calendar app")
-                            .font(.system(size: 11))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(.white.opacity(0.85))
                     }
                     Spacer()

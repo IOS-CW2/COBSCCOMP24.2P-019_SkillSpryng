@@ -14,10 +14,10 @@ struct StreakCard: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(streakCount) Day Streak!")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(.white)
                 Text(subheadline)
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.white.opacity(0.8))
             }
             
@@ -25,7 +25,7 @@ struct StreakCard: View {
             
             Image(systemName: "chevron.right")
                 .foregroundColor(.white)
-                .font(.system(size: 12, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .accessibilityHidden(true)
         }
         .padding(AppTheme.Spacing.lg)

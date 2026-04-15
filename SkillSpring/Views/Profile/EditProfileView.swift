@@ -24,7 +24,7 @@ struct EditProfileView: View {
                             
                             Button(action: { }) {
                                 Image(systemName: "camera.fill")
-                                    .font(.system(size: 14, weight: .bold))
+                                    .font(AppTheme.Typography.subheadline)
                                     .foregroundColor(.white)
                                     .frame(width: 36, height: 36)
                                     .background(AppTheme.Colors.primary)
@@ -36,7 +36,7 @@ struct EditProfileView: View {
                         }
                         
                         Text("Change Profile Photo")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
                     .padding(.top, 20)
@@ -49,11 +49,11 @@ struct EditProfileView: View {
                         
                         VStack(alignment: .leading, spacing: 8) {
                             Text("BIO")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(AppTheme.Typography.badge)
                                 .foregroundColor(.gray)
                             
                             TextEditor(text: $user.bio)
-                                .font(.system(size: 14))
+                                .font(AppTheme.Typography.callout)
                                 .padding(12)
                                 .frame(height: 100)
                                 .background(Color(.systemGray6).opacity(0.5))
@@ -66,7 +66,7 @@ struct EditProfileView: View {
                     // Save Button
                     Button(action: { dismiss() }) {
                         Text("Save Changes")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(AppTheme.Typography.headline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -79,7 +79,7 @@ struct EditProfileView: View {
                     // Dangerous Zone
                     Button(action: { }) {
                         Text("Delete Account")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.red)
                     }
                     .padding(.bottom, 40)
@@ -98,11 +98,11 @@ struct EditField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(label)
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
             
             TextField("", text: $text)
-                .font(.system(size: 16, weight: .medium))
+                .font(AppTheme.Typography.callout)
                 .padding()
                 .background(Color(.systemGray6).opacity(0.5))
                 .cornerRadius(12)

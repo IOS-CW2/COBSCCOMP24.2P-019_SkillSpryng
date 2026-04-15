@@ -8,7 +8,7 @@ struct SectionHeader: View {
     var body: some View {
         HStack {
             Text(title.uppercased())
-                .font(.system(size: 10, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray)
                 .tracking(1)
                 .accessibilityAddTraits(.isHeader)
@@ -18,7 +18,7 @@ struct SectionHeader: View {
             if let actionTitle = actionTitle, let action = action {
                 Button(action: action) {
                     Text(actionTitle)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                 }
                 .accessibilityLabel("\(title) — \(actionTitle)")

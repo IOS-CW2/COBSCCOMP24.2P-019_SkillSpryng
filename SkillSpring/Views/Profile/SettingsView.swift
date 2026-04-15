@@ -32,9 +32,9 @@ struct SettingsView: View {
                         
                         VStack(spacing: 4) {
                             Text(user.fullName)
-                                .font(.system(size: 20, weight: .bold))
+                                .font(AppTheme.Typography.title3)
                             Text("\(user.role) • Level \(user.level)")
-                                .font(.system(size: 14))
+                                .font(AppTheme.Typography.callout)
                                 .foregroundColor(.gray)
                         }
                         
@@ -42,10 +42,10 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.gray)
-                                .font(.system(size: 14, weight: .bold))
+                                .font(AppTheme.Typography.subheadline)
                                 .accessibilityHidden(true)
                             TextField("Search settings", text: .constant(""))
-                                .font(.system(size: 14))
+                                .font(AppTheme.Typography.callout)
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
@@ -163,7 +163,7 @@ struct SettingsView: View {
                             // Profile Visibility 
                             HStack {
                                 Text("PROFILE VISIBILITY")
-                                    .font(.system(size: 10, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                     .foregroundColor(.gray)
                                 Spacer()
                                 HStack(spacing: 0) {
@@ -233,7 +233,7 @@ struct SettingsView: View {
                         Text("SkillSpryng Version 2.0.1 (103)")
                         Text("© 2024 Skill Spryng Inc.")
                     }
-                    .font(.system(size: 10))
+                    .font(AppTheme.Typography.caption2)
                     .foregroundColor(.gray)
                     .padding(.bottom, 40)
                     

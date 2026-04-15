@@ -19,7 +19,7 @@ struct LearningAnalyticsView: View {
                             .foregroundColor(AppTheme.Colors.primary)
                         
                         Text("Learning Pulse")
-                            .font(.system(size: 28, weight: .bold))
+                            .font(AppTheme.Typography.title)
                         
                         Text("You're in the top 5% of active learners this week.")
                             .font(.subheadline)
@@ -50,12 +50,12 @@ struct LearningAnalyticsView: View {
                                     }
                                     
                                     Text("7 Day Streak!")
-                                        .font(.system(size: 20, weight: .bold))
+                                        .font(AppTheme.Typography.title3)
                                         .foregroundColor(.white)
                                 }
                                 
                                 Text("Keep growing your garden")
-                                    .font(.system(size: 13))
+                                    .font(AppTheme.Typography.footnote)
                                     .foregroundColor(.white.opacity(0.9))
                             }
                             .accessibilityElement(children: .combine)
@@ -177,9 +177,9 @@ struct LearningAnalyticsView: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Next Milestone")
-                                .font(.system(size: 13, weight: .bold))
+                                .font(AppTheme.Typography.sectionHeader)
                             Text("Complete 3 more peer reviews to unlock 'Community Catalyst' badge.")
-                                .font(.system(size: 11))
+                                .font(AppTheme.Typography.caption2)
                                 .foregroundColor(.gray)
                         }
                         Spacer()
@@ -211,7 +211,7 @@ struct RefinedStatGap: View {
                 .font(.system(size: 8, weight: .black))
                 .foregroundColor(.gray)
             Text(value)
-                .font(.system(size: 22, weight: .bold))
+                .font(AppTheme.Typography.title2)
                 .foregroundColor(.primary)
         }
         .frame(maxWidth: .infinity)
@@ -237,7 +237,7 @@ struct SkillProgressionRow: View {
                     .fill(color.opacity(0.1))
                     .frame(width: 44, height: 44)
                 Image(systemName: "chevron.left.forwardslash.chevron.right")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(color)
             }
             
@@ -245,9 +245,9 @@ struct SkillProgressionRow: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(name)
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                         Text(level)
-                            .font(.system(size: 10))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(.gray)
                     }
                     Spacer()
@@ -290,7 +290,7 @@ struct HorizontalMetricRow: View {
                     .foregroundColor(.gray)
                 Spacer()
                 Text("\(percentage)%")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(color)
             }
             

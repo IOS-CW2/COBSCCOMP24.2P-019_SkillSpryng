@@ -12,7 +12,7 @@ struct MissionRow: View {
                 
                 if mission.status == .completed {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(AppTheme.Colors.primary)
                 } else {
                     Circle()
@@ -23,7 +23,7 @@ struct MissionRow: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(mission.title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(mission.status == .completed ? .gray : .primary)
                 
                 Text(mission.status == .completed ? "DUE IN 2 DAYS" : "AVAILABLE NOW")
@@ -34,7 +34,7 @@ struct MissionRow: View {
             Spacer()
             
             Text("+\(mission.rewardAmount) SKP")
-                .font(.system(size: 14, weight: .bold))
+                .font(AppTheme.Typography.subheadline)
                 .foregroundColor(mission.status == .completed ? .gray : AppTheme.Colors.primary)
         }
         .padding(16)

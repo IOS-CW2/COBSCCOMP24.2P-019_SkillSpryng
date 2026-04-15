@@ -33,9 +33,9 @@ struct ChildSafetyView: View {
                             HStack {
                                 Image(systemName: "key.fill")
                                     .foregroundColor(AppTheme.Colors.primary)
-                                    .font(.system(size: 20))
+                                    .font(AppTheme.Typography.title3)
                                 Text("Manage with Parent PIN")
-                                    .font(.system(size: 16, weight: .bold))
+                                    .font(AppTheme.Typography.headline)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .foregroundColor(.gray)
@@ -99,7 +99,7 @@ struct ChildSafetyView: View {
                                 
                                 Button(action: { }) {
                                     Text("Configure Access")
-                                        .font(.system(size: 14, weight: .bold))
+                                        .font(AppTheme.Typography.subheadline)
                                         .foregroundColor(AppTheme.Colors.primary)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 12)
@@ -113,7 +113,7 @@ struct ChildSafetyView: View {
                                 
                                 Button(action: { }) {
                                     Text("Enable Always")
-                                        .font(.system(size: 14, weight: .bold))
+                                        .font(AppTheme.Typography.subheadline)
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 14)

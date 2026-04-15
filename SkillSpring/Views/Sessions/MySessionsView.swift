@@ -156,7 +156,7 @@ struct MainSessionCard: View {
                 
                 if let remaining = session.timeRemaining {
                     Text(remaining)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(AppTheme.Typography.badge)
                         .foregroundColor(AppTheme.Colors.primary)
                 }
             }
@@ -175,9 +175,9 @@ struct MainSessionCard: View {
                     
                     VStack(alignment: .leading, spacing: 0) {
                         Text(session.instructorName)
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                         Text(session.instructorRole)
-                            .font(.system(size: 10))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(.gray)
                     }
                 }
@@ -199,7 +199,7 @@ struct MainSessionCard: View {
                     VStack(alignment: .leading, spacing: 2) {
                         SectionHeader(title: "Location")
                         Text(location)
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                     }
                     
                     Spacer()
@@ -221,7 +221,7 @@ struct MainSessionCard: View {
             HStack(spacing: 12) {
                 NavigationLink(destination: SessionDetailView(session: session)) {
                     Text("View Details")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(AppTheme.Colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -231,7 +231,7 @@ struct MainSessionCard: View {
                 if session.type == .online {
                     NavigationLink(destination: LiveSessionView(session: session)) {
                         Text("Join Session")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -241,7 +241,7 @@ struct MainSessionCard: View {
                 } else {
                     NavigationLink(destination: MapSelectionView(session: session)) {
                         Text("Get Location")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -267,25 +267,25 @@ struct CompactSessionRow: View {
         HStack(spacing: 16) {
             VStack(spacing: 2) {
                 Text(date.split(separator: " ").first ?? "")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(AppTheme.Typography.badge)
                     .foregroundColor(.gray)
                 Text(date.split(separator: " ").last ?? "")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(AppTheme.Typography.headline)
             }
             .frame(width: 50)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 Text(time)
-                    .font(.system(size: 12))
+                    .font(AppTheme.Typography.caption)
                     .foregroundColor(.gray)
             }
             
             Spacer()
             
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .bold))
+                .font(AppTheme.Typography.badge)
                 .foregroundColor(.gray.opacity(0.5))
         }
         .padding()
@@ -313,13 +313,13 @@ struct HistorySessionRow: View {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
                             Text(session.title)
-                                .font(.system(size: 15, weight: .bold))
+                                .font(AppTheme.Typography.subheadline)
                             Spacer()
                             StatusBadge.sessionStatus(session.status)
                         }
                         
                         Text("with \(session.instructorName)")
-                            .font(.system(size: 12))
+                            .font(AppTheme.Typography.caption)
                             .foregroundColor(.gray)
                         
                         HStack(spacing: 8) {
@@ -327,7 +327,7 @@ struct HistorySessionRow: View {
                             Text("•")
                             Text(session.time)
                         }
-                        .font(.system(size: 10))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.gray)
                     }
                 }
@@ -341,7 +341,7 @@ struct HistorySessionRow: View {
                         HStack(spacing: 2) {
                             ForEach(0..<5) { i in
                                 Image(systemName: "star.fill")
-                                    .font(.system(size: 8))
+                                    .font(AppTheme.Typography.caption2)
                                     .foregroundColor(i < rating ? .orange : Color(.systemGray5))
                             }
                         }
@@ -372,10 +372,10 @@ struct ActionCard: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                 if !subtitle.isEmpty {
                     Text(subtitle)
-                        .font(.system(size: 10))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.gray)
                 }
             }
@@ -411,11 +411,11 @@ struct EmptySessionsView: View {
 
             VStack(spacing: 8) {
                 Text(headline)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(AppTheme.Typography.headline)
                     .multilineTextAlignment(.center)
 
                 Text(subtitle)
-                    .font(.system(size: 14))
+                    .font(AppTheme.Typography.callout)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
@@ -423,7 +423,7 @@ struct EmptySessionsView: View {
 
             NavigationLink(destination: SkillMatchesView()) {
                 Text("Find a Session")
-                    .font(.system(size: 15, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(.white)
                     .padding(.horizontal, 32)
                     .padding(.vertical, 14)

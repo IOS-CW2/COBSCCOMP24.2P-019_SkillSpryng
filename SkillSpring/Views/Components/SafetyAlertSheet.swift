@@ -50,11 +50,11 @@ struct SafetyAlertSheet: View {
                     // Heading & body
                     VStack(spacing: 10) {
                         Text("Are you still at your session?")
-                            .font(.system(size: 22, weight: .bold))
+                            .font(AppTheme.Typography.title2)
                             .multilineTextAlignment(.center)
 
                         Text("We noticed you've moved outside the session geofence. Please confirm your safety within the next 5 minutes.")
-                            .font(.system(size: 14))
+                            .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 8)
@@ -87,7 +87,7 @@ struct SafetyAlertSheet: View {
                     VStack(spacing: 12) {
                         Button(action: onImFine) {
                             Text("Yes, I'm Fine")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
@@ -97,7 +97,7 @@ struct SafetyAlertSheet: View {
 
                         Button(action: onNeedHelp) {
                             Text("I Need Help")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(AppTheme.Typography.headline)
                                 .foregroundColor(.red)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
@@ -109,7 +109,7 @@ struct SafetyAlertSheet: View {
 
                     // Footer warning
                     Text("If no response is received, we will automatically notify your emergency contacts and local authorities.")
-                        .font(.system(size: 11))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 8)

@@ -103,7 +103,7 @@ struct LessonPlayerView: View {
                     // Header info
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Lesson \(currentLessonIndex) of \(session.lessonCount ?? 0) — 42% complete")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
                         
                         Text(session.title)
@@ -117,9 +117,9 @@ struct LessonPlayerView: View {
                                 .clipShape(Circle())
                             VStack(alignment: .leading) {
                                 Text(session.instructorName)
-                                    .font(.system(size: 10, weight: .bold))
+                                    .font(AppTheme.Typography.badge)
                                 Text(session.instructorRole)
-                                    .font(.system(size: 8))
+                                    .font(AppTheme.Typography.caption2)
                                     .foregroundColor(.gray)
                             }
                             Spacer()
@@ -159,7 +159,7 @@ struct LessonPlayerView: View {
             HStack {
                 Button(action: { }) {
                     Label("Previous", systemImage: "arrow.left")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(AppTheme.Colors.primary)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 16)
@@ -173,7 +173,7 @@ struct LessonPlayerView: View {
                         Text("Next Lesson")
                         Image(systemName: "arrow.right")
                     }
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTheme.Typography.subheadline)
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 16)

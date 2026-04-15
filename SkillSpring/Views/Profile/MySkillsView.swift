@@ -16,7 +16,7 @@ struct MySkillsView: View {
                 ForEach(tabs, id: \.self) { tab in
                     Button(action: { selectedTab = tab }) {
                         Text(tab)
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(selectedTab == tab ? .white : .gray)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 10)
@@ -34,7 +34,7 @@ struct MySkillsView: View {
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(selectedTab == "Teaching" ? "Your Expertise" : "Interests")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(AppTheme.Typography.title2)
                     Text(selectedTab == "Teaching" ?
                          "Skills you are sharing with the community." :
                             "Skills you want to master through mentorship.")
@@ -64,7 +64,7 @@ struct MySkillsView: View {
                             Image(systemName: "plus")
                             Text("Add Teaching Skill")
                         }
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -90,9 +90,9 @@ struct MySkillsView: View {
                                 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(skill)
-                                        .font(.system(size: 16, weight: .bold))
+                                        .font(AppTheme.Typography.headline)
                                     Text("Beginner • 4 lessons completed")
-                                        .font(.system(size: 11))
+                                        .font(AppTheme.Typography.caption2)
                                         .foregroundColor(.gray)
                                 }
                                 
@@ -100,7 +100,7 @@ struct MySkillsView: View {
                                 
                                 Button(action: { }) {
                                     Text("Find Mentors")
-                                        .font(.system(size: 12, weight: .bold))
+                                        .font(AppTheme.Typography.badge)
                                         .foregroundColor(AppTheme.Colors.primary)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)

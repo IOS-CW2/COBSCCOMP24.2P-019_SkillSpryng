@@ -8,7 +8,7 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 14, weight: .medium))
+                .font(AppTheme.Typography.subheadline)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
                 .background(isSelected ? AppTheme.Colors.accent : AppTheme.Colors.surfaceLight)

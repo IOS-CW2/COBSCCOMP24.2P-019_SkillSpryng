@@ -49,7 +49,7 @@ struct AgeVerificationView: View {
                                     Rectangle()
                                         .fill(Color(red: 0.9, green: 0.33, blue: 0.27))
                                         .frame(height: 20)
-                                        .overlay(Text("SLAHER").font(.system(size: 8, weight: .bold)).foregroundColor(.white))
+                                        .overlay(Text("SLAHER").font(AppTheme.Typography.badge).foregroundColor(.white))
                                     Spacer()
                                 }
                                 .offset(y: 5)
@@ -58,11 +58,11 @@ struct AgeVerificationView: View {
                             .offset(y: 5)
 
                         Text("10")
-                            .font(.system(size: 26, weight: .heavy))
+                            .font(AppTheme.Typography.title)
                             .foregroundColor(Color(red: 0.17, green: 0.28, blue: 0.37))
                             .offset(y: 15)
                         Text("ST")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(AppTheme.Typography.badge)
                             .foregroundColor(Color(red: 0.17, green: 0.28, blue: 0.37))
                             .offset(y: 32)
 
@@ -76,7 +76,7 @@ struct AgeVerificationView: View {
                     .accessibilityHidden(true)
                     
                     Text("How old are you?")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(AppTheme.Typography.title)
 
                     Text("We use this to personalise your\nexperience and keep you safe.")
                         .font(.body)

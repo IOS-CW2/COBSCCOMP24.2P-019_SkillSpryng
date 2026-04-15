@@ -14,16 +14,16 @@ struct ReviewRow: View {
                     .frame(width: 32, height: 32)
                     .overlay(
                         Text(name.prefix(1))
-                            .font(.system(size: 14, weight: .bold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.gray)
                     )
                     .accessibilityHidden(true)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(name)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(AppTheme.Typography.subheadline)
                     Text(time)
-                        .font(.system(size: 10))
+                        .font(AppTheme.Typography.caption2)
                         .foregroundColor(.gray)
                 }
                 
@@ -32,7 +32,7 @@ struct ReviewRow: View {
                 HStack(spacing: 2) {
                     ForEach(0..<5) { i in
                         Image(systemName: "star.fill")
-                            .font(.system(size: 10))
+                            .font(AppTheme.Typography.caption2)
                             .foregroundColor(i < rating ? .orange : .gray.opacity(0.3))
                     }
                 }
@@ -40,7 +40,7 @@ struct ReviewRow: View {
             }
             
             Text("\"\(comment)\"")
-                .font(.system(size: 13))
+                .font(AppTheme.Typography.footnote)
                 .foregroundColor(.black.opacity(0.7))
                 .italic()
                 .lineSpacing(4)
