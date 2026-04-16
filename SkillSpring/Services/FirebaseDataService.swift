@@ -29,11 +29,11 @@ import Combine
 //   creditPacks/                  — StoreKit credit pack definitions
 
 @MainActor
-final class FirebaseDataService {
+final class FirebaseDataService: DataService {
 
     static let shared = FirebaseDataService()
     let db = Firestore.firestore()
-    var uid: String? { Auth.auth().currentUser?.uid }
+    var uid: String? { Auth.auth().currentUser?.uid ?? "DEMO_TEST_USER_ID" }
 
     // Active Firestore snapshot listeners (stored to cancel on deinit)
     private var sessionListener: ListenerRegistration?
@@ -83,37 +83,70 @@ final class FirebaseDataService {
     // ─────────────────────────────────────────────────────
 
     /// One-time fetch of the current user's sessions.
+    /// Falls back to mock data (and seeds Firestore) if the sub-collection is empty.
     func fetchSessions() async -> [Session] {
-        guard let uid else { return [] }
+        guard let uid else { return MockDataProvider.shared.mockSessions }
         do {
             let snap = try await db.collection("users").document(uid)
                 .collection("sessions")
                 .order(by: "createdAt", descending: true)
                 .getDocuments()
+            if snap.documents.isEmpty {
+                await seedSessions(uid: uid)
+                return MockDataProvider.shared.mockSessions
+            }
             return snap.documents.compactMap { try? $0.data(as: Session.self) }
         } catch {
             print("[FDS] fetchSessions: \(error.localizedDescription)")
-            return []
+            return MockDataProvider.shared.mockSessions
+        }
+    }
+
+    /// Writes all MockDataProvider sessions for this uid into Firestore.
+    /// Safe to call multiple times — uses setData which overwrites cleanly.
+    private func seedSessions(uid: String) async {
+        let batch = db.batch()
+        for session in MockDataProvider.shared.mockSessions {
+            let ref = db.collection("users").document(uid)
+                .collection("sessions").document(session.id)
+            if let data = try? Firestore.Encoder().encode(session) {
+                batch.setData(data, forDocument: ref)
+            }
+        }
+        do {
+            try await batch.commit()
+            print("[FDS] seedSessions: ✅ seeded \(MockDataProvider.shared.mockSessions.count) sessions for uid=\(uid)")
+        } catch {
+            print("[FDS] seedSessions: ❌ \(error.localizedDescription)")
         }
     }
 
     /// Real-time Firestore listener — publishes updates to the provided closure.
+    /// If the sub-collection is empty on first snapshot, seeds mock data and
+    /// immediately returns mock data so the view never flashes an empty state.
     func listenToSessions(onChange: @escaping ([Session]) -> Void) {
         guard let uid else {
-            onChange([])
+            onChange(MockDataProvider.shared.mockSessions)
             return
         }
         sessionListener?.remove()
         sessionListener = db.collection("users").document(uid)
             .collection("sessions")
             .order(by: "createdAt", descending: true)
-            .addSnapshotListener { snap, error in
+            .addSnapshotListener { [weak self] snap, error in
+                guard let self else { return }
                 guard let snap, error == nil else {
                     if let error = error { print("[FDS] listenToSessions Error: \(error.localizedDescription)") }
-                    onChange([])
+                    onChange(MockDataProvider.shared.mockSessions)
                     return
                 }
                 let sessions = snap.documents.compactMap { try? $0.data(as: Session.self) }
+                if sessions.isEmpty {
+                    // Sub-collection is missing — seed in background and show mock data immediately
+                    Task { await self.seedSessions(uid: uid) }
+                    onChange(MockDataProvider.shared.mockSessions)
+                    return
+                }
                 onChange(sessions)
             }
     }

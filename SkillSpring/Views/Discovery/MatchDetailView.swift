@@ -29,12 +29,7 @@ struct MatchDetailView: View {
             VStack(alignment: .leading, spacing: 24) {
                 // Header with Image
                 ZStack(alignment: .top) {
-                    Image(profile.imageUrl)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 140, height: 140)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 4))
+                    SmartAvatar(imageUrl: profile.imageUrl, width: 140, height: 140)
                         .shadow(radius: 10)
                         .accessibilityHidden(true)
                         .overlay(
@@ -209,7 +204,7 @@ struct MatchDetailView: View {
                     }
                     
                     NavigationLink(destination: SessionBookingView(instructor: profile)) {
-                        Text("Book Session ->")
+                        Text("Book a Session")
                             .font(AppTheme.Typography.headline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -217,6 +212,7 @@ struct MatchDetailView: View {
                             .background(AppTheme.Colors.primary)
                             .cornerRadius(16)
                     }
+                    .accessibilityIdentifier("bookSessionButton")
                 }
                 .padding()
                 .background(Color.white.opacity(0.95))

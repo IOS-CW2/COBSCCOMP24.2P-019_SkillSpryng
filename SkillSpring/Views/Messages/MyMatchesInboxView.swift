@@ -239,6 +239,8 @@ struct InboxMatchCard: View {
                             .background(AppTheme.Colors.primary.opacity(0.05))
                             .cornerRadius(12)
                     }
+                    .accessibilityIdentifier("messageMatchButton")
+
                     NavigationLink(destination: SessionBookingView(instructor: profile)) {
                         Text("Book Now")
                             .font(AppTheme.Typography.subheadline)
@@ -248,6 +250,7 @@ struct InboxMatchCard: View {
                             .background(AppTheme.Colors.primary)
                             .cornerRadius(12)
                     }
+                    .accessibilityIdentifier("bookNowButton")
                 case .archived:
                     NavigationLink(destination: MatchDetailView(profile: profile)) {
                         Text(profile.fullName == "Sarah Jenkins" ? "Request Match Again" : "View Profile")
@@ -269,5 +272,6 @@ struct InboxMatchCard: View {
                 .stroke(type == .active ? AppTheme.Colors.primary : Color.clear, lineWidth: 2)
         )
         .padding(.horizontal)
+        .accessibilityIdentifier("inboxMatchCard")
     }
 }

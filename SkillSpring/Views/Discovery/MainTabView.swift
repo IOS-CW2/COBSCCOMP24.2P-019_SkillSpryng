@@ -61,6 +61,10 @@ struct MainTabView: View {
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("skillspryng.openSessionsTab"))) { _ in
             selectedTab = 1
         }
+        .task {
+            // Force seed on launch for returning users (DataSeeder safely skips already-seeded collections)
+            await DataSeeder.shared.seedAll()
+        }
     }
 }
 

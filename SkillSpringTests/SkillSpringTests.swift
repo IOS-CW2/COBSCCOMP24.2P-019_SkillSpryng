@@ -138,3 +138,26 @@ final class MapViewModelTests: XCTestCase {
                       "Match percentage must be clamped between 0 and 100.")
     }
 }
+
+// MARK: - Mock Services
+
+class MockDataSeeder: DataSeedingService {
+    var seedAllCalled = false
+    func seedAll() async { seedAllCalled = true }
+}
+
+class MockDataService: DataService {
+    var mockUser: User?
+    var walletBalanceUpdate: Int?
+    var createdSession: Session?
+    var createdTransaction: CreditTransaction?
+    var createdMatch: MatchRequest?
+    var createdNotification: AppNotification?
+
+    func fetchCurrentUser() async -> User? { mockUser }
+    func updateWalletBalance(_ newBalance: Int) async { walletBalanceUpdate = newBalance }
+    func createSession(_ session: Session) async throws { createdSession = session }
+    func createTransaction(_ transaction: CreditTransaction) async { createdTransaction = transaction }
+    func createMatch(_ match: MatchRequest) async throws { createdMatch = match }
+    func createNotification(_ notification: AppNotification) async { createdNotification = notification }
+}

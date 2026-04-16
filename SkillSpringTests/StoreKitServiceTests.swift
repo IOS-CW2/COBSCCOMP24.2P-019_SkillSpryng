@@ -159,7 +159,7 @@ final class StoreKitPersistenceTests: XCTestCase {
 
     func test_updateLocalUserPro_setsFalseCorrectly() {
         // Arrange
-        let user = User(fullName: "Pro Test User", phoneNumber: "+9411111112", isPro: true)
+        let user = User(fullName: "Pro Test User", phoneNumber: "+9411111112", isPremium: true)
         PersistenceService.shared.saveUser(user)
 
         // Act

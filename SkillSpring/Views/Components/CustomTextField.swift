@@ -5,6 +5,7 @@ struct CustomTextField: View {
     var placeholder: String
     @Binding var text: String
     var keyboardType: UIKeyboardType = .default
+    var accessibilityIdentifier: String? = nil
     @FocusState private var isFocused: Bool
     
     var body: some View {
@@ -23,6 +24,7 @@ struct CustomTextField: View {
                 .font(.body)
                 .accessibilityLabel(placeholder)
                 .accessibilityValue(text)
+                .accessibilityIdentifier(accessibilityIdentifier ?? "")
         }
         .padding()
         .background(Color(.systemGray6))

@@ -10,13 +10,11 @@ struct RewardsTabView: View {
             VStack(spacing: 24) {
                 // Header with custom leaf icon
                 HStack {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(AppTheme.Colors.primary.opacity(0.1))
-                            .frame(width: 36, height: 36)
-                        Image(systemName: "leaf.fill")
-                            .foregroundColor(AppTheme.Colors.primary)
-                    }
+                    Image("AppLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 36, height: 36)
+                        .accessibilityHidden(true)
                     .accessibilityHidden(true)
                     Spacer()
                     NavigationLink(destination: NotificationsView()) {

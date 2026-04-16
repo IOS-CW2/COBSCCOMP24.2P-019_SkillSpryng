@@ -13,24 +13,18 @@ struct SignInView: View {
                 AppHeader(title: "Get Started", backAction: { presentationMode.wrappedValue.dismiss() })
                     .padding(.top, 10)
                 
-                ZStack {
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                        .fill(AppTheme.Gradients.onboarding)
-                        .frame(width: 60, height: 60)
-                    Image(systemName: "leaf.fill")
-                        .foregroundColor(.white)
-                        .font(.title2)
-                }
-                .padding(.top, AppTheme.Spacing.lg)
-                .accessibilityHidden(true)
+                Image("AppLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .padding(.top, -10)
+                    .accessibilityHidden(true)
                 
                 VStack(spacing: 16) {
-                    CustomTextField(iconName: "person", placeholder: "Full Name", text: $viewModel.fullName)
-                        .accessibilityIdentifier("fullNameTextField")
+                    CustomTextField(iconName: "person", placeholder: "Full Name", text: $viewModel.fullName, accessibilityIdentifier: "fullNameTextField")
                     
-                    CustomTextField(iconName: "phone", placeholder: "Phone number (+1234...)", text: $viewModel.phoneNumber, keyboardType: .phonePad)
+                    CustomTextField(iconName: "phone", placeholder: "Phone number (+1234...)", text: $viewModel.phoneNumber, keyboardType: .phonePad, accessibilityIdentifier: "phoneTextField")
                         .textContentType(.telephoneNumber)
-                        .accessibilityIdentifier("phoneTextField")
                     
                     if let error = viewModel.errorMessage {
                         Text(error)
@@ -54,9 +48,11 @@ struct SignInView: View {
                 HStack {
                     Rectangle().fill(Color.gray.opacity(0.3)).frame(height: 1)
                     Text("OR CONTINUE WITH")
-                        .font(.caption)
+                        .font(.system(size: 10, weight: .bold))
                         .foregroundColor(.gray)
                         .padding(.horizontal, 8)
+                        .lineLimit(1)
+                        .layoutPriority(1)
                     Rectangle().fill(Color.gray.opacity(0.3)).frame(height: 1)
                 }
                 .padding(.horizontal, 24)
@@ -84,9 +80,22 @@ struct SignInView: View {
                     Button(action: { /* Google Auth Placeholder */ }) {
                         HStack {
                             Text("G")
-                                .foregroundColor(.blue)
-                                .font(.title3)
-                                .bold()
+                                .font(.system(size: 24, weight: .bold, design: .rounded))
+                                .overlay(
+                                    AngularGradient(
+                                        gradient: Gradient(colors: [
+                                            Color(hex: "4285F4"), // Blue
+                                            Color(hex: "34A853"), // Green
+                                            Color(hex: "FBBC05"), // Yellow
+                                            Color(hex: "EA4335"), // Red
+                                            Color(hex: "4285F4")  // Back to Blue
+                                        ]),
+                                        center: .center,
+                                        startAngle: .degrees(0),
+                                        endAngle: .degrees(360)
+                                    )
+                                    .mask(Text("G").font(.system(size: 24, weight: .bold, design: .rounded)))
+                                )
                             Text("Continue with Google")
                                 .foregroundColor(.primary)
                                 .font(AppTheme.Typography.subheadline)
