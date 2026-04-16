@@ -182,8 +182,8 @@ struct EventHeroCard: View {
                     Task {
                         // Request Permission
                         if !CalendarService.shared.checkCalendarAccess() {
-                            let granted = await CalendarService.shared.requestAccess()
-                            if !granted {
+                            await CalendarService.shared.requestAccess()
+                            if CalendarService.shared.calendarDenied {
                                 await MainActor.run {
                                     alertMessage = "SkillSpryng needs calendar access to add community events. Please enable it in Settings."
                                     showsAlert = true

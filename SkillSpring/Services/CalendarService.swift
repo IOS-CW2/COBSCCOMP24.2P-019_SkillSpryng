@@ -8,20 +8,15 @@ class CalendarService: ObservableObject {
     
     static let shared = CalendarService()
     private let eventStore = EKEventStore()
-    @Published var accessStatus: CalendarAccessStatus
+    @Published var accessStatus: EKAuthorizationStatus = .notDetermined
     
-    enum CalendarAccessStatus {
-        case notDetermined
-        case granted
-        case denied
-        case restricted
-    }
+    /// `true` when the user has permanently denied calendar access.
+    /// Drives PermissionDeniedView(.calendar) in SessionBookingView.
+    @Published var calendarDenied: Bool = false
     
     private init() {
-        self.accessStatus = .notDetermined
-        if checkCalendarAccess() {
-            self.accessStatus = .granted
-        }
+        self.accessStatus = EKEventStore.authorizationStatus(for: .event)
+        self.calendarDenied = (self.accessStatus == .denied || self.accessStatus == .restricted)
     }
     
     // SIMULATOR TESTING:
@@ -35,27 +30,30 @@ class CalendarService: ObservableObject {
     // If event doesn't appear: force close Calendar and reopen it
     
     // FUNCTION 1: requestAccess
-    func requestAccess() async -> Bool {
-        do {
-            let success: Bool
-            if #available(iOS 17.0, *) {
-                success = try await eventStore.requestFullAccessToEvents()
-            } else {
-                success = try await eventStore.requestAccess(to: .event)
-            }
-            
+    func requestAccess() async {
+        if #available(iOS 17, *) {
+            let granted = (try? await eventStore.requestFullAccessToEvents()) ?? false
             await MainActor.run {
-                self.accessStatus = success ? .granted : .denied
+                self.accessStatus   = granted ? .fullAccess : .denied
+                self.calendarDenied = !granted
             }
-            return success
-        } catch {
-            print("Failed to request calendar access: \(error.localizedDescription)")
+        } else {
+            let granted = await withCheckedContinuation { c in
+                eventStore.requestAccess(to: .event) { ok, _ in c.resume(returning: ok) }
+            }
             await MainActor.run {
-                self.accessStatus = .denied
+                self.accessStatus   = granted ? .authorized : .denied
+                self.calendarDenied = !granted
             }
-            return false
+        }
+        if calendarDenied {
+            print("[CalendarService] ⚠️ Calendar denied — show PermissionDeniedView(.calendar)")
         }
     }
+
+    /// Deep-links to SkillSpryng's Calendar settings when the user has denied access.
+    func openSettingsForCalendar() { openAppSettings() }
+
     
     // FUNCTION 2: addSessionToCalendar
     func addSessionToCalendar(

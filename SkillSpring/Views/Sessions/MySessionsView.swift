@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MySessionsView: View {
     @StateObject private var vm = SessionsViewModel()
+    @StateObject private var network = NetworkMonitor.shared
     @State private var selectedFilter = "All"
     @State private var sessionToCancel: Session?
     @State private var showCancelAlert = false
@@ -12,6 +13,10 @@ struct MySessionsView: View {
     var body: some View {
         VStack(spacing: 0) {
             AppHeader(title: "My Sessions", showBackButton: true)
+
+            // Offline banner — driven by NWPathMonitor (NetworkMonitor.swift)
+            OfflineBannerView(network: network)
+                .animation(.easeInOut(duration: 0.3), value: network.isOnline)
 
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
@@ -348,11 +353,17 @@ struct HistorySessionRow: View {
         NavigationLink(destination: SessionDetailView(session: session)) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .top, spacing: 14) {
-                    Image("instructor1")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 44, height: 44)
-                        .clipShape(Circle())
+                    // WCAG 1.1.1: Image replaced with system icon to avoid missing-asset crash
+                    // and ensure a meaningful text alternative is always present.
+                    ZStack {
+                        Circle()
+                            .fill(AppTheme.Colors.primary.opacity(0.12))
+                            .frame(width: 44, height: 44)
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(AppTheme.Colors.primary)
+                    }
+                    .accessibilityLabel("Instructor: \(session.instructorName)")
                     
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {

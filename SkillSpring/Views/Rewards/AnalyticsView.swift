@@ -50,7 +50,7 @@ struct LearningAnalyticsView: View {
                                             .foregroundColor(.white)
                                     }
                                     
-                                    Text("7 Day Streak!")
+                                    Text("\(vm.analyticsData.streakDays) Day Streak!")
                                         .font(AppTheme.Typography.title3)
                                         .foregroundColor(.white)
                                 }
@@ -85,9 +85,9 @@ struct LearningAnalyticsView: View {
                     
                     // Stats Grid
                     HStack(spacing: 12) {
-                        RefinedStatGap(label: "SESSIONS", value: "24", color: .blue)
-                        RefinedStatGap(label: "FOCUS HOURS", value: "38.5", color: .teal)
-                        RefinedStatGap(label: "SKILLS PRO", value: "18", color: .orange)
+                        RefinedStatGap(label: "SESSIONS",    value: "\(vm.analyticsData.sessionsCount)",                          color: .blue)
+                        RefinedStatGap(label: "FOCUS HRS",   value: String(format: "%.1f", vm.analyticsData.focusHours),          color: .teal)
+                        RefinedStatGap(label: "SKILLS PRO",  value: "\(vm.analyticsData.skillsPro)",                              color: .orange)
                     }
                     .padding(.horizontal)
                     
@@ -107,10 +107,10 @@ struct LearningAnalyticsView: View {
                         
                         Spacer()
                         
-                        Text("1,240")
+                        Text("\(vm.analyticsData.karmaPoints.formatted())")
                             .font(.system(size: 18, weight: .black))
                         
-                        Text("TOP 5%")
+                        Text(leaderboardRank)
                             .font(.system(size: 8, weight: .black))
                             .padding(.horizontal, 6)
                             .padding(.vertical, 4)
@@ -123,7 +123,7 @@ struct LearningAnalyticsView: View {
                     .cornerRadius(20)
                     .padding(.horizontal)
                     .accessibilityElement(children: .combine)
-                    .accessibilityLabel("Karma Points: 1,240. Top 5%")
+                    .accessibilityLabel("Karma Points: \(vm.analyticsData.karmaPoints). \(leaderboardRank)")
                     
                     // Growth Trajectory Chart
                     VStack(alignment: .leading, spacing: 20) {
@@ -196,17 +196,25 @@ struct LearningAnalyticsView: View {
                     }
                     .padding(.horizontal)
                     
-                    // Skill Progression Grid
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text("Skill Progression")
-                            .font(.headline)
-                        
-                        VStack(spacing: 16) {
-                            SkillProgressionRow(name: "Fullstack Development", level: "Level 4 • Pro", percentage: 0.85, color: .orange)
-                            SkillProgressionRow(name: "UI/UX Design Strategy", level: "Level 2 • Intermediate", percentage: 0.42, color: .blue)
+                    // Skill Progression Grid — driven by vm.analyticsData.skillProgress
+                    if !vm.analyticsData.skillProgress.isEmpty {
+                        VStack(alignment: .leading, spacing: 20) {
+                            Text("Skill Progression")
+                                .font(.headline)
+                            
+                            VStack(spacing: 16) {
+                                ForEach(vm.analyticsData.skillProgress.prefix(3)) { skill in
+                                    SkillProgressionRow(
+                                        name:       skill.name,
+                                        level:      skill.level,
+                                        percentage: skill.percentage,
+                                        color:      skillColor(for: skill.name)
+                                    )
+                                }
+                            }
                         }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                     
                     // Focus Breakdown
                     VStack(alignment: .leading, spacing: 20) {
@@ -249,6 +257,26 @@ struct LearningAnalyticsView: View {
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarHidden(true)
+    }
+
+    // MARK: - Helpers
+
+    /// Derives a rank label from the user's karma position.
+    /// Full leaderboard ranking requires the leaderboard array; for analytics
+    /// we approximate from karma percentile.
+    private var leaderboardRank: String {
+        let k = vm.analyticsData.karmaPoints
+        if k > 2000 { return "TOP 1%" }
+        if k > 1000 { return "TOP 5%" }
+        if k > 500  { return "TOP 10%" }
+        return "TOP 25%"
+    }
+
+    /// Returns a consistent colour for a skill name.
+    private func skillColor(for name: String) -> Color {
+        let colours: [Color] = [.orange, .blue, .green, .purple, .pink]
+        let index = abs(name.hashValue) % colours.count
+        return colours[index]
     }
 }
 
