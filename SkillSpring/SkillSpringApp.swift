@@ -9,17 +9,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // Initialize Firebase
         FirebaseApp.configure()
 
-        // 🔥 DEBUG: Print Firestore collection counts to console on every launch
-        // Remove this block before App Store submission
-        Task {
-            await DataSeeder.shared.seedAll()
-            await FirebaseDataService.shared.debugPrintAll()
-        }
 
         // Force-initialize FirebaseManager
         let manager = FirebaseManager.shared
-        // Disable APNs requirement on Simulator
+#if DEBUG
+        // Disable APNs OTP verification on Simulator / Debug builds only.
+        // MUST NOT be enabled in Release — it bypasses real phone-number verification.
         manager.auth.settings?.isAppVerificationDisabledForTesting = true
+#endif
         
         // Set delegate BEFORE requesting authorization so no notifications are missed
         UNUserNotificationCenter.current().delegate = self

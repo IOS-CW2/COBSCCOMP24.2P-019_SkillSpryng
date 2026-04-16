@@ -368,6 +368,25 @@ final class FirebaseDataService {
         } catch { return MockDataProvider.shared.learningPath }
     }
 
+    /// CREATE / UPDATE — enrols the user in a course and persists it to Firestore.
+    /// Safe to call on re-enrolment; uses merge so existing progress is not overwritten.
+    func saveLearningProgress(course: Course) async throws {
+        guard let uid else { throw NSError(domain: "FDS", code: -1) }
+        try db.collection("users").document(uid)
+            .collection("learningPath").document(course.id)
+            .setData(from: course, merge: true)
+    }
+
+    /// UPDATE — writes only the `progress` field so partial progress is persisted
+    /// without overwriting other course metadata.
+    func updateCourseProgress(_ courseId: String, progress: Double) async {
+        guard let uid else { return }
+        let clamped = min(max(progress, 0), 1)   // clamp to [0, 1]
+        try? await db.collection("users").document(uid)
+            .collection("learningPath").document(courseId)
+            .updateData(["progress": clamped, "updatedAt": FieldValue.serverTimestamp()])
+    }
+
     func fetchUpcomingEvents() async -> [Event] {
         do {
             let snap = try await db.collection("events").getDocuments()

@@ -24,6 +24,8 @@ struct RewardsTabView: View {
                             .font(AppTheme.Typography.title3)
                             .foregroundColor(.gray)
                     }
+                    .accessibilityLabel("Notifications")
+                    .accessibilityHint("Double-tap to view notifications")
                 }
                 .padding(.horizontal)
                 
@@ -110,6 +112,9 @@ struct RewardsTabView: View {
                             .frame(maxWidth: .infinity)
                             .background(RoundedRectangle(cornerRadius: 16).stroke(AppTheme.Colors.primary.opacity(0.2), lineWidth: 1))
                     }
+                    .accessibilityLabel("View Full Leaderboard")
+                    .accessibilityHint("Double-tap to open the weekly leaderboard")
+                    .accessibilityMinTouchTarget()
                 }
                 .padding(.horizontal)
                 
@@ -144,6 +149,8 @@ struct RewardsTabView: View {
                         Button("VIEW ALL") { }
                             .font(.system(size: 10, weight: .black))
                             .foregroundColor(AppTheme.Colors.primary)
+                            .accessibilityLabel("View all upcoming milestones")
+                            .accessibilityMinTouchTarget()
                     }
                     
                     VStack(spacing: 12) {
@@ -181,6 +188,8 @@ struct RewardsTabView: View {
                     .shadow(color: AppTheme.Colors.primary.opacity(0.3), radius: 10, x: 0, y: 5)
                 }
                 .padding(.horizontal)
+                .accessibilityLabel("Detailed Learning Analytics")
+                .accessibilityHint("Double-tap to view your full analytics dashboard")
                 
                 Spacer().frame(height: 100)
             }

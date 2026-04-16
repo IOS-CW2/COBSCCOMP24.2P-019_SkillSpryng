@@ -51,9 +51,11 @@ extension View {
             .accessibilityAddTraits(.isButton)
     }
 
-    /// Ensures interactive elements meet the 44×44pt minimum touch target.
+    /// Ensures interactive elements meet the minimum touch target (52pt for Child Mode, 44pt otherwise).
     func accessibilityMinTouchTarget() -> some View {
-        self.frame(minWidth: 44, minHeight: 44)
+        let isChildMode = UserDefaults.standard.bool(forKey: "isChildMode")
+        let size: CGFloat = isChildMode ? 52 : 44
+        return self.frame(minWidth: size, minHeight: size)
     }
 
     // -------------------------------------------------------------------------

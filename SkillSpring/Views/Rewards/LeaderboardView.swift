@@ -26,6 +26,7 @@ struct LeaderboardView: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
+                    .accessibilityButton(label: "\(tab) Leaderboard")
                     .accessibilityAddTraits(selectedTab == tab ? .isSelected : [])
                 }
             }

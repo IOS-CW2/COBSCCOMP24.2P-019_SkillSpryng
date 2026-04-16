@@ -1,6 +1,5 @@
 import SwiftUI
 import Combine
-import FirebaseAuth
 
 // MARK: - BookingViewModel
 // Handles the full booking flow:
@@ -67,11 +66,12 @@ class BookingViewModel: ObservableObject {
         Task {
             defer { isBooking = false }
             let fds = FirebaseDataService.shared
-            let currentUid = Auth.auth().currentUser?.uid ?? "unknown"
+            
+            guard let user = await fds.fetchCurrentUser(),
+                  let currentUid = user.id else { return }
 
             if instructor.status == .active {
                 // ─── Paid Booking ───────────────────
-                guard let user = await fds.fetchCurrentUser() else { return }
                 let newBalance = user.walletBalance - totalPrice
 
                 // 1. Deduct wallet in Firestore
@@ -153,7 +153,6 @@ class BookingViewModel: ObservableObject {
 
             } else {
                 // ─── Free Request Flow ───────────────
-                guard let user = await fds.fetchCurrentUser() else { return }
 
                 // Write MatchRequest (pending)
                 let match = MatchRequest(
