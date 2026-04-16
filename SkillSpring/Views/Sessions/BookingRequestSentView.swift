@@ -129,8 +129,8 @@ struct BookingRequestSentView: View {
                     
                     Task {
                         if !CalendarService.shared.checkCalendarAccess() {
-                            let granted = await CalendarService.shared.requestAccess()
-                            if !granted {
+                            await CalendarService.shared.requestAccess()
+                            if CalendarService.shared.calendarDenied {
                                 await MainActor.run {
                                     alertMessage = "SkillSpryng needs calendar access to add this event. Please enable it in Settings."
                                     showsAlert = true

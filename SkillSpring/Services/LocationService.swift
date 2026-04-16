@@ -40,6 +40,10 @@ class LocationService: NSObject, ObservableObject {
     /// Current Core Location authorization status.
     @Published var authorizationStatus: CLAuthorizationStatus
 
+    /// `true` when the user has permanently denied location access.
+    /// Drives PermissionDeniedView in MapSelectionView and DiscoverView.
+    @Published var locationDenied: Bool = false
+
     // MARK: - Private
 
     private let locationManager = CLLocationManager()
@@ -83,6 +87,12 @@ class LocationService: NSObject, ObservableObject {
     /// Stop all GPS updates. Call when location data is no longer needed.
     func stopUpdatingLocation() {
         locationManager.stopUpdatingLocation()
+    }
+
+    /// Deep-links to SkillSpryng's Location settings when the user has permanently denied access.
+    /// Call this after showing PermissionDeniedView with type: .location.
+    func openSettingsForLocation() {
+        openAppSettings()   // defined in AccessibilityHelper.swift
     }
 
     /// Reverse-geocode a CLLocation into a city/area name.
@@ -147,10 +157,14 @@ extension LocationService: CLLocationManagerDelegate {
         Task { @MainActor in
             self.authorizationStatus = manager.authorizationStatus
 
-            if manager.authorizationStatus == .denied ||
-               manager.authorizationStatus == .restricted {
-                self.userLocation = nil
+            let denied = manager.authorizationStatus == .denied
+                      || manager.authorizationStatus == .restricted
+            self.locationDenied = denied
+
+            if denied {
+                self.userLocation   = nil
                 self.approximateCity = ""
+                print("[LocationService] ⚠️ Location denied — show PermissionDeniedView(.location)")
             }
         }
     }

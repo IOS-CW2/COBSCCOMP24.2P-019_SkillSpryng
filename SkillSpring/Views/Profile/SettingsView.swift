@@ -7,7 +7,10 @@ struct SettingsView: View {
     @ObservedObject private var biometricService = BiometricAuthService.shared
     @AppStorage("skillspryng.isLoggedIn") private var isLoggedIn = false
     @Environment(\.dismiss) var dismiss
-    
+
+    // Search — real binding instead of .constant("")
+    @State private var settingsSearch: String = ""
+
     // Toast & confirmation state
     @State private var toast: ToastMessage? = nil
     @State private var showLogoutConfirmation = false
@@ -22,13 +25,25 @@ struct SettingsView: View {
                     
                     // User Profile Brief
                     VStack(spacing: 16) {
-                        Image(vm.user.profileImageURL)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 80, height: 80)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.white, lineWidth: 3))
-                            .shadow(radius: 5)
+                        // WCAG 1.1.1: non-decorative image must have a text alternative
+                        Group {
+                            if vm.user.profileImageURL.hasPrefix("http") {
+                                AsyncImage(url: URL(string: vm.user.profileImageURL)) { img in
+                                    img.resizable().scaledToFill()
+                                } placeholder: {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable().foregroundColor(AppTheme.Colors.primary.opacity(0.4))
+                                }
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable().foregroundColor(AppTheme.Colors.primary.opacity(0.4))
+                            }
+                        }
+                        .frame(width: 80, height: 80)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.white, lineWidth: 3))
+                        .shadow(radius: 5)
+                        .accessibilityLabel("Profile photo of \(vm.user.fullName)")
                         
                         VStack(spacing: 4) {
                             Text(vm.user.fullName)
@@ -38,14 +53,16 @@ struct SettingsView: View {
                                 .foregroundColor(.gray)
                         }
                         
-                        // Search bar 
+                        // Search bar — WCAG 1.3.1 / 4.1.2: label must be programmatically determinable
                         HStack {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.gray)
                                 .font(AppTheme.Typography.subheadline)
                                 .accessibilityHidden(true)
-                            TextField("Search settings", text: .constant(""))
+                            TextField("Search settings", text: $settingsSearch)
                                 .font(AppTheme.Typography.callout)
+                                .accessibilityLabel("Search settings")
+                                .accessibilityHint("Type to filter settings options")
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
@@ -129,7 +146,9 @@ struct SettingsView: View {
                         SectionHeader(title: "WALLET")
                         
                         NavigationLink(destination: WalletView()) {
-                            SettingsRow(icon: "w.square.fill", title: "SkillCredits Wallet", value: "4,850 SKP")
+                            // Live wallet balance from Firestore via ProfileViewModel
+                            SettingsRow(icon: "w.square.fill", title: "SkillCredits Wallet",
+                                        value: vm.isLoading ? "—" : "\(vm.user.walletBalance) SKP")
                         }
                         .buttonStyle(PlainButtonStyle())
                         .background(Color.white)

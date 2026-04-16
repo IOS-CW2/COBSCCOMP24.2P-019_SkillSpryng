@@ -1,5 +1,20 @@
 import SwiftUI
 
+// MARK: - GrowthChart (Legacy — iOS 15 Bezier Fallback)
+//
+// ⚠️ SUPERSEDED by Swift Charts in AnalyticsView (see LearningAnalyticsView.swift).
+//
+// This component was the original growth-trajectory renderer using manual
+// UIBezierPath-equivalent SwiftUI Path drawing. It is retained as a reference
+// implementation demonstrating raw Bezier curve maths (control-point calculation,
+// area fill with gradient) for environments where `import Charts` is unavailable
+// (i.e. iOS 15 and earlier).
+//
+// Current usage: NOT called by any active view — AnalyticsView uses `import Charts`
+// with AreaMark / LineMark / PointMark and Catmull-Rom interpolation.
+//
+// Safe to remove for production. Kept for iOS 15 backward-compatibility reference.
+
 struct GrowthChart: View {
     let points: [GrowthPoint]
     

@@ -99,13 +99,20 @@ final class FirebaseDataService {
 
     /// Real-time Firestore listener — publishes updates to the provided closure.
     func listenToSessions(onChange: @escaping ([Session]) -> Void) {
-        guard let uid else { return }
+        guard let uid else {
+            onChange([])
+            return
+        }
         sessionListener?.remove()
         sessionListener = db.collection("users").document(uid)
             .collection("sessions")
             .order(by: "createdAt", descending: true)
             .addSnapshotListener { snap, error in
-                guard let snap, error == nil else { return }
+                guard let snap, error == nil else {
+                    if let error = error { print("[FDS] listenToSessions Error: \(error.localizedDescription)") }
+                    onChange([])
+                    return
+                }
                 let sessions = snap.documents.compactMap { try? $0.data(as: Session.self) }
                 onChange(sessions)
             }
@@ -174,13 +181,20 @@ final class FirebaseDataService {
     }
 
     func listenToIncomingMatches(onChange: @escaping ([MatchRequest]) -> Void) {
-        guard let uid else { return }
+        guard let uid else {
+            onChange([])
+            return
+        }
         matchListener?.remove()
         matchListener = db.collection("matches")
             .whereField("toUserId", isEqualTo: uid)
             .whereField("status", isEqualTo: MatchRequestStatus.pending.rawValue)
-            .addSnapshotListener { snap, _ in
-                guard let snap else { return }
+            .addSnapshotListener { snap, error in
+                guard let snap, error == nil else {
+                    if let error = error { print("[FDS] listenToIncomingMatches Error: \(error.localizedDescription)") }
+                    onChange([])
+                    return
+                }
                 let matches = snap.documents.compactMap { try? $0.data(as: MatchRequest.self) }
                 onChange(matches)
             }
@@ -235,7 +249,11 @@ final class FirebaseDataService {
             .collection("messages")
             .order(by: "timestamp")
             .addSnapshotListener { snap, error in
-                guard let snap, error == nil else { return }
+                guard let snap, error == nil else {
+                    if let error = error { print("[FDS] listenToMessages Error: \(error.localizedDescription)") }
+                    onChange([])
+                    return
+                }
                 let messages = snap.documents.compactMap { try? $0.data(as: ChatMessage.self) }
                 onChange(messages)
             }
