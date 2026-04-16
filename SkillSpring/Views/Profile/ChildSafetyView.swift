@@ -1,8 +1,13 @@
 import SwiftUI
 
 struct ChildSafetyView: View {
-    @State private var isAdultMode = true
+    @State private var isAdultMode = false
     @Environment(\.dismiss) var dismiss
+    
+    @AppStorage("skillspryng.parentPIN") private var savedPin: String = ""
+    @State private var showingPinAlert = false
+    @State private var showingSetupPinAlert = false
+    @State private var enteredPin = ""
     
     // Adult State Toggles
     @State private var restrictedContent = true
@@ -29,7 +34,13 @@ struct ChildSafetyView: View {
                     
                     if !isAdultMode {
                         // CHILD VIEW - Display Mode
-                        Button(action: { }) {
+                        Button(action: { 
+                            if savedPin.isEmpty {
+                                showingSetupPinAlert = true
+                            } else {
+                                showingPinAlert = true
+                            }
+                        }) {
                             HStack {
                                 Image(systemName: "key.fill")
                                     .foregroundColor(AppTheme.Colors.primary)
@@ -68,11 +79,6 @@ struct ChildSafetyView: View {
                                 .cornerRadius(16)
                                 .padding(.horizontal)
                         }
-                        
-                        // Demo Toggle
-                        Button("Switch to Parent/Adult Control") { isAdultMode.toggle() }
-                            .font(.caption)
-                            .foregroundColor(.gray)
                         
                     } else {
                         // ADULT CONTROL PANEL
@@ -144,18 +150,23 @@ struct ChildSafetyView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             SectionHeader(title: "REPORTING")
                             
-                            NavigationLink(destination: Text("Activity logs")) {
-                                SettingsRow(icon: "doc.text.below.ecg.fill", title: "Activity Report", value: "Detailed history and logs")
-                            }
-                            .background(Color.white)
-                            .cornerRadius(16)
-                            .padding(.horizontal)
+                            SettingsRow(icon: "doc.text.below.ecg.fill", title: "Activity Report", value: "Detailed history and logs")
+                                .background(Color.white)
+                                .cornerRadius(16)
+                                .padding(.horizontal)
                         }
                         
-                        // Demo Toggle
-                        Button("Switch to Protected Child View") { isAdultMode.toggle() }
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                        // Switch to Child View Toggle
+                        Button("Lock & Switch to Protected Child View") { 
+                            if savedPin.isEmpty {
+                                showingSetupPinAlert = true
+                            } else {
+                                isAdultMode = false 
+                            }
+                        }
+                        .font(AppTheme.Typography.headline)
+                        .foregroundColor(AppTheme.Colors.primary)
+                        .padding(.top, 16)
                     }
                     
                     Spacer().frame(height: 100)
@@ -165,5 +176,32 @@ struct ChildSafetyView: View {
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarHidden(true)
+        .alert("Setup Parent PIN", isPresented: $showingSetupPinAlert) {
+            SecureField("New 4-digit PIN", text: $enteredPin)
+                .keyboardType(.numberPad)
+            Button("Save", action: {
+                if enteredPin.count == 4 {
+                    savedPin = enteredPin
+                    isAdultMode = true
+                }
+                enteredPin = ""
+            })
+            Button("Cancel", role: .cancel, action: { enteredPin = "" })
+        } message: {
+            Text("Please create a 4-digit PIN to access parent controls.")
+        }
+        .alert("Enter Parent PIN", isPresented: $showingPinAlert) {
+            SecureField("PIN", text: $enteredPin)
+                .keyboardType(.numberPad)
+            Button("Unlock", action: {
+                if enteredPin == savedPin {
+                    isAdultMode = true
+                }
+                enteredPin = ""
+            })
+            Button("Cancel", role: .cancel, action: { enteredPin = "" })
+        } message: {
+            Text("Please enter your 4-digit PIN.")
+        }
     }
 }

@@ -40,7 +40,7 @@ class AuthViewModel: ObservableObject {
 
         Task {
             do {
-                let id = try await FirebaseManager.shared.sendPhoneNumberOTP(phoneNumber: phoneNumber)
+                let id = try await self.firebaseService.sendPhoneNumberOTP(phoneNumber: phoneNumber)
                 self.verificationID = id
                 self.navigateToOTP = true
             } catch {
@@ -62,12 +62,12 @@ class AuthViewModel: ObservableObject {
 
         Task {
             do {
-                let result = try await FirebaseManager.shared.verifyOTP(
+                let result = try await self.firebaseService.verifyOTP(
                     verificationID: verificationID,
                     verificationCode: verificationCode
                 )
-                let uid = result.user.uid
-                let isNewUser = result.additionalUserInfo?.isNewUser ?? false
+                let uid = result.uid
+                let isNewUser = result.isNewUser
 
                 if isNewUser {
                     // Create user profile in Firestore for the first time

@@ -127,6 +127,50 @@ final class AuthViewModelTests: XCTestCase {
         XCTAssertNotNil(sut.errorMessage,
                         "errorMessage must be set when verificationCode is empty.")
     }
+    
+    func test_verifyCode_withNewUser_navigatesToSkillSetup() async {
+        // Arrange
+        sut.verificationID = "VERIFICATION_ID_001"
+        sut.verificationCode = "123456"
+        mockService.verifyOTPResult = .success(AuthResultProxy(uid: "NEW_UID", isNewUser: true))
+        
+        let exp = expectation(description: "navigateToSkillSetup becomes true")
+        sut.$navigateToSkillSetup
+            .dropFirst()
+            .first { $0 }
+            .sink { _ in exp.fulfill() }
+            .store(in: &cancellables)
+            
+        // Act
+        sut.verifyCode()
+        
+        // Assert
+        await fulfillment(of: [exp], timeout: 1.0)
+        XCTAssertTrue(sut.navigateToSkillSetup)
+        XCTAssertFalse(sut.navigateToSuccess)
+    }
+    
+    func test_verifyCode_withExistingUser_navigatesToHome() async {
+        // Arrange
+        sut.verificationID = "VERIFICATION_ID_001"
+        sut.verificationCode = "123456"
+        mockService.verifyOTPResult = .success(AuthResultProxy(uid: "OLD_UID", isNewUser: false))
+        
+        let exp = expectation(description: "navigateToSuccess becomes true")
+        sut.$navigateToSuccess
+            .dropFirst()
+            .first { $0 }
+            .sink { _ in exp.fulfill() }
+            .store(in: &cancellables)
+            
+        // Act
+        sut.verifyCode()
+        
+        // Assert
+        await fulfillment(of: [exp], timeout: 1.0)
+        XCTAssertTrue(sut.navigateToSuccess)
+        XCTAssertFalse(sut.navigateToSkillSetup)
+    }
 }
 
 

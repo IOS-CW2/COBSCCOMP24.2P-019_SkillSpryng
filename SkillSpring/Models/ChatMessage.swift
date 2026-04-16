@@ -15,6 +15,7 @@ struct ChatMessage: Identifiable, Codable {
     let imageName: String?
     let fileName: String?
     let fileSize: String?
+    var isDeleted: Bool? = false
     
     // Helper to format timestamp
     var timeString: String {

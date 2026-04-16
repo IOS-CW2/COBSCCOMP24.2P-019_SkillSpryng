@@ -33,14 +33,26 @@
 		6227C22A2F7A96D200E964BB /* SkillSpring.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkillSpring.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6227C2422F7A9AF600E964BB /* SkillSpringTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkillSpringTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6227C24F2F7A9B1D00E964BB /* SkillSpringUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkillSpringUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A201B452F8B803C006224E0 /* LocalStore.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = LocalStore.storekit; sourceTree = "<group>"; };
-		8A2E68A42F8B3AE8006BBE33 /* geofence_test.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = geofence_test.gpx; sourceTree = "<group>"; };
-		8A2E68AB2F8B4524006BBE33 /* colombo_geofence_test.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = colombo_geofence_test.gpx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		07B9F35F2F9174160031810B /* Exceptions for "SkillSpring" folder in "SkillSpring" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SupportingFiles/colombo_geofence_test.gpx,
+				SupportingFiles/geofence_test.gpx,
+				SupportingFiles/LocalStore.storekit,
+			);
+			target = 6227C2292F7A96D200E964BB /* SkillSpring */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6227C22C2F7A96D200E964BB /* SkillSpring */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				07B9F35F2F9174160031810B /* Exceptions for "SkillSpring" folder in "SkillSpring" target */,
+			);
 			path = SkillSpring;
 			sourceTree = "<group>";
 		};
@@ -87,9 +99,6 @@
 		6227C2212F7A96D200E964BB = {
 			isa = PBXGroup;
 			children = (
-				8A201B452F8B803C006224E0 /* LocalStore.storekit */,
-				8A2E68AB2F8B4524006BBE33 /* colombo_geofence_test.gpx */,
-				8A2E68A42F8B3AE8006BBE33 /* geofence_test.gpx */,
 				6227C22C2F7A96D200E964BB /* SkillSpring */,
 				6227C2432F7A9AF600E964BB /* SkillSpringTests */,
 				6227C2502F7A9B1D00E964BB /* SkillSpringUITests */,
