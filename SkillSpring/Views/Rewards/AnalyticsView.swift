@@ -173,6 +173,8 @@ struct LearningAnalyticsView: View {
                             )
                             .foregroundStyle(AppTheme.Colors.primary)
                             .symbolSize(30)
+                            .accessibilityLabel("Day \(point.day)")
+                            .accessibilityValue("\(point.value) score")
                         }
                     }
                     .frame(height: 180)

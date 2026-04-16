@@ -78,27 +78,37 @@ struct DiscoverView: View {
                 NearbyMapBannerCard(action: { viewModel.navigateToMap = true })
                     .padding(.horizontal)
                 
-                // Most Popular Skills
-                SkillSection(title: "Most Popular Skills", items: viewModel.filteredSkills)
-                
-                // Recommended for you
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Text("Recommended for you")
-                            .font(AppTheme.Typography.title3)
-                        Spacer()
-                        Button("See all") { viewModel.navigateToCourses = true }
-                            .font(AppTheme.Typography.caption)
-                            .foregroundColor(AppTheme.Colors.primary)
-                    }
-                    .padding(.horizontal)
-
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        ForEach(viewModel.filteredSkills.prefix(2)) { skill in
-                            RecommendedSkillCard(skill: skill)
+                if viewModel.filteredSkills.isEmpty {
+                    EmptyStateView(
+                        icon: "magnifyingglass",
+                        title: "No Skills Found",
+                        message: "We couldn't find any skills matching your search. Try different keywords or browse categories.",
+                        actionTitle: "Clear Search",
+                        action: { viewModel.searchText = "" }
+                    )
+                } else {
+                    // Most Popular Skills
+                    SkillSection(title: "Most Popular Skills", items: viewModel.filteredSkills)
+                    
+                    // Recommended for you
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Text("Recommended for you")
+                                .font(AppTheme.Typography.title3)
+                            Spacer()
+                            Button("See all") { viewModel.navigateToCourses = true }
+                                .font(AppTheme.Typography.caption)
+                                .foregroundColor(AppTheme.Colors.primary)
                         }
+                        .padding(.horizontal)
+                        
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                            ForEach(viewModel.filteredSkills.prefix(2)) { skill in
+                                RecommendedSkillCard(skill: skill)
+                            }
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                 }
                 
                 // Post a Skill section

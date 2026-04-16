@@ -24,6 +24,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // Request Push Notification authorization and register categories
         NotificationManager.shared.requestAuthorization()
         
+        application.registerForRemoteNotifications()
+        
         return true
     }
     
@@ -64,6 +66,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             completionHandler(.noData)
             return
         }
+    }
+    
+    func application(_ application: UIApplication, 
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Auth.auth().setAPNSToken(deviceToken, type: .unknown)
     }
 }
 

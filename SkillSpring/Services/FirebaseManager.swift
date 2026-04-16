@@ -59,13 +59,13 @@ class FirebaseManager: FirebaseService {
         return verificationID
     }
     
-    func verifyOTP(verificationID: String, verificationCode: String) async throws -> AuthDataResult {
+    func verifyOTP(verificationID: String, verificationCode: String) async throws -> AuthResultProxy {
         let credential = PhoneAuthProvider.provider().credential(
             withVerificationID: verificationID,
             verificationCode: verificationCode
         )
         let result = try await auth.signIn(with: credential)
-        return result
+        return AuthResultProxy(uid: result.user.uid, isNewUser: result.additionalUserInfo?.isNewUser ?? false)
     }
     
     func signOut() throws {

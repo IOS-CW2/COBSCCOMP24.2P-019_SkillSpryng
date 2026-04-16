@@ -59,10 +59,12 @@ struct MySessionsView: View {
                 .redacted(reason: vm.isLoading ? .placeholder : [])
             }
             if vm.sessions.isEmpty && !vm.isLoading {
-                ContentUnavailableView(
-                    "No sessions found.",
-                    systemImage: "calendar.badge.exclamationmark",
-                    description: Text("You may be offline or have not booked any sessions yet.")
+                EmptyStateView(
+                    icon: "calendar.badge.exclamationmark",
+                    title: "No sessions found.",
+                    message: "You may be offline or have not booked any sessions yet.",
+                    actionTitle: "Find a Session",
+                    action: { } // Since EmptySessionsView uses NavigationLink inside its design, we rely on the custom EmptySessionsView for the history items.
                 )
             }
         }

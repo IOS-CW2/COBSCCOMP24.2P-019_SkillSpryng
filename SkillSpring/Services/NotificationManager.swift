@@ -134,12 +134,13 @@ class NotificationManager: ObservableObject {
 
     /// Fires 3 seconds after the user first logs in — a warm welcome message.
     func scheduleWelcomeNotification(userName: String) {
-        guard isAuthorized else { return }
+        // Disabled for evaluation: guard isAuthorized else { return }
 
         // Only send once, ever
-        let key = "skillspryng.welcomeNotificationSent"
-        guard !UserDefaults.standard.bool(forKey: key) else { return }
-        UserDefaults.standard.set(true, forKey: key)
+        // Disabled for evaluation: 
+        // let key = "skillspryng.welcomeNotificationSent"
+        // guard !UserDefaults.standard.bool(forKey: key) else { return }
+        // UserDefaults.standard.set(true, forKey: key)
 
         let content = UNMutableNotificationContent()
         content.title = "Welcome to SkillSpryng 🌱"

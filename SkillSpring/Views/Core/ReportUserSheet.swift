@@ -1,6 +1,11 @@
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
 
 struct ReportUserSheet: View {
+    let reportedUserId: String
+    let reportedUserName: String
+    
     @State private var selectedReason: String? = "Harassment or hate speech" // Default per mockup
     @State private var details: String = ""
     @State private var blockUser: Bool = true // Default per mockup
@@ -44,9 +49,9 @@ struct ReportUserSheet: View {
                             .clipShape(Circle())
                         
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Alex Rivera")
+                            Text(reportedUserName)
                                 .font(AppTheme.Typography.headline)
-                            Text("@rivera_design")
+                            Text("@\(reportedUserName.lowercased().replacingOccurrences(of: " ", with: "_"))")
                                 .font(AppTheme.Typography.caption)
                                 .foregroundColor(.gray)
                         }
@@ -140,7 +145,7 @@ struct ReportUserSheet: View {
                         .accessibilityHidden(true)
                         
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Block Alex Rivera")
+                            Text("Block \(reportedUserName)")
                                 .font(AppTheme.Typography.subheadline)
                             Text("They won't be able to message you or see your profile.")
                                 .font(AppTheme.Typography.caption2)
@@ -152,7 +157,7 @@ struct ReportUserSheet: View {
                         Toggle("", isOn: $blockUser)
                             .tint(.red)
                             .labelsHidden()
-                            .accessibilityLabel("Block Alex Rivera")
+                            .accessibilityLabel("Block \(reportedUserName)")
                     }
                     .padding()
                     .background(Color.white)
@@ -161,7 +166,7 @@ struct ReportUserSheet: View {
                     
                     // Action Buttons
                     VStack(spacing: 12) {
-                        Button(action: { dismiss() }) {
+                        Button(action: { submitReport() }) {
                             Text("Submit Report")
                                 .font(AppTheme.Typography.headline)
                                 .foregroundColor(.white)
@@ -187,5 +192,24 @@ struct ReportUserSheet: View {
             }
         }
         .background(Color(.systemBackground))
+    }
+    
+    private func submitReport() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        db.collection("reports").addDocument(data: [
+            "reason": selectedReason ?? "",
+            "details": details,
+            "blockUser": blockUser,
+            "reportedBy": uid,
+            "reportedUserId": reportedUserId,
+            "timestamp": FieldValue.serverTimestamp()
+        ]) { error in
+            if let error = error {
+                print("Error capturing report: \(error)")
+            } else {
+                dismiss()
+            }
+        }
     }
 }

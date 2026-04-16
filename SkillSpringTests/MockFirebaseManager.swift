@@ -20,13 +20,18 @@ class MockFirebaseManager: FirebaseService {
         }
     }
     
-    func verifyOTP(verificationID: String, verificationCode: String) async throws -> AuthDataResult {
-        if shouldSucceed {
-            // This is complex to mock due to private initializers in Firebase,
-            // but for simple ViewModel tests, we just care if it throws or not.
-            fatalError("AuthDataResult mocking is complex; use protocol methods instead if results are needed.")
-        } else {
+    var verifyOTPResult: Result<AuthResultProxy, Error> = .success(AuthResultProxy(uid: "USER_ID_123", isNewUser: false))
+    
+    func verifyOTP(verificationID: String, verificationCode: String) async throws -> AuthResultProxy {
+        if !shouldSucceed {
             throw NSError(domain: "MockError", code: -1, userInfo: nil)
+        }
+        
+        switch verifyOTPResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
         }
     }
     

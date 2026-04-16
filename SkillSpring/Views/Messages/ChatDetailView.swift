@@ -80,7 +80,7 @@ struct ChatDetailView: View {
                             .padding(.top)
                             .accessibilityLabel("Chat history for today")
 
-                        ForEach(viewModel.messages) { message in
+                        ForEach(viewModel.messages.filter { !($0.isDeleted ?? false) }) { message in
                             MessageBubble(message: message)
                                 .id(message.id)
                         }
