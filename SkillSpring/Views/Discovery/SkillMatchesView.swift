@@ -54,6 +54,7 @@ struct SkillMatchesView: View {
                             SkillMatchCard(profile: profile)
                         }
                         .buttonStyle(PlainButtonStyle())
+                        .accessibilityIdentifier("skillMatchCard")
                     }
                 }
                 .padding(.horizontal)
@@ -129,11 +130,7 @@ struct SkillMatchCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 14) {
-                Image(profile.imageUrl)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 60, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                SmartAvatar(imageUrl: profile.imageUrl, width: 60, height: 60)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(profile.fullName)

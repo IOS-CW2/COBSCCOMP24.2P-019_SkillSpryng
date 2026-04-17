@@ -18,11 +18,11 @@ import FirebaseAuth
 //   users/{uid}/learningPath    — this user's enrolled courses
 
 @MainActor
-final class DataSeeder {
+final class DataSeeder: DataSeedingService {
 
     static let shared = DataSeeder()
     private let db = Firestore.firestore()
-    private var uid: String? { Auth.auth().currentUser?.uid }
+    private var uid: String? { Auth.auth().currentUser?.uid ?? "DEMO_TEST_USER_ID" }
     private let mock = MockDataProvider.shared
 
     private init() {}
@@ -42,6 +42,10 @@ final class DataSeeder {
         await seedUserSessions()
         await seedUserProfile()
         await seedGamification()
+        await seedMatches()           // ← matches/ collection
+        await seedLearningPath()      // ← users/{uid}/learningPath
+        await seedNotifications()     // ← users/{uid}/notifications
+        await seedTransactions()      // ← users/{uid}/transactions
         print("🌱 ====================================================\n")
     }
 
@@ -342,6 +346,180 @@ final class DataSeeder {
             if let data = try? Firestore.Encoder().encode(mock.analyticsData) {
                 try? await analyticsRef.setData(data)
             }
+        }
+    }
+
+
+    // MARK: - matches/
+    // Seeds the `matches` root collection with realistic pending/accepted requests
+    // so the MyMatchesInboxView is populated without needing real user interactions.
+
+    private func seedMatches() async {
+        let ref = db.collection("matches")
+        guard await isEmpty(ref) else {
+            print("🌱 matches: already seeded — skipping")
+            return
+        }
+        guard let uid else {
+            print("🌱 matches: ⚠️ skipped — no authenticated user")
+            return
+        }
+        let batch = db.batch()
+        // Build one match per profile using the current user as the sender.
+        for profile in mock.allProfiles.prefix(4) {
+            let toId = profile.id
+            let match = MatchRequest(
+                fromUserId: uid,
+                toUserId: toId,
+                fromUserName: mock.currentUser.fullName,
+                toUserName: profile.fullName,
+                skillOffered: mock.currentUser.skillsToTeach.first ?? "UI Design",
+                skillWanted: profile.skillsToLearn.first ?? "Pottery",
+                status: .pending,
+                message: "Hey \(profile.fullName.split(separator: " ").first ?? "there")! I'd love to swap skills with you."
+            )
+            if let data = try? Firestore.Encoder().encode(match) {
+                batch.setData(data, forDocument: ref.document(match.id))
+            }
+        }
+        do {
+            try await batch.commit()
+            print("🌱 matches: ✅ seeded \(min(mock.allProfiles.count, 4)) match requests")
+        } catch {
+            print("🌱 matches: ❌ \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - users/{uid}/learningPath
+    // Seeds the learningPath sub-collection so CoursesView has data
+    // without the user needing to manually enrol in a course first.
+
+    private func seedLearningPath() async {
+        guard let uid else {
+            print("🌱 learningPath: ⚠️ skipped — no authenticated user")
+            return
+        }
+        let ref = db.collection("users").document(uid).collection("learningPath")
+        guard await isEmpty(ref) else {
+            print("🌱 learningPath: already seeded — skipping")
+            return
+        }
+        let batch = db.batch()
+        for course in mock.learningPath {
+            if let data = try? Firestore.Encoder().encode(course) {
+                batch.setData(data, forDocument: ref.document(course.id))
+            }
+        }
+        do {
+            try await batch.commit()
+            print("🌱 learningPath: ✅ seeded \(mock.learningPath.count) courses")
+        } catch {
+            print("🌱 learningPath: ❌ \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - users/{uid}/notifications
+    // Seeds a welcome notification and a session-reminder so the
+    // Notifications inbox is not empty on first launch.
+
+    private func seedNotifications() async {
+        guard let uid else {
+            print("🌱 notifications: ⚠️ skipped — no authenticated user")
+            return
+        }
+        let ref = db.collection("users").document(uid).collection("notifications")
+        guard await isEmpty(ref) else {
+            print("🌱 notifications: already seeded — skipping")
+            return
+        }
+        let notifications = [
+            AppNotification(
+                type: .systemAlert,
+                title: "Welcome to SkillSpryng! 🎉",
+                body: "You have been given 500 SKP starter credits. Find a mentor and book your first session!",
+                referenceId: nil
+            ),
+            AppNotification(
+                type: .matchRequest,
+                title: "New Match Request 🤝",
+                body: "Elena Rodriguez wants to swap UI Design for TypeScript skills with you.",
+                referenceId: nil
+            ),
+            AppNotification(
+                type: .sessionReminder,
+                title: "Session Reminder ⏰",
+                body: "Your Advanced Creative Strategy session starts in 2 hours.",
+                referenceId: nil
+            ),
+            AppNotification(
+                type: .rewardEarned,
+                title: "Badge Unlocked! 🏅",
+                body: "You earned the First Bloom badge for completing your profile.",
+                referenceId: nil
+            )
+        ]
+        let batch = db.batch()
+        for notif in notifications {
+            if let data = try? Firestore.Encoder().encode(notif) {
+                batch.setData(data, forDocument: ref.document(notif.id))
+            }
+        }
+        do {
+            try await batch.commit()
+            print("🌱 notifications: ✅ seeded \(notifications.count) notifications")
+        } catch {
+            print("🌱 notifications: ❌ \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - users/{uid}/transactions
+    // Seeds 3 demo transactions so the Wallet History screen is not empty
+    // and so Firestore shows the sub-collection exists.
+
+    private func seedTransactions() async {
+        guard let uid else {
+            print("🌱 transactions: ⚠️ skipped — no authenticated user")
+            return
+        }
+        let ref = db.collection("users").document(uid).collection("transactions")
+        guard await isEmpty(ref) else {
+            print("🌱 transactions: already seeded — skipping")
+            return
+        }
+        let transactions = [
+            CreditTransaction(
+                amount: 500,
+                type: .rewardBonus,
+                description: "Welcome bonus — starter SKP credits",
+                balanceAfter: 500,
+                referenceId: nil
+            ),
+            CreditTransaction(
+                amount: -150,
+                type: .sessionPayment,
+                description: "Session: Advanced Creative Strategy (90 min)",
+                balanceAfter: 350,
+                referenceId: nil
+            ),
+            CreditTransaction(
+                amount: 150,
+                type: .sessionEarning,
+                description: "Session completion reward — Advanced Brand Identity",
+                balanceAfter: 500,
+                referenceId: nil
+            )
+        ]
+        let batch = db.batch()
+        for tx in transactions {
+            if let data = try? Firestore.Encoder().encode(tx) {
+                batch.setData(data, forDocument: ref.document(tx.id))
+            }
+        }
+        do {
+            try await batch.commit()
+            print("🌱 transactions: ✅ seeded \(transactions.count) transactions")
+        } catch {
+            print("🌱 transactions: ❌ \(error.localizedDescription)")
         }
     }
 

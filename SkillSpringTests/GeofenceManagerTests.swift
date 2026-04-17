@@ -8,6 +8,7 @@
 // Run: Cmd+U   ·   Pattern: Arrange → Act → Assert (AAA)
 
 import XCTest
+import CoreLocation
 @testable import SkillSpring
 
 @MainActor

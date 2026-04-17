@@ -27,8 +27,10 @@ struct PaySessionView: View {
                                 .foregroundColor(.gray)
                         }
                         Spacer()
-                        Image(systemName: "leaf.fill")
-                            .foregroundColor(AppTheme.Colors.primary)
+                        Image("AppLogo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
                             .accessibilityHidden(true)
                     }
                     .accessibilityElement(children: .combine)

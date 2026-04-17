@@ -17,12 +17,18 @@ final class AuthViewModelTests: XCTestCase {
 
     private var sut: AuthViewModel!
     private var mockService: MockFirebaseManager!
+    private var mockSeeder: MockDataSeeder!
+    private var mockDataService: MockDataService!
     private var cancellables: Set<AnyCancellable>!
 
     override func setUp() async throws {
         try await super.setUp()
         mockService   = MockFirebaseManager()
-        sut           = AuthViewModel(firebaseService: mockService)
+        mockSeeder    = MockDataSeeder()
+        mockDataService = MockDataService()
+        sut           = AuthViewModel(firebaseService: mockService,
+                                      seederService: mockSeeder,
+                                      dataService: mockDataService)
         cancellables  = []
     }
 

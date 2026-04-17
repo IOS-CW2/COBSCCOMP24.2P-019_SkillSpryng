@@ -23,9 +23,15 @@ class AuthViewModel: ObservableObject {
     @Published var navigateToSkillSetup: Bool = false
 
     private let firebaseService: FirebaseService
+    private let seederService: DataSeedingService
+    private let dataService: DataService
 
-    init(firebaseService: FirebaseService? = nil) {
+    init(firebaseService: FirebaseService? = nil,
+         seederService: DataSeedingService? = nil,
+         dataService: DataService? = nil) {
         self.firebaseService = firebaseService ?? FirebaseManager.shared
+        self.seederService   = seederService   ?? DataSeeder.shared
+        self.dataService     = dataService     ?? FirebaseDataService.shared
     }
 
     // MARK: - Step 1: Send OTP
@@ -75,7 +81,7 @@ class AuthViewModel: ObservableObject {
                     self.navigateToSkillSetup = true
                 } else {
                     // Existing user — seed their data and go home
-                    await DataSeeder.shared.seedAll()
+                    await seederService.seedAll()
                     UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
                     self.navigateToSuccess = true
                 }
@@ -100,9 +106,9 @@ class AuthViewModel: ObservableObject {
             walletBalance: 500   // Welcome bonus
         )
         do {
-            try await FirebaseManager.shared.saveUser(newUser)
+            try await firebaseService.saveUser(newUser)
             // Write welcome notification
-            await FirebaseDataService.shared.createNotification(
+            await dataService.createNotification(
                 AppNotification(
                     type: .systemAlert,
                     title: "Welcome to SkillSpryng! 🎉",
@@ -111,7 +117,7 @@ class AuthViewModel: ObservableObject {
                 )
             )
             // Seed all collections for new user
-            await DataSeeder.shared.seedAll()
+            await seederService.seedAll()
             UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
         } catch {
             print("[AuthViewModel] createUserProfile error: \(error.localizedDescription)")
@@ -128,6 +134,10 @@ class AuthViewModel: ObservableObject {
             self.isLoading = false
             if success {
                 HapticManager.success()
+                // Seed all Firestore collections (idempotent — safe on repeat calls).
+                // This mirrors the OTP login path and ensures sessions always appear
+                // even if the user previously authenticated only via biometrics.
+                await seederService.seedAll()
                 UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
             } else {
                 HapticManager.error()

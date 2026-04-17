@@ -8,9 +8,10 @@ struct DiscoverView: View {
             VStack(alignment: .leading, spacing: 20) {
                 // Header
                 HStack {
-                    Image(systemName: "leaf.fill")
-                        .foregroundColor(AppTheme.Colors.primary)
-                        .font(.title3)
+                    Image("AppLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 28, height: 28)
                         .accessibilityHidden(true)
                     
                     Spacer()
@@ -41,6 +42,7 @@ struct DiscoverView: View {
                         .accessibilityHidden(true)
                     TextField("What do you want to learn?", text: $viewModel.searchText)
                         .font(AppTheme.Typography.body)
+                        .accessibilityIdentifier("discoverSearchField")
                     
                     Button(action: { /* Filter action */ }) {
                         Image(systemName: "slider.horizontal.3")
@@ -168,19 +170,8 @@ struct HeroMatchCard: View {
                 VStack(alignment: .leading, spacing: 12) {
                     // Overlapping avatars
                     HStack(spacing: -12) {
-                        Image("instructor1") // Use placeholders or system icons if assets missing
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                        
-                        Image("instructor2")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                        SmartAvatar(imageUrl: "instructor1", width: 40, height: 40)
+                        SmartAvatar(imageUrl: "instructor2", width: 40, height: 40)
                     }
                     
                     Text("Perfect Match Nearby!")
@@ -201,6 +192,7 @@ struct HeroMatchCard: View {
                             .background(AppTheme.Colors.primary)
                             .cornerRadius(8)
                     }
+                    .accessibilityIdentifier("connectNowButton")
                 }
                 .padding(24)
                 
@@ -385,8 +377,9 @@ struct NearbyMapBannerCard: View {
                         .foregroundColor(.gray)
                     
                     HStack(spacing: -8) {
-                        ForEach(["instructor1", "instructor2", "instructor1"], id: \.self) { img in
-                            Image(img)
+                        let images = ["instructor1", "instructor2", "instructor1"]
+                        ForEach(images.indices, id: \.self) { index in
+                            Image(images[index])
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 22, height: 22)

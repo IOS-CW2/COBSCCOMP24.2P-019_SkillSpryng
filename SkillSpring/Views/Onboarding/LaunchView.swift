@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LaunchView: View {
     @State private var isActive: Bool = false
+    @State private var activeDotIndex: Int = 0
     
     var body: some View {
         Group {
@@ -13,19 +14,12 @@ struct LaunchView: View {
                     VStack(spacing: 20) {
                         Spacer()
 
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(AppTheme.Gradients.onboarding)
-                                .frame(width: 90, height: 90)
-                                .shadow(color: AppTheme.Colors.primary.opacity(0.3), radius: 12, y: 6)
-
-                            Image(systemName: "leaf.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 44, height: 44)
-                                .foregroundColor(.white)
-                        }
-                        .accessibilityHidden(true)
+                        Image("AppLogo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 120, height: 120)
+                            .shadow(color: AppTheme.Colors.primary.opacity(0.2), radius: 15, y: 8)
+                            .accessibilityHidden(true)
 
                         Text("SkillSpryng")
                             .font(.system(size: 34, weight: .bold, design: .default))
@@ -38,12 +32,21 @@ struct LaunchView: View {
                         Spacer()
 
                         HStack(spacing: 8) {
-                            Circle().fill(AppTheme.Colors.primary).frame(width: 8, height: 8)
-                            Circle().fill(AppTheme.Colors.primary.opacity(0.35)).frame(width: 6, height: 6)
-                            Circle().fill(AppTheme.Colors.primary.opacity(0.2)).frame(width: 6, height: 6)
+                            ForEach(0..<3) { index in
+                                Circle()
+                                    .fill(AppTheme.Colors.primary.opacity(activeDotIndex == index ? 1.0 : 0.2))
+                                    .frame(width: activeDotIndex == index ? 8 : 6, height: activeDotIndex == index ? 8 : 6)
+                            }
                         }
                         .padding(.bottom, 48)
                         .accessibilityHidden(true)
+                        .onAppear {
+                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                    activeDotIndex = (activeDotIndex + 1) % 3
+                                }
+                            }
+                        }
                     }
                 }
             }

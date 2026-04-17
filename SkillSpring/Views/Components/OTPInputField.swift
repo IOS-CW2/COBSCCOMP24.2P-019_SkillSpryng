@@ -4,6 +4,7 @@ struct OTPInputField: View {
     @Binding var verificationCode: String
     var numberOfDigits: Int = 6
     @FocusState private var isFocused: Bool
+    var accessibilityIdentifier: String? = nil
     
     var body: some View {
         ZStack {
@@ -35,6 +36,7 @@ struct OTPInputField: View {
                 .accessibilityLabel("Verification Code")
                 .accessibilityValue(verificationCode.isEmpty ? "Empty" : verificationCode.map { String($0) }.joined(separator: " "))
                 .accessibilityHint("Enter your \(numberOfDigits)-digit code")
+                .accessibilityIdentifier(accessibilityIdentifier ?? "")
                 .onChange(of: verificationCode) { newValue in
                     // Only allow digits
                     let filtered = newValue.filter { "0123456789".contains($0) }

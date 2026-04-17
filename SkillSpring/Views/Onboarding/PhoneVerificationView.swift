@@ -19,9 +19,8 @@ struct PhoneVerificationView: View {
                 .foregroundColor(.black)
                 .multilineTextAlignment(.center)
             
-            OTPInputField(verificationCode: $viewModel.verificationCode)
+            OTPInputField(verificationCode: $viewModel.verificationCode, accessibilityIdentifier: "otpInputField")
                 .padding(.horizontal, 40)
-                .accessibilityIdentifier("otpInputField")
             
             if let error = viewModel.errorMessage {
                 Text(error)

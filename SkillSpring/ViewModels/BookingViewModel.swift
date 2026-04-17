@@ -30,15 +30,18 @@ class BookingViewModel: ObservableObject {
 
     @Published var userBalance: Int = 0
 
-    init(instructor: MatchProfile) {
+    private let dataService: DataService
+
+    init(instructor: MatchProfile, dataService: DataService? = nil) {
         self.instructor = instructor
+        self.dataService = dataService ?? FirebaseDataService.shared
         Task { await loadBalance() }
     }
 
     // MARK: - Load Balance
 
     func loadBalance() async {
-        if let user = await FirebaseDataService.shared.fetchCurrentUser() {
+        if let user = await dataService.fetchCurrentUser() {
             self.userBalance = user.walletBalance
         }
     }
@@ -65,9 +68,8 @@ class BookingViewModel: ObservableObject {
 
         Task {
             defer { isBooking = false }
-            let fds = FirebaseDataService.shared
             
-            guard let user = await fds.fetchCurrentUser(),
+            guard let user = await dataService.fetchCurrentUser(),
                   let currentUid = user.id else { return }
 
             if instructor.status == .active {
@@ -75,7 +77,7 @@ class BookingViewModel: ObservableObject {
                 let newBalance = user.walletBalance - totalPrice
 
                 // 1. Deduct wallet in Firestore
-                await fds.updateWalletBalance(newBalance)
+                await dataService.updateWalletBalance(newBalance)
                 self.userBalance = newBalance
 
                 // 2. Build & create the Session document
@@ -101,7 +103,7 @@ class BookingViewModel: ObservableObject {
                     scheduledAt: sessionDate
                 )
                 do {
-                    try await fds.createSession(session)
+                    try await dataService.createSession(session)
                 } catch {
                     print("[Booking] createSession error: \(error)")
                 }
@@ -114,7 +116,7 @@ class BookingViewModel: ObservableObject {
                     balanceAfter: newBalance,
                     referenceId: session.id
                 )
-                await fds.createTransaction(tx)
+                await dataService.createTransaction(tx)
 
                 // 4. Write MatchRequest document (status: accepted for direct bookings)
                 let match = MatchRequest(
@@ -126,10 +128,10 @@ class BookingViewModel: ObservableObject {
                     skillWanted: instructor.skillsToTeach.first ?? "Skills",
                     status: .accepted
                 )
-                try? await fds.createMatch(match)
+                try? await dataService.createMatch(match)
 
                 // 5. Write in-app notification
-                await fds.createNotification(AppNotification(
+                await dataService.createNotification(AppNotification(
                     type: .sessionConfirmed,
                     title: "Session Booked! ✅",
                     body: "Your session with \(instructor.fullName) on \(formatter.string(from: sessionDate)) is confirmed.",
@@ -165,10 +167,10 @@ class BookingViewModel: ObservableObject {
                     status: .pending,
                     message: topicsAndGoals
                 )
-                try? await fds.createMatch(match)
+                try? await dataService.createMatch(match)
 
                 // Write in-app notification
-                await fds.createNotification(AppNotification(
+                await dataService.createNotification(AppNotification(
                     type: .matchRequest,
                     title: "Request Sent 📩",
                     body: "Your skill-swap request to \(instructor.fullName) has been sent.",
