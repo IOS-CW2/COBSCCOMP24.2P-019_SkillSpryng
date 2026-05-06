@@ -1,11 +1,15 @@
 import SwiftUI
 
 struct CoursesView: View {
-    @StateObject private var vm = LearningViewModel()
+    @ObservedObject private var vm: LearningViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = "Courses" // Toggled with "Events"
     @State private var selectedCategory = "All"
     let categories = ["All", "Design", "Coding", "Music", "Languages", "Business"]
+
+    init(vm: LearningViewModel = LearningViewModel()) {
+        self.vm = vm
+    }
     
     var body: some View {
         VStack(spacing: 0) {

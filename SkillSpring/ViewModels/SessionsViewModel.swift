@@ -45,9 +45,17 @@ final class SessionsViewModel: ObservableObject {
 
     // MARK: - Session Status Update
 
+    /// Marks a session as completed.
+    /// `FirebaseDataService.updateSessionStatus` internally calls
+    /// `awardSessionCompletionPoints` which atomically increments `walletBalance`
+    /// via `FieldValue.increment`, writes a `CreditTransaction` (.sessionEarning),
+    /// updates karma + leaderboard, and fires an in-app notification.
+    /// This satisfies Proposal §2.1.7: "Completing sessions earns SKP atomically
+    /// via Firestore's FieldValue.increment."
     func completeSession(_ session: Session) {
         Task {
             await FirebaseDataService.shared.updateSessionStatus(session.id, status: .completed)
+            HapticManager.success()
         }
     }
 

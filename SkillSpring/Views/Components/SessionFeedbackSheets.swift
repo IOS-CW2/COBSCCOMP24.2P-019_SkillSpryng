@@ -2,9 +2,11 @@ import SwiftUI
 
 struct RateSessionSheet: View {
     let instructor: String
+    let session: Session
     @Environment(\.dismiss) var dismiss
     @State private var rating = 0
     @State private var feedback = ""
+    @State private var isSubmitting = false
     
     var body: some View {
         VStack(spacing: 32) {
@@ -92,16 +94,37 @@ struct RateSessionSheet: View {
             
             // Actions
             VStack(spacing: 12) {
-                Button(action: { dismiss() }) {
-                    Text("Submit Review")
-                        .font(AppTheme.Typography.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(rating > 0 ? AppTheme.Colors.primary : Color.gray.opacity(0.3))
-                        .cornerRadius(16)
+                Button(action: {
+                    guard rating > 0 else { return }
+                    isSubmitting = true
+                    Task {
+                        // Mark session completed and write rating to Firestore
+                        await FirebaseDataService.shared.updateSessionStatus(session.id, status: .completed)
+                        await FirebaseDataService.shared.rateSession(
+                            sessionId: session.id,
+                            rating: rating,
+                            feedback: feedback
+                        )
+                        HapticManager.success()
+                        isSubmitting = false
+                        dismiss()
+                    }
+                }) {
+                    Group {
+                        if isSubmitting {
+                            ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        } else {
+                            Text("Submit Review")
+                                .font(AppTheme.Typography.headline)
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(rating > 0 ? AppTheme.Colors.primary : Color.gray.opacity(0.3))
+                    .cornerRadius(16)
                 }
-                .disabled(rating == 0)
+                .disabled(rating == 0 || isSubmitting)
                 
                 Button(action: { dismiss() }) {
                     Text("Skip")
@@ -249,12 +272,33 @@ struct CancelSessionSheet: View {
                 Button(action: {
                     isCancelling = true
                     Task {
-                        // Attempt to delete it from calendar if the ID is tracked
+                        // 1. Cancel in Firestore (soft-delete: sets status → .cancelled, fires in-app notification)
+                        await FirebaseDataService.shared.cancelSession(session.id)
+
+                        // 2. Attempt to delete calendar event if one was created at booking time
                         if let eventId = session.calendarEventId {
                             _ = await CalendarService.shared.deleteCalendarEvent(identifier: eventId)
                         }
-                        
-                        // Proceed to dismiss or run actual cancel logic
+
+                        // 3. Refund the session cost back to the user's wallet
+                        //    creditsEarned stores the SKP value of the session; use it as the refund amount.
+                        let refund = session.creditsEarned ?? 0
+                        if refund > 0 {
+                            if let user = await FirebaseDataService.shared.fetchCurrentUser(),
+                               let uid = user.id {
+                                let newBalance = user.walletBalance + refund
+                                await FirebaseDataService.shared.updateWalletBalance(newBalance)
+                                await FirebaseDataService.shared.createTransaction(CreditTransaction(
+                                    amount: refund,
+                                    type: .sessionEarning,
+                                    description: "Refund: cancelled session with \(session.instructorName)",
+                                    balanceAfter: newBalance,
+                                    referenceId: session.id
+                                ))
+                                _ = uid // suppress unused warning
+                            }
+                        }
+
                         await MainActor.run {
                             isCancelling = false
                             dismiss()

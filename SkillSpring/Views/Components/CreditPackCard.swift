@@ -3,6 +3,7 @@ import StoreKit
 
 struct CreditPackCard: View {
     let pack: CreditPack
+    var onBuy: () -> Void = {}
     
     var body: some View {
         HStack {
@@ -38,7 +39,7 @@ struct CreditPackCard: View {
             
             Spacer()
             
-            Button(action: { }) {
+            Button(action: onBuy) {
                 Text("Buy for \(pack.price)")
                     .font(AppTheme.Typography.subheadline)
                     .foregroundColor(.white)

@@ -241,7 +241,6 @@ struct MapSelectionView: View {
         .alert("Emergency Alert", isPresented: $showNeedHelpAlert) {
             Button("Confirm — Send Alert", role: .destructive) {
                 HapticManager.error()
-                // TODO: SOS / emergency contact API
             }
             Button("Cancel", role: .cancel) { }
         } message: {

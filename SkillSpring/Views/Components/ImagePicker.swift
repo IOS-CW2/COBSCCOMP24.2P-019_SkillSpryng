@@ -8,9 +8,9 @@ struct ImagePicker: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
-        // Fulfils AVFoundation requirements by defaulting to the Camera feed if the target device supports it
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            picker.sourceType = .camera
+        
+        if UIImagePickerController.isSourceTypeAvailable(sourceType) {
+            picker.sourceType = sourceType
         } else {
             picker.sourceType = .photoLibrary
         }

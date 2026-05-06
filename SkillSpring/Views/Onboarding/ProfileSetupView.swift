@@ -6,7 +6,9 @@ struct ProfileSetupView: View {
     var phoneNumber: String
     @AppStorage("skillspryng.isLoggedIn") private var isLoggedIn = false
 
-    @State private var showingImagePicker = false
+    @State private var showSourcePicker = false
+    @State private var showCamera = false
+    @State private var showLibraryPicker = false
     @State private var navigateToFamily = false
     
     var body: some View {
@@ -32,7 +34,7 @@ struct ProfileSetupView: View {
                     // Titles
                     VStack(spacing: 8) {
                         Text("Make your profile\nshine ✨")
-                            .font(.system(size: 34, weight: .bold))
+                            .font(AppTheme.Typography.displayTitle)
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)
                         
@@ -64,7 +66,7 @@ struct ProfileSetupView: View {
                             .accessibilityHidden(true)
                         
                         Button(action: {
-                            showingImagePicker = true
+                            showSourcePicker = true
                         }) {
                             Circle()
                                 .fill(AppTheme.Colors.primary)
@@ -165,8 +167,19 @@ struct ProfileSetupView: View {
             .background(Color.white.shadow(color: .black.opacity(0.05), radius: 10, y: -5))
         }
         .navigationBarHidden(true)
-        .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(image: $viewModel.selectedImage)
+        .confirmationDialog("Change Profile Photo", isPresented: $showSourcePicker, titleVisibility: .visible) {
+            Button("Take Photo") { showCamera = true }
+            Button("Choose from Library") { showLibraryPicker = true }
+            Button("Cancel", role: .cancel) {}
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraSheetView { image in
+                viewModel.selectedImage = image
+            }
+        }
+        .sheet(isPresented: $showLibraryPicker) {
+            ImagePicker(image: $viewModel.selectedImage, sourceType: .photoLibrary)
+                .ignoresSafeArea()
         }
     }
 }

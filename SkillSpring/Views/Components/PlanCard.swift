@@ -5,6 +5,7 @@ struct PlanCard: View {
     let price: String
     let features: [String]
     let isRecommended: Bool
+    var onAction: (() -> Void)? = nil
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -43,7 +44,7 @@ struct PlanCard: View {
                 }
             }
             
-            Button(action: { }) {
+            Button(action: { onAction?() }) {
                 Text(isRecommended ? "Go Premium" : "Current Plan")
                     .font(AppTheme.Typography.subheadline)
                     .foregroundColor(isRecommended ? .white : AppTheme.Colors.primary)

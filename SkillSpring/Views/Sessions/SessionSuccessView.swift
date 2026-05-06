@@ -7,11 +7,29 @@ struct SessionSuccessView: View {
     @State private var showCalendarToast = false
     @State private var showsAlert = false
     @State private var alertMessage = ""
+    @State private var linkCopied = false
+    @State private var reminderSet = false
     
     private var formattedDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEE, MMM d"
         return formatter.string(from: viewModel.selectedDate)
+    }
+
+    /// Calculates the session end time by adding selectedDuration minutes to
+    /// the parsed selectedTime string. Replaces the previous hardcoded "11:30 AM".
+    private var computedEndTime: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        guard let start = formatter.date(from: viewModel.selectedTime) else {
+            return viewModel.selectedTime
+        }
+        let end = Calendar.current.date(
+            byAdding: .minute,
+            value: viewModel.selectedDuration,
+            to: start
+        ) ?? start
+        return formatter.string(from: end)
     }
     
     var body: some View {
@@ -56,7 +74,7 @@ struct SessionSuccessView: View {
                         .font(AppTheme.Typography.headline)
                     Text(formattedDate)
                         .font(AppTheme.Typography.subheadline)
-                    Text("\(viewModel.selectedTime) - 11:30 AM")
+                    Text("\(viewModel.selectedTime) – \(computedEndTime)")
                         .font(AppTheme.Typography.caption)
                         .foregroundColor(.gray)
                 }
@@ -72,10 +90,13 @@ struct SessionSuccessView: View {
                     Spacer()
                     Text("google.com/asdf-ghjk")
                         .font(AppTheme.Typography.badge)
-                    Button(action: { }) {
-                        Text("Copy")
+                    Button(action: {
+                        UIPasteboard.general.string = "google.com/asdf-ghjk"
+                        withAnimation { linkCopied = true }
+                    }) {
+                        Text(linkCopied ? "Copied!" : "Copy")
                             .font(AppTheme.Typography.badge)
-                            .foregroundColor(AppTheme.Colors.primary)
+                            .foregroundColor(linkCopied ? .gray : AppTheme.Colors.primary)
                     }
                 }
                 .padding(.horizontal)
@@ -162,13 +183,23 @@ struct SessionSuccessView: View {
                 }
                 .disabled(calendarSuccess)
                 
-                Button(action: { }) {
-                    Label("Set Reminder", systemImage: "bell.fill")
+                Button(action: {
+                    guard !reminderSet else { return }
+                    NotificationManager.shared.scheduleSessionReminder(
+                        identifier: viewModel.instructor.id,
+                        sessionTitle: "\(viewModel.instructor.role) Session",
+                        instructorName: viewModel.instructor.fullName,
+                        sessionDate: viewModel.selectedDate
+                    )
+                    withAnimation { reminderSet = true }
+                }) {
+                    Label(reminderSet ? "Reminder Set" : "Set Reminder", systemImage: reminderSet ? "bell.badge.fill" : "bell.fill")
                         .font(AppTheme.Typography.headline)
-                        .foregroundColor(AppTheme.Colors.primary)
+                        .foregroundColor(reminderSet ? .gray : AppTheme.Colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
+                .disabled(reminderSet)
                 
                 Button(action: { dismiss() }) {
                     Text("Go to Home")

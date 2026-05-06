@@ -158,7 +158,7 @@ struct PremiumView: View {
                 VStack(spacing: 6) {
                     if selectedPlan == .monthly {
                         Text(storeKit.proMonthly?.displayPrice ?? "$6.99")
-                            .font(.system(size: 36, weight: .bold))
+                            .font(AppTheme.Typography.largeTitle)
                         + Text(" / month")
                             .font(AppTheme.Typography.callout)
                             .foregroundColor(.gray)
@@ -169,7 +169,7 @@ struct PremiumView: View {
                     } else {
                         HStack(spacing: 8) {
                             Text(storeKit.proYearly?.displayPrice ?? "$49.99")
-                                .font(.system(size: 36, weight: .bold))
+                                .font(AppTheme.Typography.largeTitle)
                             Text("$83.88")
                                 .font(AppTheme.Typography.callout)
                                 .foregroundColor(.gray)
@@ -262,12 +262,20 @@ struct PremiumView: View {
                     // Footer
                     VStack(spacing: 4) {
                         HStack(spacing: 16) {
-                            Button("Terms of Use") { }
-                                .font(AppTheme.Typography.caption2)
-                                .foregroundColor(.gray)
-                            Button("Privacy Policy") { }
-                                .font(AppTheme.Typography.caption2)
-                                .foregroundColor(.gray)
+                            Button("Terms of Use") {
+                                if let url = URL(string: "https://skillspryng.com/terms") {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                            .font(AppTheme.Typography.caption2)
+                            .foregroundColor(.gray)
+                            Button("Privacy Policy") {
+                                if let url = URL(string: "https://skillspryng.com/privacy") {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                            .font(AppTheme.Typography.caption2)
+                            .foregroundColor(.gray)
                         }
                         Text("Subscription auto-renews unless cancelled at least 24 hours before the end of the current period.")
                             .font(AppTheme.Typography.micro)

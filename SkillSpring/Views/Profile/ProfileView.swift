@@ -3,6 +3,7 @@ import SwiftUI
 struct ProfileView: View {
     @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) var dismiss
+    @State private var showAllReviews = false
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -103,7 +104,7 @@ struct ProfileView: View {
                     }
                     .frame(height: 8)
                     
-                    Button(action: { }) {
+                    NavigationLink(destination: EditProfileView()) {
                         HStack(spacing: 4) {
                             Text("See what's missing")
                             Image(systemName: "arrow.right")
@@ -234,11 +235,11 @@ struct ProfileView: View {
                 }
                 .padding(.horizontal)
                 
-                // Reviews
+                // Reviews Section
                 VStack(alignment: .leading, spacing: 16) {
-                    SectionHeader(title: "REVIEWS", actionTitle: "42 Total", action: { })
+                    SectionHeader(title: "REVIEWS", actionTitle: "\(vm.user.sessionsCount) Total", action: { showAllReviews = true })
                     
-                    ReviewRow(name: "Sarah Mitchell", time: "Learner of UI Design • 2 days ago", comment: "Adrian is an incredible mentor. He doesn't just teach the craft, he teaches the mindset of a successful designer.", rating: 5)
+                    ReviewRow(name: "Sarah Mitchell", time: "Learner of UI Design   2 days ago", comment: "Adrian is an incredible mentor. He doesn't just teach the craft, he teaches the mindset of a successful designer.", rating: 5)
                     
                     ReviewRow(name: "Julian Chen", time: "Learner of Brand Strategy • 1 week ago", comment: "Top-tier sessions. Adrian's depth of knowledge in market positioning was exactly what our startup needed.", rating: 5)
                 }
@@ -246,8 +247,14 @@ struct ProfileView: View {
                 
                 Spacer().frame(height: 100)
             }
+            .padding(.top)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(
+            NavigationLink(destination: GenericListView(title: "All Reviews", items: ["Sarah Mitchell: Adrian is an incredible mentor. He doesn't just teach the craft, he teaches the mindset of a successful designer.", "David Chen: Great session! Very clear explanations.", "Emma Wong: Helped me build my first iOS app from scratch."]), isActive: $showAllReviews) {
+                EmptyView()
+            }
+        )
         .navigationBarHidden(true)
         .onAppear {
             if let cachedUser = PersistenceService.shared.fetchUser() {

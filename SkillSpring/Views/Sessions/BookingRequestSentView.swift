@@ -4,6 +4,8 @@ struct BookingRequestSentView: View {
     let instructor: MatchProfile
     let sessionDate: Date   // Real date object
     let time: String
+    let isOnline: Bool
+    let duration: Int       // minutes
     @Environment(\.dismiss) private var dismiss
     
     // Calendar State
@@ -95,7 +97,7 @@ struct BookingRequestSentView: View {
                         .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
-                    Text("60 min")
+                    Text("\(duration) min")
                         .font(AppTheme.Typography.badge)
                 }
                 

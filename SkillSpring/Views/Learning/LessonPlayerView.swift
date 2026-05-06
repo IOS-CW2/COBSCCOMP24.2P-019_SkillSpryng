@@ -20,6 +20,8 @@ struct LessonPlayerView: View {
 
     @State private var currentLessonIndex = 3
     @State private var isPlaying = false
+    @State private var playerProgress: Double = 0.0   // 0.0 – 1.0
+    @State private var timeObserverToken: Any? = nil
 
     // MARK: AVPlayer setup
     // Apple public HLS test stream — valid, publicly available, no account required.
@@ -73,11 +75,16 @@ struct LessonPlayerView: View {
                     avPlayer.play()
                     isPlaying = true
                     observePlayerErrors()
+                    startProgressObserver()
                     print("[LessonPlayerView] ✅ AVPlayer started — URL: \(Self.sampleStreamURL)")
                 }
                 .onDisappear {
                     avPlayer.pause()
                     isPlaying = false
+                    if let token = timeObserverToken {
+                        avPlayer.removeTimeObserver(token)
+                        timeObserverToken = nil
+                    }
                 }
 
                 if let error = playerError {
@@ -95,7 +102,8 @@ struct LessonPlayerView: View {
 
                     // Header info
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Lesson \(currentLessonIndex) of \(session.lessonCount ?? 0) — 42% complete")
+                        let progressPct = Int(playerProgress * 100)
+                        Text("Lesson \(currentLessonIndex) of \(session.lessonCount ?? 0) — \(progressPct)% complete")
                             .font(AppTheme.Typography.badge)
                             .foregroundColor(.gray)
 
@@ -208,6 +216,17 @@ struct LessonPlayerView: View {
             playerError = (note.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error)?.localizedDescription
         }
     }
+
+    // MARK: - Progress Observer
+    private func startProgressObserver() {
+        let interval = CMTime(seconds: 2, preferredTimescale: 600)
+        timeObserverToken = avPlayer.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [self] time in
+            guard let duration = avPlayer.currentItem?.duration.seconds,
+                  duration.isFinite, duration > 0 else { return }
+            let progress = time.seconds / duration
+            playerProgress = min(max(progress, 0), 1)
+        }
+    }
 }
 
 // MARK: - TabHeader (unchanged, kept co-located)
@@ -218,7 +237,7 @@ struct TabHeader: View {
     var body: some View {
         VStack(spacing: 8) {
             Text(title)
-                .font(.system(size: 14, weight: isSelected ? .bold : .medium))
+                .font(isSelected ? AppTheme.Typography.footnote.weight(.bold) : AppTheme.Typography.footnote.weight(.medium))
                 .foregroundColor(isSelected ? AppTheme.Colors.primary : .gray)
             if isSelected {
                 Rectangle()

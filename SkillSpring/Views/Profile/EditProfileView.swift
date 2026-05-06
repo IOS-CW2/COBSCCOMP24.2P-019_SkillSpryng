@@ -1,4 +1,6 @@
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
 struct EditProfileView: View {
     @StateObject private var vm = ProfileViewModel()
@@ -127,12 +129,27 @@ struct EditProfileView: View {
                     .padding(.horizontal)
                     .padding(.top, 24)
 
-                    Button(action: {}) {
+                    Button(action: { showDeleteAccountAlert = true }) {
                         Text("Delete Account")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.red)
                     }
                     .padding(.bottom, 40)
+                    .alert("Delete Account?", isPresented: $showDeleteAccountAlert) {
+                        Button("Delete", role: .destructive) {
+                            Task {
+                                try? await FirebaseAuth.Auth.auth().currentUser?.delete()
+                                FirebaseDataService.shared.db
+                                    .collection("users")
+                                    .document(FirebaseDataService.shared.uid ?? "")
+                                    .delete()
+                                UserDefaults.standard.set(false, forKey: "skillspryng.isLoggedIn")
+                            }
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("This will permanently delete your account and all data. This action cannot be undone.")
+                    }
                 }
             }
         }

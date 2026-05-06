@@ -3,6 +3,7 @@ import SwiftUI
 struct SkillMatchesView: View {
     @StateObject private var vm = DiscoverViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State private var navigateToEvents = false
     @State private var searchText = ""
     @State private var selectedCategory = "All Matches"
     let categories = ["All Matches", "Creative Arts", "Development"]
@@ -16,7 +17,7 @@ struct SkillMatchesView: View {
                 // Title Area
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Grow your circle.")
-                        .font(.system(size: 32, weight: .bold))
+                        .font(AppTheme.Typography.largeTitle)
                     Text("Suggested mentors and peers matching your journey.")
                         .font(.subheadline)
                         .foregroundColor(.gray)
@@ -93,7 +94,7 @@ struct SkillMatchesView: View {
                             .lineSpacing(4)
                         
                         HStack {
-                            Button(action: { }) {
+                            Button(action: { navigateToEvents = true }) {
                                 Text("Join Group")
                                     .font(AppTheme.Typography.badge)
                                     .foregroundColor(.white)
@@ -121,6 +122,9 @@ struct SkillMatchesView: View {
             .padding(.top)
         }
         .navigationBarHidden(true)
+        .background(
+            NavigationLink(destination: EventsView(), isActive: $navigateToEvents) { EmptyView() }
+        )
     }
 }
 

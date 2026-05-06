@@ -213,7 +213,7 @@ struct CameraSheetView: View {
                     .accessibilityLabel("Close camera")
                     Spacer()
                     Text("Take Photo")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(AppTheme.Typography.subheadline)
                         .foregroundColor(.white)
                     Spacer()
                     // Balance spacer

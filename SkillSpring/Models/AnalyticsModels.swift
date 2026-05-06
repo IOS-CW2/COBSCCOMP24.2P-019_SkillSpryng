@@ -49,6 +49,11 @@ struct MatchRequest: Identifiable, Codable {
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
     var message: String = ""
+    // Scheduling metadata written by BookingViewModel at request creation
+    var scheduledDate: Date? = nil
+    var scheduledTime: String? = nil
+    var durationMinutes: Int? = nil
+    var isOnline: Bool? = nil
 }
 
 // MARK: - CreditTransaction

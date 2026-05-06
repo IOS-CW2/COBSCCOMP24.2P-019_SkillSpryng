@@ -1,12 +1,15 @@
 import SwiftUI
+import FirebaseAuth
 
 struct SettingsView: View {
     @StateObject private var vm = ProfileViewModel()
-    @State private var pushNotifications = true
-    @State private var darkMode = false
+    @AppStorage("skillspryng.pushNotifications") private var pushNotifications = true
+    @AppStorage("skillspryng.darkMode") private var darkMode = false
+    @AppStorage("skillspryng.profileVisibility") private var profileVisibility = "Public"
     @ObservedObject private var biometricService = BiometricAuthService.shared
     @AppStorage("skillspryng.isLoggedIn") private var isLoggedIn = false
     @Environment(\.dismiss) var dismiss
+    @State private var isDeletingAccount = false
 
     // Search — real binding instead of .constant("")
     @State private var settingsSearch: String = ""
@@ -179,16 +182,32 @@ struct SettingsView: View {
                         }
                         
                         VStack(spacing: 0) {
-                            // Profile Visibility 
+                            // Profile Visibility
                             HStack {
                                 Text("PROFILE VISIBILITY")
                                     .font(AppTheme.Typography.badge)
                                     .foregroundColor(.gray)
                                 Spacer()
                                 HStack(spacing: 0) {
-                                    Text("Public").padding(.horizontal, 12).padding(.vertical, 6).background(AppTheme.Colors.primary).foregroundColor(.white).cornerRadius(6)
-                                    Text("Private").padding(.horizontal, 12).padding(.vertical, 6).foregroundColor(.gray)
-                                    Text("Mutuals").padding(.horizontal, 12).padding(.vertical, 6).foregroundColor(.gray)
+                                    ForEach(["Public", "Private", "Mutuals"], id: \.self) { option in
+                                        Button(action: {
+                                            profileVisibility = option
+                                            Task {
+                                                if let uid = await FirebaseDataService.shared.fetchCurrentUser()?.id {
+                                                    try? await FirebaseDataService.shared.db
+                                                        .collection("users").document(uid)
+                                                        .updateData(["visibility": option.lowercased()])
+                                                }
+                                            }
+                                        }) {
+                                            Text(option)
+                                                .padding(.horizontal, 12).padding(.vertical, 6)
+                                                .background(profileVisibility == option ? AppTheme.Colors.primary : Color.clear)
+                                                .foregroundColor(profileVisibility == option ? .white : .gray)
+                                                .cornerRadius(6)
+                                        }
+                                        .accessibilityAddTraits(profileVisibility == option ? .isSelected : [])
+                                    }
                                 }
                                 .background(Color(.systemGray6))
                                 .cornerRadius(8)
@@ -273,6 +292,7 @@ struct SettingsView: View {
         .alert("Log Out", isPresented: $showLogoutConfirmation) {
             Button("Log Out", role: .destructive) {
                 biometricService.errorMessage = nil
+                try? FirebaseManager.shared.signOut()
                 PersistenceService.shared.clearCache()
                 NotificationManager.shared.cancelAllPendingNotifications()
                 isLoggedIn = false
@@ -284,9 +304,20 @@ struct SettingsView: View {
         // HIG: Destructive delete action requires explicit confirmation
         .alert("Delete Account", isPresented: $showDeleteConfirmation) {
             Button("Delete Account", role: .destructive) {
-                // TODO: call delete account API
                 HapticManager.error()
-                toast = .error("Account deletion is not yet available.")
+                isDeletingAccount = true
+                Task {
+                    if let uid = Auth.auth().currentUser?.uid {
+                        try? await FirebaseDataService.shared.db
+                            .collection("users").document(uid).delete()
+                    }
+                    try? Auth.auth().currentUser?.delete()
+                    await MainActor.run {
+                        isDeletingAccount = false
+                        PersistenceService.shared.clearCache()
+                        isLoggedIn = false
+                    }
+                }
             }
             Button("Cancel", role: .cancel) { }
         } message: {

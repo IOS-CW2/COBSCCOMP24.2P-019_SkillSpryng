@@ -2,6 +2,13 @@ import Foundation
 import Combine
 import UIKit
 
+// MARK: - SkillSetupViewModel
+// Drives the new-user Skill Setup flow (SkillSetupView).
+// Collects the user's teach/learn skills, experience level, location, bio,
+// and optional profile photo, then writes the completed User document to
+// Firestore via FirebaseDataService and seeds initial data via DataSeeder.
+// Architecture: SkillSetupView → SkillSetupViewModel → FirebaseDataService → Firestore
+
 @MainActor
 class SkillSetupViewModel: ObservableObject {
     @Published var selectedTeachSkills: Set<String> = []
@@ -61,17 +68,26 @@ class SkillSetupViewModel: ObservableObject {
             experienceLevel: experienceLevel.rawValue,
             location: isLocationEnabled ? location : "",
             bio: bio,
-            profileImageURL: "" // This would be the URL from storage in a real app
+            profileImageURL: ""
         )
         
         isLoading = true
         
         Task {
-            // Cache the user profile locally so it's available for zero-latency loading
+            // 1. Cache locally for zero-latency profile reads
             PersistenceService.shared.saveUser(user)
-            
-            // Temporarily mocked to bypass for UI testing
-            // Mark user as fully logged in — root switches to MainTabView
+
+            // 2. Persist skill profile to Firestore so it appears in Discover / MatchProfiles
+            do {
+                try await FirebaseDataService.shared.saveUser(user)
+            } catch {
+                print("[SkillSetup] Firestore save failed: \(error.localizedDescription)")
+            }
+
+            // 3. Seed all Firestore collections for this user (sessions, courses, etc.)
+            await DataSeeder.shared.seedAll()
+
+            // 4. Mark as logged in — RootCoordinatorView switches to MainTabView
             UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
             self.isSetupComplete = true
             self.isLoading = false

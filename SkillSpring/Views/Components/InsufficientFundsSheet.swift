@@ -2,6 +2,7 @@ import SwiftUI
 
 struct InsufficientFundsSheet: View {
     @Environment(\.dismiss) private var dismiss
+    var onTopUp: (() -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 24) {
@@ -30,7 +31,10 @@ struct InsufficientFundsSheet: View {
                 QuickTopUpCard(amount: 1000, price: "Rs. 1000")
             }
             
-            Button(action: { }) {
+            Button(action: {
+                dismiss()
+                onTopUp?()
+            }) {
                 Text("Top Up Now")
                     .font(AppTheme.Typography.headline)
                     .foregroundColor(.white)

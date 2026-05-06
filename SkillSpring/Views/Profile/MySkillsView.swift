@@ -4,6 +4,7 @@ struct MySkillsView: View {
     @State private var selectedTab = "Teaching"
     @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) var dismiss
+    @State private var navigateToMatches = false
     
     let tabs = ["Teaching", "Learning"]
     
@@ -53,13 +54,14 @@ struct MySkillsView: View {
                                 badge: stats?.level ?? "PRO",
                                 subheadline: "\(stats?.studentsTaught ?? 0) students taught • \(stats?.rating ?? 0.0) ★",
                                 studentsTaught: stats?.studentsTaught ?? 0,
-                                rating: stats?.rating ?? 0.0
+                                rating: stats?.rating ?? 0.0,
+                                onFindLearners: { navigateToMatches = true }
                             )
                         }
                     }
                     .padding(.horizontal)
                     
-                    Button(action: { }) {
+                    NavigationLink(destination: EditProfileView()) {
                         HStack {
                             Image(systemName: "plus")
                             Text("Add Teaching Skill")
@@ -98,7 +100,7 @@ struct MySkillsView: View {
                                 
                                 Spacer()
                                 
-                                Button(action: { }) {
+                                NavigationLink(destination: SkillMatchesView()) {
                                     Text("Find Mentors")
                                         .font(AppTheme.Typography.badge)
                                         .foregroundColor(AppTheme.Colors.primary)
@@ -125,6 +127,9 @@ struct MySkillsView: View {
         
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarHidden(true)
+        .background(
+            NavigationLink(destination: SkillMatchesView(), isActive: $navigateToMatches) { EmptyView() }
+        )
     }
 }
 

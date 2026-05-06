@@ -1,13 +1,18 @@
 import SwiftUI
 
 struct EventsView: View {
-    @StateObject private var vm = LearningViewModel()
+    @ObservedObject private var vm: LearningViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = "Events"
     @State private var selectedFilter = "All"
     let filters = ["All", "Free", "Paid", "Online", "Nearby"]
-    
+
     var isNavigatedFromCourses: Bool = false
+
+    init(vm: LearningViewModel = LearningViewModel(), isNavigatedFromCourses: Bool = false) {
+        self.vm = vm
+        self.isNavigatedFromCourses = isNavigatedFromCourses
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -22,7 +27,7 @@ struct EventsView: View {
                 
                 // Courses/Events Selector (Redundant if called from CoursesView but kept for standalone)
                 HStack(spacing: 0) {
-                    Button(action: { selectedTab = "Courses" }) {
+                    Button(action: { dismiss() }) {
                         Text("Courses")
                             .font(AppTheme.Typography.subheadline)
                             .frame(maxWidth: .infinity)

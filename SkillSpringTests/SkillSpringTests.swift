@@ -160,4 +160,5 @@ class MockDataService: DataService {
     func createTransaction(_ transaction: CreditTransaction) async { createdTransaction = transaction }
     func createMatch(_ match: MatchRequest) async throws { createdMatch = match }
     func createNotification(_ notification: AppNotification) async { createdNotification = notification }
+    func createConversation(_ conversation: Conversation, currentUserId: String) async { }
 }

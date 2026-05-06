@@ -144,12 +144,12 @@ struct LocationMapView: View {
                     HStack(spacing: 6) {
                         ProgressView().scaleEffect(0.7)
                         Text("Finding learners nearby...")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.gray)
                     }
                 } else {
                     Text("\(viewModel.nearbySkills.count) learners nearby")
-                        .font(.system(size: 17, weight: .bold))
+                        .font(AppTheme.Typography.headline)
                 }
                 Spacer()
                 Button(action: {
@@ -305,7 +305,7 @@ struct NearbyUserCard: View {
                     .foregroundColor(.green)
             }
 
-            NavigationLink(destination: Text("Profile: \(skill.name)")) {
+            NavigationLink(destination: MatchDetailView(profile: skill.profile)) {
                 Text("View")
                     .font(AppTheme.Typography.badge)
                     .foregroundColor(.white)

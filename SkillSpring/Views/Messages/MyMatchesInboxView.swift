@@ -16,7 +16,7 @@ struct MyMatchesInboxView: View {
                     // Title
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Matches")
-                            .font(.system(size: 32, weight: .bold))
+                            .font(AppTheme.Typography.largeTitle)
                         Text("Connect with experts who match your growth path.")
                             .font(.subheadline)
                             .foregroundColor(.gray)
@@ -29,7 +29,7 @@ struct MyMatchesInboxView: View {
                             Button(action: { selectedTab = index }) {
                                 VStack(spacing: 8) {
                                     Text(tabs[index])
-                                        .font(.system(size: 14, weight: selectedTab == index ? .bold : .medium))
+                                        .font(AppTheme.Typography.subheadline.weight(selectedTab == index ? .bold : .medium))
                                         .foregroundColor(selectedTab == index ? AppTheme.Colors.primary : .gray)
                                     
                                     ZStack {
@@ -77,11 +77,12 @@ struct RequestsView: View {
         VStack(alignment: .leading, spacing: 24) {
             // Incoming
             VStack(alignment: .leading, spacing: 16) {
-                SectionHeader(title: "INCOMING", actionTitle: "1 NEW", action: { })
+                let newCount = discoverVM.profiles.filter { $0.status == .requestIncoming }.count
+                SectionHeader(title: "INCOMING", actionTitle: newCount > 0 ? "\(newCount) NEW" : nil, action: { })
                     .padding(.horizontal)
                 
                 ForEach(discoverVM.profiles.filter { $0.status == .requestIncoming }) { profile in
-                    InboxMatchCard(profile: profile, type: .incoming)
+                    InboxMatchCard(profile: profile, type: .incoming, discoverVM: discoverVM)
                 }
             }
             
@@ -91,7 +92,7 @@ struct RequestsView: View {
                     .padding(.horizontal)
                 
                 ForEach(discoverVM.profiles.filter { $0.status == .requestSent }) { profile in
-                    InboxMatchCard(profile: profile, type: .sent)
+                    InboxMatchCard(profile: profile, type: .sent, discoverVM: discoverVM)
                 }
             }
         }
@@ -104,7 +105,7 @@ struct ActiveMatchesView: View {
     var body: some View {
         VStack(spacing: 16) {
             ForEach(discoverVM.profiles.filter { $0.status == .active }) { profile in
-                InboxMatchCard(profile: profile, type: .active)
+                InboxMatchCard(profile: profile, type: .active, discoverVM: discoverVM)
             }
         }
     }
@@ -116,8 +117,7 @@ struct ArchivedMatchesView: View {
     var body: some View {
         VStack(spacing: 16) {
             ForEach(discoverVM.profiles.filter { $0.status == .archived }) { profile in
-                // Using Marcus Chen as a mock for declined in this demo
-                InboxMatchCard(profile: profile, type: .archived)
+                InboxMatchCard(profile: profile, type: .archived, discoverVM: discoverVM)
             }
             
             VStack(spacing: 16) {
@@ -143,7 +143,8 @@ enum InboxCardType {
 struct InboxMatchCard: View {
     let profile: MatchProfile
     let type: InboxCardType
-    
+    @ObservedObject var discoverVM: DiscoverViewModel
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 14) {
@@ -158,7 +159,7 @@ struct InboxMatchCard: View {
                         Text(profile.fullName)
                             .font(AppTheme.Typography.headline)
                         
-                        if type == .archived && profile.fullName == "Marcus Chen" {
+                        if type == .archived {
                              StatusBadge(text: "DECLINED", color: .red)
                         }
                     }
@@ -174,9 +175,9 @@ struct InboxMatchCard: View {
                 
                 Spacer()
                 
-                Text(type == .active ? "YESTERDAY" : "2H AGO")
+                Text(type == .incoming ? "NEW" : type == .sent ? "PENDING" : type == .active ? "ACTIVE" : "ARCHIVED")
                     .font(AppTheme.Typography.badge)
-                    .foregroundColor(.gray)
+                    .foregroundColor(type == .incoming ? AppTheme.Colors.primary : .gray)
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel("\(profile.fullName), \(profile.role). \(type == .active ? "Active Match" : "")")
@@ -185,7 +186,7 @@ struct InboxMatchCard: View {
             HStack(spacing: 12) {
                 switch type {
                 case .incoming:
-                    Button(action: { }) {
+                    Button(action: { Task { await discoverVM.acceptIncomingMatch(profile: profile) } }) {
                         Text("Accept")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.white)
@@ -194,7 +195,8 @@ struct InboxMatchCard: View {
                             .background(AppTheme.Colors.primary)
                             .cornerRadius(12)
                     }
-                    Button(action: { }) {
+                    .accessibilityLabel("Accept match request from \(profile.fullName)")
+                    Button(action: { Task { await discoverVM.declineIncomingMatch(profile: profile) } }) {
                         Text("Decline")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.red)
@@ -204,13 +206,14 @@ struct InboxMatchCard: View {
                             .cornerRadius(12)
                             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.red.opacity(0.2), lineWidth: 1))
                     }
+                    .accessibilityLabel("Decline match request from \(profile.fullName)")
                 case .sent:
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Expires in 18h 23m", systemImage: "clock")
                             .font(AppTheme.Typography.badge)
                             .foregroundColor(.orange)
                         
-                        Button(action: { }) {
+                        Button(action: { Task { await discoverVM.cancelSentMatch(profile: profile) } }) {
                             Text("Cancel Request")
                                 .font(AppTheme.Typography.subheadline)
                                 .foregroundColor(.red)
@@ -220,6 +223,7 @@ struct InboxMatchCard: View {
                                 .cornerRadius(12)
                                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.red.opacity(0.2), lineWidth: 1))
                         }
+                        .accessibilityLabel("Cancel match request to \(profile.fullName)")
                     }
                 case .active:
                     let conversation = Conversation(
@@ -253,13 +257,13 @@ struct InboxMatchCard: View {
                     .accessibilityIdentifier("bookNowButton")
                 case .archived:
                     NavigationLink(destination: MatchDetailView(profile: profile)) {
-                        Text(profile.fullName == "Sarah Jenkins" ? "Request Match Again" : "View Profile")
+                        Text("View Profile")
                             .font(AppTheme.Typography.subheadline)
-                            .foregroundColor(profile.fullName == "Sarah Jenkins" ? AppTheme.Colors.primary : .gray)
+                            .foregroundColor(.gray)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                             .cornerRadius(12)
-                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(profile.fullName == "Sarah Jenkins" ? AppTheme.Colors.primary : Color.gray.opacity(0.3), lineWidth: 1))
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.gray.opacity(0.3), lineWidth: 1))
                     }
                 }
             }

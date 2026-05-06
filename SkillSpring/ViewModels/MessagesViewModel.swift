@@ -38,17 +38,26 @@ final class MessagesViewModel: ObservableObject {
     var todayConversations: [Conversation] {
         allConversations
             .filter { $0.lastMessageTime != "YESTERDAY" }
+            .filter { applyFilter($0) }
             .filter { matchesSearch($0) }
     }
 
     var yesterdayConversations: [Conversation] {
         allConversations
             .filter { $0.lastMessageTime == "YESTERDAY" }
+            .filter { applyFilter($0) }
             .filter { matchesSearch($0) }
     }
 
     var isTodayEmpty: Bool {
-        !searchText.isEmpty && todayConversations.isEmpty
+        todayConversations.isEmpty
+    }
+
+    private func applyFilter(_ conversation: Conversation) -> Bool {
+        switch selectedFilter {
+        case "Unread":  return conversation.unreadCount > 0
+        default:        return true
+        }
     }
 
     private func matchesSearch(_ conversation: Conversation) -> Bool {

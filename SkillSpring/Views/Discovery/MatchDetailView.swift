@@ -2,6 +2,8 @@ import SwiftUI
 
 struct MatchDetailView: View {
     let profile: MatchProfile
+    @State private var showAllReviews = false
+    @State private var showReportSheet = false
     @Environment(\.dismiss) private var dismiss
 
     /// Build a live Conversation from this MatchProfile.
@@ -45,7 +47,7 @@ struct MatchDetailView: View {
                         .padding(.top, 60)
                     
                     HStack {
-                        AppHeader(title: "", backAction: { dismiss() }, actionIcon: "ellipsis", action: { })
+                        AppHeader(title: "", backAction: { dismiss() }, actionIcon: "ellipsis", action: { showReportSheet = true })
                     }
                     .padding(.top, 40)
                 }
@@ -53,7 +55,7 @@ struct MatchDetailView: View {
                 // Name & Stats Row
                 VStack(spacing: 8) {
                     Text(profile.fullName)
-                        .font(.system(size: 26, weight: .bold))
+                        .font(AppTheme.Typography.title)
                     
                     Text(profile.role)
                         .font(AppTheme.Typography.callout)
@@ -179,7 +181,7 @@ struct MatchDetailView: View {
                 
                 // Reviews
                 VStack(alignment: .leading, spacing: 16) {
-                    SectionHeader(title: "REVIEWS", actionTitle: "See All Reviews", action: { })
+                    SectionHeader(title: "REVIEWS", actionTitle: "See All Reviews", action: { showAllReviews = true })
                     
                     ForEach(profile.reviews) { review in
                         ReviewCard(review: review)
@@ -215,12 +217,19 @@ struct MatchDetailView: View {
                     .accessibilityIdentifier("bookSessionButton")
                 }
                 .padding()
-                .background(Color.white.opacity(0.95))
+            }
+        )
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(
+            NavigationLink(destination: GenericListView(title: "All Reviews", items: profile.reviews.map { "\($0.authorName): \($0.text)" }), isActive: $showAllReviews) {
+                EmptyView()
             }
         )
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.top)
-    }
+        .sheet(isPresented: $showReportSheet) {
+            ReportUserSheet(reportedUserId: profile.id, reportedUserName: profile.fullName)
+        }
 }
 
 struct DetailStatCard: View {

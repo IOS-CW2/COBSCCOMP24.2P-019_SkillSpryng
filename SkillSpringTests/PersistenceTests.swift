@@ -8,10 +8,13 @@ final class PersistenceTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // We use the shared singleton but it uses the SkillSpringModel
-        service = PersistenceService.shared
-        // Clear before each test
-        service.clearCache()
+        let controller = PersistenceController(inMemory: true)
+        service = PersistenceService(context: controller.container.viewContext)
+    }
+    
+    override func tearDown() {
+        service = nil
+        super.tearDown()
     }
     
     func testSaveAndFetchUser() {

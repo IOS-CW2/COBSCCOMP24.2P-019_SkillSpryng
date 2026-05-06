@@ -22,7 +22,7 @@ struct PaySessionView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(viewModel.instructor.skillsToTeach.first ?? "Skill Session")
                                 .font(AppTheme.Typography.headline)
-                            Text("Online • Oct \(viewModel.selectedDate), \(viewModel.selectedTime)")
+                            Text("\(viewModel.isOnline ? "Online" : "In-Person") • \(viewModel.selectedDate.formatted(.dateTime.month(.abbreviated).day())) • \(viewModel.selectedTime)")
                                 .font(AppTheme.Typography.caption)
                                 .foregroundColor(.gray)
                         }
@@ -103,11 +103,11 @@ struct PriceRow: View {
     var body: some View {
         HStack {
             Text(label)
-                .font(.system(size: isBold ? 16 : 14, weight: isBold ? .bold : .regular))
+                .font(isBold ? AppTheme.Typography.callout.weight(.bold) : AppTheme.Typography.callout)
                 .foregroundColor(isBold ? .black : .gray)
             Spacer()
             Text(value)
-                .font(.system(size: isBold ? 20 : 14, weight: isBold ? .bold : .bold))
+                .font(isBold ? AppTheme.Typography.title3.weight(.bold) : AppTheme.Typography.callout)
                 .foregroundColor(isBold ? AppTheme.Colors.primary : .black)
         }
         .accessibilityElement(children: .combine)

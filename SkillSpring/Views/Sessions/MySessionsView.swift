@@ -7,6 +7,8 @@ struct MySessionsView: View {
     @State private var sessionToCancel: Session?
     @State private var showCancelAlert = false
     @State private var sessionToRate: Session?
+    @State private var navigateToSkillMatches = false
+    @State private var showAllSessions = false
     @Namespace private var animation
     let filters = ["All", "Upcoming", "Completed", "Cancelled"]
 
@@ -36,9 +38,14 @@ struct MySessionsView: View {
                             sessionToCancel = session
                             showCancelAlert = true
                         }, onEndSession: { session in
+                            // Mark complete in Firestore + award SKP via FieldValue.increment
+                            vm.completeSession(session)
+                            // Then open the rating sheet after a short delay
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                                 sessionToRate = session
                             }
+                        }, onSeeAll: {
+                            showAllSessions = true
                         })
                     }
 
@@ -64,7 +71,7 @@ struct MySessionsView: View {
                     title: "No sessions found.",
                     message: "You may be offline or have not booked any sessions yet.",
                     actionTitle: "Find a Session",
-                    action: { } // Since EmptySessionsView uses NavigationLink inside its design, we rely on the custom EmptySessionsView for the history items.
+                    action: { navigateToSkillMatches = true }
                 )
             }
         }
@@ -78,15 +85,19 @@ struct MySessionsView: View {
             Text("Are you sure you want to cancel \"\(session.title)\"? This cannot be undone.")
         }
         .sheet(item: $sessionToRate) { session in
-            RateSessionSheet(instructor: session.instructorName)
+            RateSessionSheet(instructor: session.instructorName, session: session)
         }
-    }
-}
+        .navigationDestination(isPresented: $navigateToSkillMatches) {
+            SkillMatchesView()
+        }
+    } // end body
+} // end MySessionsView
 
 struct UpcomingSessionsSection: View {
     @ObservedObject var vm: SessionsViewModel
     var onCancel: (Session) -> Void = { _ in }
     var onEndSession: (Session) -> Void = { _ in }
+    var onSeeAll: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -113,7 +124,7 @@ struct UpcomingSessionsSection: View {
             }
 
             VStack(alignment: .leading, spacing: 16) {
-                SectionHeader(title: "NEXT WEEK", actionTitle: "See All", action: { }).padding(.horizontal)
+                SectionHeader(title: "NEXT WEEK", actionTitle: "See All", action: { onSeeAll() }).padding(.horizontal)
                 VStack(spacing: 12) {
                     ForEach(vm.upcomingSessions.prefix(3)) { session in
                         HStack {

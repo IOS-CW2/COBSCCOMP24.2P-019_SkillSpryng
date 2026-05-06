@@ -90,7 +90,7 @@ struct DiscoverView: View {
                     )
                 } else {
                     // Most Popular Skills
-                    SkillSection(title: "Most Popular Skills", items: viewModel.filteredSkills)
+                    SkillSection(title: "Most Popular Skills", items: viewModel.filteredSkills, onSeeAll: { viewModel.navigateToSkillMatches = true })
                     
                     // Recommended for you
                     VStack(alignment: .leading, spacing: 16) {
@@ -216,6 +216,7 @@ struct HeroMatchCard: View {
 struct SkillSection: View {
     let title: String
     let items: [RecommendedSkill]
+    var onSeeAll: () -> Void = {}
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -223,7 +224,7 @@ struct SkillSection: View {
                 Text(title)
                     .font(AppTheme.Typography.title3)
                 Spacer()
-                Button("See all") { }
+                Button("See all") { onSeeAll() }
                     .font(AppTheme.Typography.caption)
                     .foregroundColor(AppTheme.Colors.primary)
             }

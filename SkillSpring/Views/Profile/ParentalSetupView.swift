@@ -1,4 +1,6 @@
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
 
 struct ParentalSetupView: View {
     @Environment(\.presentationMode) var presentationMode
@@ -93,6 +95,22 @@ struct ParentalSetupView: View {
                             Spacer(minLength: 16)
                             
                             Button(action: {
+                                guard !parentName.isEmpty, !parentEmail.isEmpty else { return }
+                                // Save parental setup request to Firestore
+                                Task {
+                                    if let uid = Auth.auth().currentUser?.uid {
+                                        let data: [String: Any] = [
+                                            "parentName":  parentName,
+                                            "parentEmail": parentEmail,
+                                            "requestedAt": FieldValue.serverTimestamp(),
+                                            "status":      "pending"
+                                        ]
+                                        try? await Firestore.firestore()
+                                            .collection("users").document(uid)
+                                            .collection("parentalApproval").document("request")
+                                            .setData(data)
+                                    }
+                                }
                                 navigateToSkillSetup = true
                             }) {
                                 HStack {
