@@ -6,9 +6,18 @@ import CoreData
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        // Handle UI test launch arguments to set initial state
+        let args = ProcessInfo.processInfo.arguments
+        if args.contains("-skillspryng.isLoggedIn") {
+            if let index = args.firstIndex(of: "-skillspryng.isLoggedIn"),
+               index + 1 < args.count {
+                let value = args[index + 1].lowercased() == "yes"
+                UserDefaults.standard.set(value, forKey: "skillspryng.isLoggedIn")
+            }
+        }
+        
         // Initialize Firebase
         FirebaseApp.configure()
-
 
         // Force-initialize FirebaseManager
         let manager = FirebaseManager.shared
@@ -21,10 +30,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // Set delegate BEFORE requesting authorization so no notifications are missed
         UNUserNotificationCenter.current().delegate = self
         
-        // Request Push Notification authorization and register categories
-        NotificationManager.shared.requestAuthorization()
-        
-        application.registerForRemoteNotifications()
+        // Skip notification requests in UI tests to avoid blocking UI on startup
+        if !ProcessInfo.processInfo.arguments.contains("-skillspryng.skipNotifications") {
+            // Request Push Notification authorization and register categories
+            NotificationManager.shared.requestAuthorization()
+            application.registerForRemoteNotifications()
+        }
         
         return true
     }
@@ -85,10 +96,13 @@ struct SkillSpringApp: App {
             RootCoordinatorView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .task {
-                    // StoreKit 2: Load products and silently restore Pro status on every launch
-                    async let products: () = StoreKitService.shared.loadProducts()
-                    async let status: () = StoreKitService.shared.checkSubscriptionStatus()
-                    _ = await (products, status)
+                    // Skip expensive operations during UI tests
+                    if !ProcessInfo.processInfo.arguments.contains("-skillspryng.skipNotifications") {
+                        // StoreKit 2: Load products and silently restore Pro status on every launch
+                        async let products: () = StoreKitService.shared.loadProducts()
+                        async let status: () = StoreKitService.shared.checkSubscriptionStatus()
+                        _ = await (products, status)
+                    }
                 }
         }
         .onChange(of: scenePhase) { phase in

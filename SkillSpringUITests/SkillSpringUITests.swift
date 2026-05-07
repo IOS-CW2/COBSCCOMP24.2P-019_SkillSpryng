@@ -11,6 +11,7 @@ import XCTest
 final class SkillSpringUITests: XCTestCase {
 
     override func setUpWithError() throws {
+        _ = UITestSummaryObserver.shared
         // Stop immediately if a failure occurs
         continueAfterFailure = false
     }
@@ -19,7 +20,7 @@ final class SkillSpringUITests: XCTestCase {
     
     func test_launch_showsOnboardingAfterDelay() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-skillspryng.isLoggedIn", "NO"]
+        app.launchArguments = ["-skillspryng.isLoggedIn", "NO", "-skillspryng.skipNotifications", "YES", "-skillspryng.skipLaunchDelay", "YES"]
         app.launch()
 
         // Wait for the Onboarding screen to appear after the 2s LaunchView delay
@@ -40,8 +41,9 @@ final class SkillSpringUITests: XCTestCase {
     func test_loginFlow_navigatesToOTPVerification() throws {
         let app = XCUIApplication()
         // Inject a mock flag so FirebaseManager returns a stub verificationID
-        // instead of making a real network call, avoiding the fatal nil crash
-        app.launchArguments = ["-skillspryng.isLoggedIn", "NO", "-skillspryng.useMockAuth", "YES"]
+        // instead of making a real network call, avoiding the fatal nil crash.
+        // Skip the animated launch delay for faster, more stable test startup.
+        app.launchArguments = ["-skillspryng.isLoggedIn", "NO", "-skillspryng.useMockAuth", "YES", "-skillspryng.skipLaunchDelay", "YES", "-skillspryng.skipNotifications", "YES"]
         app.launch()
         
         // Skip through onboarding to get straight to login
@@ -65,8 +67,16 @@ final class SkillSpringUITests: XCTestCase {
         phoneField.tap()
         phoneField.typeText("+94771234567")
         
-        // Dismiss keyboard before tapping button
-        if app.keyboards.element.exists { app.keyboards.buttons["Done"].firstMatch.tap() }
+        // Dismiss keyboard before tapping button if a system keyboard key is available.
+        if app.keyboards.element.exists {
+            if app.keyboards.buttons["Done"].firstMatch.exists {
+                app.keyboards.buttons["Done"].firstMatch.tap()
+            } else if app.keys["Done"].firstMatch.exists {
+                app.keys["Done"].firstMatch.tap()
+            } else if app.keyboards.buttons["Return"].firstMatch.exists {
+                app.keyboards.buttons["Return"].firstMatch.tap()
+            }
+        }
         
         // 3. Tap Send OTP
         let sendOTPButton = app.buttons["sendOTPButton"]
@@ -83,7 +93,7 @@ final class SkillSpringUITests: XCTestCase {
     
     func test_tabBarNavigation_switchesTabsSuccessfully() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-skillspryng.isLoggedIn", "YES"]
+        app.launchArguments = ["-skillspryng.isLoggedIn", "YES", "-skillspryng.skipNotifications", "YES"]
         app.launch()
         
         // 1. Verify we start on Home
@@ -107,7 +117,7 @@ final class SkillSpringUITests: XCTestCase {
     
     func test_discoverSearch_noResults_showsEmptyState() {
         let app = XCUIApplication()
-        app.launchArguments = ["-skillspryng.isLoggedIn", "YES"]
+        app.launchArguments = ["-skillspryng.isLoggedIn", "YES", "-skillspryng.skipNotifications", "YES"]
         app.launch()
         
         // Locate the Discover tab's dedicated search field by its accessibility ID
@@ -125,12 +135,16 @@ final class SkillSpringUITests: XCTestCase {
     
     func test_chat_sendMessage_appearsInBubble() {
         let app = XCUIApplication()
-        app.launchArguments = ["-skillspryng.isLoggedIn", "YES"]
+        app.launchArguments = ["-skillspryng.isLoggedIn", "YES", "-skillspryng.skipNotifications", "YES"]
         app.launch()
         
         let messagesTab = app.tabBars.buttons["MESSAGES"]
         XCTAssertTrue(messagesTab.waitForExistence(timeout: 5.0))
         messagesTab.tap()
+        
+        let matchesButton = app.buttons["matchesButton"]
+        XCTAssertTrue(matchesButton.waitForExistence(timeout: 5.0), "Matches button must exist on Messages tab.")
+        matchesButton.tap()
         
         // Find first inbox match card and tap it to open chat
         let firstCell = app.otherElements["inboxMatchCard"].firstMatch
@@ -163,7 +177,7 @@ final class SkillSpringUITests: XCTestCase {
     
     func test_matchDetail_tapBookSession_opensbookingView() {
         let app = XCUIApplication()
-        app.launchArguments = ["-skillspryng.isLoggedIn", "YES"]
+        app.launchArguments = ["-skillspryng.isLoggedIn", "YES", "-skillspryng.skipNotifications", "YES"]
         app.launch()
         
         // Scroll down on Discover to ensure the hero card is visible
@@ -212,7 +226,7 @@ final class SkillSpringUITests: XCTestCase {
     
     func test_accessibility_keyElementsHaveLabels() {
         let app = XCUIApplication()
-        app.launchArguments = ["-skillspryng.isLoggedIn", "NO"]
+        app.launchArguments = ["-skillspryng.isLoggedIn", "NO", "-skillspryng.skipLaunchDelay", "YES", "-skillspryng.skipNotifications", "YES"]
         app.launch()
         
         // Skip through onboarding if visible
@@ -232,6 +246,32 @@ final class SkillSpringUITests: XCTestCase {
         let nameField = app.textFields["fullNameTextField"]
         XCTAssertTrue(nameField.waitForExistence(timeout: 3.0),
                       "Full Name text field must be present and accessible.")
+    }
+}
+
+// MARK: - UI Test Summary Logger
+final class UITestSummaryObserver: NSObject, XCTestObservation {
+    static let shared = UITestSummaryObserver()
+    private var passed = 0
+    private var failed = 0
+    private var total = 0
+
+    private override init() {
+        super.init()
+        XCTestObservationCenter.shared.addTestObserver(self)
+    }
+
+    func testCaseDidFinish(_ testCase: XCTestCase) {
+        total += 1
+        if let run = testCase.testRun, run.hasSucceeded {
+            passed += 1
+        } else {
+            failed += 1
+        }
+    }
+
+    func testBundleDidFinish(_ testBundle: Bundle) {
+        print("✅ UI Test Summary: \(total) tests run — \(passed) passed, \(failed) failed")
     }
 }
 

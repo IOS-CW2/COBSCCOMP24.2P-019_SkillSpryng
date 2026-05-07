@@ -72,16 +72,18 @@ class GeofenceManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func startMonitoring(
         coordinate: CLLocationCoordinate2D,
         sessionId: String,
-        sessionTitle: String
+        sessionTitle: String,
+        radius: CLLocationDistance? = nil
     ) {
         // Request Always permission for true background monitoring
         LocationService.shared.requestAlwaysPermission()
 
         let regionId = "session-geofence-\(sessionId)"
+        let effectiveRadius = radius ?? geofenceRadius
 
         let region = CLCircularRegion(
             center: coordinate,
-            radius: geofenceRadius,
+            radius: effectiveRadius,
             identifier: regionId
         )
         region.notifyOnExit  = true  // safety alert when leaving
@@ -116,7 +118,7 @@ class GeofenceManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         radius: CLLocationDistance? = nil
     ) {
         let sessionId = UUID().uuidString
-        startMonitoring(coordinate: coordinate, sessionId: sessionId, sessionTitle: sessionTitle)
+        startMonitoring(coordinate: coordinate, sessionId: sessionId, sessionTitle: sessionTitle, radius: radius)
     }
 
     /// Stop monitoring for a specific session.

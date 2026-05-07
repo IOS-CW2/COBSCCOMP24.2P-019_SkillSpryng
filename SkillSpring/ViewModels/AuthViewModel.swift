@@ -29,7 +29,13 @@ class AuthViewModel: ObservableObject {
     init(firebaseService: FirebaseService? = nil,
          seederService: DataSeedingService? = nil,
          dataService: DataService? = nil) {
-        self.firebaseService = firebaseService ?? FirebaseManager.shared
+        if let firebaseService = firebaseService {
+            self.firebaseService = firebaseService
+        } else if ProcessInfo.processInfo.arguments.contains("-skillspryng.useMockAuth") {
+            self.firebaseService = MockFirebaseService()
+        } else {
+            self.firebaseService = FirebaseManager.shared
+        }
         self.seederService   = seederService   ?? DataSeeder.shared
         self.dataService     = dataService     ?? FirebaseDataService.shared
     }
