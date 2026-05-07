@@ -109,6 +109,62 @@ final class ProfileViewModel: ObservableObject {
         await saveProfile()
     }
 
+    // MARK: - Profile Visibility
+
+    /// Updates the user's profile visibility in Firestore.
+    /// Called from SettingsView — avoids a direct Firestore write in the View layer.
+    func updateProfileVisibility(_ visibility: String) async {
+        guard let uid = user.id else { return }
+        do {
+            try await FirebaseDataService.shared.db
+                .collection("users").document(uid)
+                .updateData(["visibility": visibility.lowercased()])
+            user.role = user.role   // trigger objectWillChange so UI refreshes
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // MARK: - Child Safety Mode
+
+    /// Writes `isChildMode` to Firestore and updates the local Core Data cache.
+    /// `enabled = true`  → child-facing UI is active.
+    /// `enabled = false` → parent/adult control panel is active.
+    func updateChildMode(enabled: Bool) async {
+        guard let uid = user.id else { return }
+        do {
+            try await FirebaseDataService.shared.db
+                .collection("users").document(uid)
+                .updateData(["isChildMode": enabled])
+            user.isChildMode = enabled
+            PersistenceService.shared.saveUser(user)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // MARK: - Account Deletion
+
+    /// Permanently deletes the Firestore document and the Firebase Auth account.
+    /// Clears Core Data and signs out on completion.
+    func deleteAccount() async {
+        guard let uid = user.id else { return }
+        isLoading = true
+        do {
+            try await FirebaseDataService.shared.db
+                .collection("users").document(uid).delete()
+            if let currentUser = FirebaseManager.shared.currentUser {
+                try await currentUser.delete()
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        PersistenceService.shared.clearCache()
+        NotificationManager.shared.cancelAllPendingNotifications()
+        UserDefaults.standard.set(false, forKey: "skillspryng.isLoggedIn")
+        isLoading = false
+    }
+
     // MARK: - Sign Out
 
     func signOut() {

@@ -21,7 +21,25 @@
         <attribute name="skillsToTeach" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="skillsToLearn" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="LocalSession" representedClassName="LocalSession" syncable="YES" codeGenerationType="class">
+        <attribute name="id"             optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="title"          optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="instructorName" optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="instructorRole" optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="date"           optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="time"           optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="duration"       optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="location"       optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="status"         optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="sessionType"    optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="category"       optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="notes"          optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="scheduledAt"    optional="YES" attributeType="Date"        syncable="YES"/>
+        <attribute name="createdAt"      optional="YES" attributeType="Date"        syncable="YES"/>
+        <attribute name="calendarEventId" optional="YES" attributeType="String"     syncable="YES"/>
+    </entity>
     <elements>
-        <element name="LocalUser" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="LocalUser"    positionX="-63" positionY="-18"  width="128" height="120"/>
+        <element name="LocalSession" positionX="120" positionY="-18"  width="128" height="120"/>
     </elements>
 </model>

@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import FirebaseFirestore
 
 // MARK: - BookingViewModel
 // Handles the full booking flow:
@@ -74,11 +75,38 @@ class BookingViewModel: ObservableObject {
                   let currentUid = user.id else { return }
 
             if instructor.status == .active {
-                // ─── Paid Booking ───────────────────
-                let newBalance = user.walletBalance - totalPrice
+                // ─── Paid Booking (Atomic) ───────────────────────────────
+                // Use a Firestore transaction to atomically read-and-deduct
+                // the wallet balance, preventing race conditions when booking
+                // simultaneously from multiple devices.
+                guard let uid = user.id else { return }
+                let userRef = FirebaseDataService.shared.db.collection("users").document(uid)
 
-                // 1. Deduct wallet in Firestore
-                await dataService.updateWalletBalance(newBalance)
+                let newBalance: Int
+                do {
+                    newBalance = try await FirebaseDataService.shared.db.runTransaction { transaction, errorPointer in
+                        let snapshot: DocumentSnapshot
+                        do {
+                            snapshot = try transaction.getDocument(userRef)
+                        } catch let fetchError as NSError {
+                            errorPointer?.pointee = fetchError
+                            return nil
+                        }
+                        let liveBalance = snapshot.data()?["walletBalance"] as? Int ?? 0
+                        guard liveBalance >= self.totalPrice else {
+                            let insuf = NSError(domain: "Wallet", code: 402,
+                                userInfo: [NSLocalizedDescriptionKey: "Insufficient funds"])
+                            errorPointer?.pointee = insuf
+                            return nil
+                        }
+                        let updated = liveBalance - self.totalPrice
+                        transaction.updateData(["walletBalance": updated], forDocument: userRef)
+                        return updated
+                    } as! Int
+                } catch {
+                    print("[Booking] ❌ Atomic wallet transaction failed: \(error.localizedDescription)")
+                    return
+                }
                 self.userBalance = newBalance
 
                 // 2. Build & create the Session document
@@ -105,6 +133,8 @@ class BookingViewModel: ObservableObject {
                 )
                 do {
                     try await dataService.createSession(session)
+                    // Write-through: cache session locally for offline access
+                    PersistenceService.shared.saveSession(session)
                 } catch {
                     print("[Booking] createSession error: \(error)")
                 }

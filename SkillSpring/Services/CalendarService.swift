@@ -122,8 +122,8 @@ class CalendarService: ObservableObject {
             event.url = url
         }
         
-        // Step 5: Add reminders (1 hour and 24 hours before)
-        event.addAlarm(EKAlarm(relativeOffset: -3600)) // 1 hour
+        // Step 5: Add reminders (30 minutes and 24 hours before)
+        event.addAlarm(EKAlarm(relativeOffset: -1800))  // 30 minutes (matches session reminder notification)
         event.addAlarm(EKAlarm(relativeOffset: -86400)) // 24 hours
         
         // Step 6: Save and return identifier

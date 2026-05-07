@@ -20,7 +20,8 @@ class NotificationManager: ObservableObject {
     /// Request permission and register actionable notification categories.
     /// Called once from AppDelegate on launch.
     func requestAuthorization() {
-        // Define "Join Session" action on reminder notifications
+        // ── SESSION_REMINDER Category ──────────────────────────────────────
+        // "Join Session" deep-links the user directly to the Sessions tab.
         let joinAction = UNNotificationAction(
             identifier: joinSessionActionID,
             title: "Join Session",
@@ -37,7 +38,29 @@ class NotificationManager: ObservableObject {
             intentIdentifiers: [],
             options: []
         )
-        UNUserNotificationCenter.current().setNotificationCategories([sessionCategory])
+
+        // ── SAFETY_ALERT Category ──────────────────────────────────────────
+        // Shown when the user exits a geofence. Allows a single-tap response
+        // so that the 5-minute escalation timer can be cancelled without
+        // unlocking the device (foreground not required for "I'm Safe").
+        let imSafeAction = UNNotificationAction(
+            identifier: "IM_SAFE",
+            title: "I'm Safe ✅",
+            options: [.foreground]          // Opens app so user can confirm
+        )
+        let needHelpAction = UNNotificationAction(
+            identifier: "NEED_HELP",
+            title: "I Need Help 🚨",
+            options: [.foreground, .destructive]
+        )
+        let safetyCategory = UNNotificationCategory(
+            identifier: "SAFETY_ALERT",
+            actions: [imSafeAction, needHelpAction],
+            intentIdentifiers: [],
+            options: [.customDismissAction]
+        )
+
+        UNUserNotificationCenter.current().setNotificationCategories([sessionCategory, safetyCategory])
 
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             DispatchQueue.main.async {
@@ -150,6 +173,34 @@ class NotificationManager: ObservableObject {
         let request = UNNotificationRequest(identifier: "welcome", content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error { print("Failed to schedule welcome notification: \(error)") }
+        }
+    }
+
+    // MARK: - Geofence Safety Alert
+
+    /// Fires a critical-sound safety alert with "I'm Safe" / "I Need Help" action buttons.
+    /// Uses the SAFETY_ALERT category registered at launch so action buttons are visible
+    /// even on the lock screen.
+    /// - Parameters:
+    ///   - sessionId: Used to correlate the notification with the active session.
+    ///   - userName: The user's first name shown in the notification body.
+    func scheduleGeofenceSafetyAlert(sessionId: String, userName: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "⚠️ Are you safe, \(userName)?"
+        content.body  = "You've moved away from your session location. Please confirm your safety."
+        content.sound = .defaultCritical
+        content.badge = 1
+        content.categoryIdentifier = "SAFETY_ALERT"
+        content.userInfo = ["sessionId": sessionId]
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: "safety.alert.\(sessionId)",
+            content: content,
+            trigger: trigger
+        )
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error { print("[NotificationManager] Safety alert error: \(error)") }
         }
     }
 

@@ -37,6 +37,8 @@ struct SignInView: View {
                         viewModel.sendOTP()
                     }, isLoading: viewModel.isLoading)
                     .accessibilityIdentifier("sendOTPButton")
+                    .disabled(!viewModel.isPhoneNumberValid || viewModel.isLoading)
+                    .opacity(viewModel.isPhoneNumberValid ? 1.0 : 0.5)
                     .padding(.top, 10)
                 }
                 .padding(.horizontal, 24)
