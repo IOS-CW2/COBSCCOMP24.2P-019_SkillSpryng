@@ -42,7 +42,7 @@ struct ChatDetailView: View {
                         .font(AppTheme.Typography.headline)
                     HStack(spacing: 4) {
                         Circle()
-                            .fill(Color.green)
+                            .fill(AppTheme.Colors.primary)
                             .frame(width: 8, height: 8)
                         Text(viewModel.isTyping ? "Typing…" : "Online")
                             .font(AppTheme.Typography.caption)
@@ -105,18 +105,9 @@ struct ChatDetailView: View {
                         // Typing indicator — always in the hierarchy, shown/hidden via opacity
                         HStack(spacing: 6) {
                             ForEach(0..<3, id: \.self) { i in
-                                Circle()
-                                    .fill(Color.gray.opacity(0.5))
-                                    .frame(width: 7, height: 7)
-                                    .scaleEffect(viewModel.isTyping ? 1.0 : 0.6)
-                                    .animation(
-                                        viewModel.isTyping
-                                            ? .easeInOut(duration: 0.45).repeatForever().delay(Double(i) * 0.15)
-                                            : .default,
-                                        value: viewModel.isTyping
-                                    )
+                                typingIndicatorDot(for: i)
                             }
-                            Text("\(conversation.participant.fullName.split(separator: " ").first.map(String.init) ?? "") is typing")
+                            Text(typingStatusText)
                                 .font(.system(size: 12).italic())
                                 .foregroundColor(.gray)
                             Spacer()
@@ -190,7 +181,7 @@ struct ChatDetailView: View {
         }
         // MARK: - Image Picker Sheet
         .sheet(isPresented: $showImagePicker) {
-            ImagePicker(selectedImage: $pickedImage)
+            ImagePicker(image: $pickedImage)
                 .ignoresSafeArea()
         }
         .onChange(of: pickedImage) { image in
@@ -202,6 +193,23 @@ struct ChatDetailView: View {
     }
 
     // sendMessage is handled by ChatViewModel.send(text:)
+
+    private func typingIndicatorDot(for index: Int) -> some View {
+        let animation = viewModel.isTyping
+            ? Animation.easeInOut(duration: 0.45).repeatForever().delay(Double(index) * 0.15)
+            : .default
+
+        return Circle()
+            .fill(Color.gray.opacity(0.5))
+            .frame(width: 7, height: 7)
+            .scaleEffect(viewModel.isTyping ? 1.0 : 0.6)
+            .animation(animation, value: viewModel.isTyping)
+    }
+
+    private var typingStatusText: String {
+        let firstName = conversation.participant.fullName.split(separator: " ").first.map(String.init) ?? conversation.participant.fullName
+        return "\(firstName) is typing"
+    }
 }
 
 // MARK: - ParticipantInfoSheet
@@ -395,13 +403,20 @@ struct MessageBubble: View {
         }
         .padding(.horizontal)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(
-            "\(message.isFromMe ? "You" : conversation_participantName(message)): "
-            + (message.text
-               ?? (message.type == .image ? "Image attachment"
-                   : (message.fileName ?? "File attachment")))
-            + ", \(message.timeString)"
-        )
+        .accessibilityLabel(accessibilityLabelText)
+    }
+
+    private var accessibilityLabelText: String {
+        let speaker = message.isFromMe ? "You" : conversation_participantName(message)
+        let content: String
+        if let text = message.text {
+            content = text
+        } else if message.type == .image {
+            content = "Image attachment"
+        } else {
+            content = message.fileName ?? "File attachment"
+        }
+        return "\(speaker): \(content), \(message.timeString)"
     }
 
     // Helper so the label compiles without needing a reference to the parent view

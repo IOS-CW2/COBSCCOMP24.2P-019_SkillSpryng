@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MyMatchesInboxView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var discoverVM = DiscoverViewModel()
     @State private var selectedTab = 0
     @Namespace private var animation
@@ -9,7 +10,7 @@ struct MyMatchesInboxView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            AppHeader(title: "My Matches", showBackButton: true)
+            AppHeader(title: "My Matches", showBackButton: true, backAction: { dismiss() })
             
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {

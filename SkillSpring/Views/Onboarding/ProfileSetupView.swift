@@ -118,7 +118,7 @@ struct ProfileSetupView: View {
                                 .frame(width: 40, height: 40)
                             
                             Image(systemName: "mappin.and.ellipse")
-                                .foregroundColor(Color(hex: "00A86B"))
+                                .foregroundColor(AppTheme.Colors.primary)
                         }
                         .accessibilityHidden(true)
                         

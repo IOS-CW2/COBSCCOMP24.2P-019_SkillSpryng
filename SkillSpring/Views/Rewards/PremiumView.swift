@@ -86,7 +86,7 @@ struct PremiumView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
-                            .background(Color.green)
+                            .background(AppTheme.Colors.primary)
                             .cornerRadius(4)
                             .offset(x: -8, y: -18)
                             .transition(.scale.combined(with: .opacity))

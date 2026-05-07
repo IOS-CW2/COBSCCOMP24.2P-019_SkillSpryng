@@ -237,7 +237,7 @@ struct SessionSuccessView: View {
                     Spacer()
                 }
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.green.gradient))
+                .background(RoundedRectangle(cornerRadius: 16).fill(AppTheme.Colors.primary.gradient))
                 .padding(.horizontal)
                 .padding(.top, 60)
                 .transition(.move(edge: .top).combined(with: .opacity))

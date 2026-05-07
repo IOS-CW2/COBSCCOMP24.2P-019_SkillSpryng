@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
 
 struct SettingsView: View {
     @StateObject private var vm = ProfileViewModel()
@@ -193,7 +194,8 @@ struct SettingsView: View {
                                         Button(action: {
                                             profileVisibility = option
                                             Task {
-                                                if let uid = await FirebaseDataService.shared.fetchCurrentUser()?.id {
+                                                let currentUser = await FirebaseDataService.shared.fetchCurrentUser()
+                                                if let uid = currentUser?.id {
                                                     try? await FirebaseDataService.shared.db
                                                         .collection("users").document(uid)
                                                         .updateData(["visibility": option.lowercased()])
@@ -311,7 +313,9 @@ struct SettingsView: View {
                         try? await FirebaseDataService.shared.db
                             .collection("users").document(uid).delete()
                     }
-                    try? Auth.auth().currentUser?.delete()
+                    if let currentUser = Auth.auth().currentUser {
+                        try? await currentUser.delete()
+                    }
                     await MainActor.run {
                         isDeletingAccount = false
                         PersistenceService.shared.clearCache()

@@ -10,8 +10,20 @@ struct EventsView: View {
     var isNavigatedFromCourses: Bool = false
 
     @MainActor
-    init(vm: LearningViewModel = LearningViewModel(), isNavigatedFromCourses: Bool = false) {
-        self.vm = vm
+    init() {
+        _vm = ObservedObject(initialValue: .init())
+        self.isNavigatedFromCourses = false
+    }
+
+    @MainActor
+    init(isNavigatedFromCourses: Bool) {
+        _vm = ObservedObject(initialValue: .init())
+        self.isNavigatedFromCourses = isNavigatedFromCourses
+    }
+
+    @MainActor
+    init(vm: LearningViewModel, isNavigatedFromCourses: Bool = false) {
+        _vm = ObservedObject(initialValue: vm)
         self.isNavigatedFromCourses = isNavigatedFromCourses
     }
     

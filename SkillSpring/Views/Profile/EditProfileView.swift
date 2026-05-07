@@ -14,6 +14,7 @@ struct EditProfileView: View {
     @State private var uploadError: String?
     @State private var isSaveLoading    = false
     @State private var showSaveSuccess  = false
+    @State private var showDeleteAccountAlert = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -121,7 +122,7 @@ struct EditProfileView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(showSaveSuccess ? Color.green : AppTheme.Colors.primary)
+                        .background(showSaveSuccess ? AppTheme.Colors.primary : AppTheme.Colors.primary)
                         .cornerRadius(16)
                         .animation(.easeInOut(duration: 0.3), value: showSaveSuccess)
                     }
@@ -139,7 +140,7 @@ struct EditProfileView: View {
                         Button("Delete", role: .destructive) {
                             Task {
                                 try? await FirebaseAuth.Auth.auth().currentUser?.delete()
-                                FirebaseDataService.shared.db
+                                try? await FirebaseDataService.shared.db
                                     .collection("users")
                                     .document(FirebaseDataService.shared.uid ?? "")
                                     .delete()

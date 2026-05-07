@@ -5,8 +5,14 @@ struct LeaderboardView: View {
     @Environment(\.dismiss) var dismiss
     @ObservedObject var vm: RewardsViewModel
 
-    init(vm: RewardsViewModel = RewardsViewModel()) {
-        self.vm = vm
+    @MainActor
+    init() {
+        _vm = ObservedObject(initialValue: .init())
+    }
+
+    @MainActor
+    init(vm: RewardsViewModel) {
+        _vm = ObservedObject(initialValue: vm)
     }
     
     var body: some View {

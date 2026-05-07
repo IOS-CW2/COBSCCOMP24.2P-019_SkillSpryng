@@ -238,7 +238,7 @@ struct LiveSessionView: View {
                     Text(formatDuration(callDuration))
                         .font(.system(size: 12, weight: .bold, design: .monospaced))
                         .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Color.green.opacity(0.85))
+                        .background(AppTheme.Colors.primary.opacity(0.85))
                         .foregroundColor(.white)
                         .cornerRadius(20)
                         .accessibilityLabel("Session duration: \(formatDuration(callDuration))")
@@ -253,7 +253,7 @@ struct LiveSessionView: View {
                 VStack(spacing: 6) {
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(jitsiStatus.contains("Joined") ? Color.green : Color.orange)
+                            .fill(jitsiStatus.contains("Joined") ? AppTheme.Colors.primary : Color.orange)
                             .frame(width: 8, height: 8)
                         Text(jitsiStatus)
                             .font(AppTheme.Typography.badge)
@@ -360,7 +360,7 @@ struct LiveSessionView: View {
                     // Live status badge over the WebView
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(jitsiStatus.contains("Joined") ? Color.green : Color.orange)
+                            .fill(jitsiStatus.contains("Joined") ? AppTheme.Colors.primary : Color.orange)
                             .frame(width: 7, height: 7)
                         Text(jitsiStatus)
                             .font(.system(size: 11, weight: .semibold))

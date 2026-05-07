@@ -201,7 +201,7 @@ struct CancelSessionSheet: View {
                 
                 HStack {
                     ZStack {
-                        Circle().fill(Color.green.opacity(0.1)).frame(width: 24, height: 24)
+                        Circle().fill(AppTheme.Colors.primary.opacity(0.1)).frame(width: 24, height: 24)
                         Image(systemName: "checkmark").font(AppTheme.Typography.badge).foregroundColor(.green)
                     }
                     VStack(alignment: .leading) {
@@ -216,12 +216,12 @@ struct CancelSessionSheet: View {
                         .font(AppTheme.Typography.badge)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
-                        .background(Color.green.opacity(0.1))
+                        .background(AppTheme.Colors.primary.opacity(0.1))
                         .foregroundColor(.green)
                         .cornerRadius(4)
                 }
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 12).stroke(Color.green, lineWidth: 1))
+                .background(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.Colors.primary, lineWidth: 1))
                 .accessibilityElement(children: .combine)
                 
                 HStack(spacing: 12) {

@@ -14,8 +14,8 @@ struct MentorSessionRequestView: View {
 
     // Formatted display values — real when match loaded, fallback otherwise
     private var displayFormat: String {
-        if let online = pendingMatch?.isOnline { return online ? "Online \u00B7 Jitsi Meet" : "In-Person" }
-        return "Online \u00B7 Jitsi Meet"
+        if let online = pendingMatch?.isOnline { return online ? "Online \u{00B7} Jitsi Meet" : "In-Person" }
+        return "Online \u{00B7} Jitsi Meet"
     }
     private var displayDate: String {
         guard let date = pendingMatch?.scheduledDate else { return "Pending" }
@@ -132,13 +132,13 @@ struct MentorSessionRequestView: View {
                                         Image(systemName: "checkmark")
                                             .foregroundColor(.white)
                                     }
-                                    Text(isAccepted ? "Session Accepted!" : (isAccepting ? "Accepting..." : "Accept Session â†’"))
+                                    Text(isAccepted ? "Session Accepted!" : (isAccepting ? "Accepting..." : "Accept Session →"))
                                         .font(AppTheme.Typography.headline)
                                         .foregroundColor(.white)
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(isAccepted ? Color.green : AppTheme.Colors.primary)
+                                .background(isAccepted ? AppTheme.Colors.primary : AppTheme.Colors.primary)
                                 .cornerRadius(16)
                             }
                             .disabled(isAccepting || isAccepted)

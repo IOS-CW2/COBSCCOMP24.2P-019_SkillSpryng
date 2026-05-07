@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseFirestore
 
 struct SessionDetailView: View {
     let session: Session
@@ -76,7 +77,7 @@ struct SessionDetailView: View {
                             .foregroundColor(.green)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.green.opacity(0.1))
+                            .background(AppTheme.Colors.primary.opacity(0.1))
                             .cornerRadius(4)
                     }
                 }

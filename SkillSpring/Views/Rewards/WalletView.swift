@@ -243,7 +243,7 @@ struct WalletView: View {
                     Spacer()
                 }
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color.green.gradient))
+                .background(RoundedRectangle(cornerRadius: 16).fill(AppTheme.Colors.primary.gradient))
                 .padding(.horizontal)
                 .padding(.top, 60)
                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -361,7 +361,7 @@ struct TransactionRow: View {
         HStack(spacing: 14) {
             ZStack {
                 Circle()
-                    .fill(isCredit ? Color.green.opacity(0.15) : Color.red.opacity(0.1))
+                    .fill(isCredit ? AppTheme.Colors.primary.opacity(0.15) : Color.red.opacity(0.1))
                     .frame(width: 40, height: 40)
                 Image(systemName: isCredit ? "arrow.down.circle.fill" : "arrow.up.circle.fill")
                     .foregroundColor(isCredit ? .green : .red)

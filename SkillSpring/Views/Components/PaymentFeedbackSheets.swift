@@ -48,6 +48,7 @@ struct PaymentFailedSheet: View {
                         UIApplication.shared.open(url)
                     }
                 }) {
+                    Text("Contact Support")
                         .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.primary)
                         .frame(maxWidth: .infinity)

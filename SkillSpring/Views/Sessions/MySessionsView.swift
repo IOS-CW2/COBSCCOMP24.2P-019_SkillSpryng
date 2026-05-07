@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MySessionsView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var vm = SessionsViewModel()
     @StateObject private var network = NetworkMonitor.shared
     @State private var selectedFilter = "All"
@@ -14,7 +15,7 @@ struct MySessionsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            AppHeader(title: "My Sessions", showBackButton: true)
+            AppHeader(title: "My Sessions", showBackButton: false)
 
             // Offline banner — driven by NWPathMonitor (NetworkMonitor.swift)
             OfflineBannerView(network: network)
@@ -148,7 +149,7 @@ struct UpcomingSessionsSection: View {
             HStack(spacing: 16) {
                 ActionCard(title: "Prepare for your next session", subtitle: "Review 3 shared documents", icon: "sparkles", color: Color.blue.opacity(0.1))
                 VStack(spacing: 16) {
-                    ActionCard(title: "Notes", subtitle: "", icon: "note.text", color: Color.green.opacity(0.1))
+                    ActionCard(title: "Notes", subtitle: "", icon: "note.text", color: AppTheme.Colors.primary.opacity(0.1))
                     NavigationLink(destination: LearningAnalyticsView()) {
                         ActionCard(title: "Progress Overview", subtitle: "", icon: "chart.bar.fill", color: Color.gray.opacity(0.1))
                     }.buttonStyle(PlainButtonStyle())

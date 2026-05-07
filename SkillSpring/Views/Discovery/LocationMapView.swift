@@ -279,7 +279,7 @@ struct NearbyUserCard: View {
                     .scaledToFill()
                     .frame(width: 44, height: 44)
                     .clipShape(Circle())
-                    .overlay(Circle().stroke(Color.green, lineWidth: 2.5))
+                    .overlay(Circle().stroke(AppTheme.Colors.primary, lineWidth: 2.5))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(skill.name)
@@ -338,7 +338,7 @@ struct NearbyUserRow: View {
                 .scaledToFill()
                 .frame(width: 52, height: 52)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(Color.green, lineWidth: 2.5))
+                .overlay(Circle().stroke(AppTheme.Colors.primary, lineWidth: 2.5))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(skill.name)
@@ -400,7 +400,7 @@ struct SkillPinView: View {
                     .shadow(color: AppTheme.Colors.primary.opacity(0.4), radius: isSelected ? 10 : 4)
                     .overlay(
                         Circle()
-                            .stroke(Color.green, lineWidth: 3)
+                            .stroke(AppTheme.Colors.primary, lineWidth: 3)
                     )
 
                 Image(skill.profile.imageUrl)
@@ -436,7 +436,7 @@ struct SelectedSkillCard: View {
                 .scaledToFill()
                 .frame(width: 48, height: 48)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(Color.green, lineWidth: 2.5))
+                .overlay(Circle().stroke(AppTheme.Colors.primary, lineWidth: 2.5))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(skill.name)

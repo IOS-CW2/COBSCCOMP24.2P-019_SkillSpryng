@@ -19,7 +19,7 @@ struct CredibilityCard: View {
                     .font(AppTheme.Typography.badge)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(badge == "EXPERT" ? Color.blue.opacity(0.1) : Color.green.opacity(0.1))
+                    .background(badge == "EXPERT" ? Color.blue.opacity(0.1) : AppTheme.Colors.primary.opacity(0.1))
                     .foregroundColor(badge == "EXPERT" ? .blue : .green)
                     .cornerRadius(4)
             }

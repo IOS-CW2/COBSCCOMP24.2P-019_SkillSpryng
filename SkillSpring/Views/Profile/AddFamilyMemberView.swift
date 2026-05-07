@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseFirestore
 
 struct AddFamilyMemberView: View {
     @Environment(\.presentationMode) var presentationMode
@@ -127,7 +128,8 @@ struct AddFamilyMemberView: View {
 
                             // Persist the family member contact to Firestore under users/{uid}/familyMembers
                             Task {
-                                if let uid = await FirebaseDataService.shared.fetchCurrentUser()?.id {
+                                if let currentUser = await FirebaseDataService.shared.fetchCurrentUser(),
+                                   let uid = currentUser.id {
                                     let data: [String: Any] = [
                                         "fullName":     fullName,
                                         "phoneNumber":  phoneNumber,

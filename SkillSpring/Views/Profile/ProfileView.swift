@@ -4,21 +4,22 @@ struct ProfileView: View {
     @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) var dismiss
     @State private var showAllReviews = false
+    @State private var navigateToSettings = false
     
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
                 // Header Navigation
-                AppHeader(title: "Profile", showBackButton: true, actionIcon: "gearshape") { }
-                .overlay(
-                    HStack {
-                        Spacer()
-                        NavigationLink(destination: SettingsView()) {
-                            Color.clear.frame(width: 44, height: 44)
-                        }
-                        .accessibilityLabel("Settings")
-                    }
+                AppHeader(
+                    title: "Profile",
+                    showBackButton: false,
+                    actionIcon: "gearshape",
+                    action: { navigateToSettings = true }
                 )
+                
+                NavigationLink(destination: SettingsView(), isActive: $navigateToSettings) {
+                    EmptyView()
+                }
                 
                 // Profile Hero 
                 VStack(spacing: 16) {

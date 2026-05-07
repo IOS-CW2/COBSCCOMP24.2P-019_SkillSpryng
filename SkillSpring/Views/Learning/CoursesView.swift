@@ -8,8 +8,13 @@ struct CoursesView: View {
     let categories = ["All", "Design", "Coding", "Music", "Languages", "Business"]
 
     @MainActor
-    init(vm: LearningViewModel = LearningViewModel()) {
-        self.vm = vm
+    init() {
+        _vm = ObservedObject(initialValue: .init())
+    }
+
+    @MainActor
+    init(vm: LearningViewModel) {
+        _vm = ObservedObject(initialValue: vm)
     }
     
     var body: some View {
