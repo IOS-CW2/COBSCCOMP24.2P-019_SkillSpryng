@@ -9,6 +9,7 @@ struct EventsView: View {
 
     var isNavigatedFromCourses: Bool = false
 
+    @MainActor
     init(vm: LearningViewModel = LearningViewModel(), isNavigatedFromCourses: Bool = false) {
         self.vm = vm
         self.isNavigatedFromCourses = isNavigatedFromCourses

@@ -7,6 +7,7 @@ struct CoursesView: View {
     @State private var selectedCategory = "All"
     let categories = ["All", "Design", "Coding", "Music", "Languages", "Business"]
 
+    @MainActor
     init(vm: LearningViewModel = LearningViewModel()) {
         self.vm = vm
     }

@@ -250,7 +250,9 @@ struct WalletView: View {
                 .animation(.spring(response: 0.4), value: toast)
             }
         }
-            struct CreditOptionsSheet: View {
+    }
+
+    struct CreditOptionsSheet: View {
                 let fallbackCreditPacks: [CreditPack]
                 @ObservedObject var storeKit: StoreKitService
                 let onShowPremium: () -> Void
@@ -323,7 +325,6 @@ struct WalletView: View {
                     }
                 }
             }
-    }
 }
 
 struct WalletActionView: View {

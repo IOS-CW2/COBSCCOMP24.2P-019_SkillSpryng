@@ -5,6 +5,7 @@ struct LearningAnalyticsView: View {
     @ObservedObject var vm: RewardsViewModel
     @Environment(\.dismiss) var dismiss
 
+    @MainActor
     init(vm: RewardsViewModel = RewardsViewModel()) {
         self.vm = vm
     }
