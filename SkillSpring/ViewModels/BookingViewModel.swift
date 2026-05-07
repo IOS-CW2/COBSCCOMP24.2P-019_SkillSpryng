@@ -15,6 +15,7 @@ class BookingViewModel: ObservableObject {
     @Published var selectedTime: String = "09:00 AM"
     @Published var selectedDuration: Int = 60
     @Published var topicsAndGoals: String = ""
+    @Published var selectedVenueName: String = ""
 
     // Payment State
     @Published var showPaymentSheet: Bool = false
@@ -126,9 +127,33 @@ class BookingViewModel: ObservableObject {
                     toUserName: instructor.fullName,
                     skillOffered: user.skillsToTeach.first ?? "Skills",
                     skillWanted: instructor.skillsToTeach.first ?? "Skills",
-                    status: .accepted
+                    status: .accepted,
+                    scheduledDate: selectedDate,
+                    scheduledTime: selectedTime,
+                    durationMinutes: selectedDuration,
+                    isOnline: isOnline
                 )
                 try? await dataService.createMatch(match)
+
+                // 4b. Create conversation so the instructor appears in the Messages tab
+                let instructorUser = User(
+                    id: instructor.id,
+                    fullName: instructor.fullName,
+                    phoneNumber: "",
+                    skillsToTeach: instructor.skillsToTeach,
+                    skillsToLearn: instructor.skillsToLearn,
+                    location: instructor.location,
+                    bio: instructor.bio,
+                    profileImageURL: instructor.imageUrl
+                )
+                let conversation = Conversation(
+                    participant: instructorUser,
+                    lastMessage: "Session booked for \(formatter.string(from: sessionDate))",
+                    lastMessageTime: "Just now",
+                    unreadCount: 0,
+                    messages: []
+                )
+                await dataService.createConversation(conversation, currentUserId: currentUid)
 
                 // 5. Write in-app notification
                 await dataService.createNotification(AppNotification(
@@ -165,7 +190,11 @@ class BookingViewModel: ObservableObject {
                     skillOffered: user.skillsToTeach.first ?? "Skills",
                     skillWanted: instructor.skillsToTeach.first ?? "Skills",
                     status: .pending,
-                    message: topicsAndGoals
+                    message: topicsAndGoals,
+                    scheduledDate: selectedDate,
+                    scheduledTime: selectedTime,
+                    durationMinutes: selectedDuration,
+                    isOnline: isOnline
                 )
                 try? await dataService.createMatch(match)
 

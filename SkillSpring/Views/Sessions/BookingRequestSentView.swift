@@ -4,6 +4,8 @@ struct BookingRequestSentView: View {
     let instructor: MatchProfile
     let sessionDate: Date   // Real date object
     let time: String
+    let isOnline: Bool
+    let duration: Int       // minutes
     @Environment(\.dismiss) private var dismiss
     
     // Calendar State
@@ -95,7 +97,7 @@ struct BookingRequestSentView: View {
                         .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
-                    Text("60 min")
+                    Text("\(duration) min")
                         .font(AppTheme.Typography.badge)
                 }
                 
@@ -182,7 +184,7 @@ struct BookingRequestSentView: View {
                         .foregroundColor(calendarSuccess ? AppTheme.Colors.primary : .white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(calendarSuccess ? Color.green.opacity(0.1) : Color.black)
+                        .background(calendarSuccess ? AppTheme.Colors.primary.opacity(0.1) : Color.black)
                         .cornerRadius(16)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
@@ -230,7 +232,7 @@ struct BookingRequestSentView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.green.gradient)
+                        .fill(AppTheme.Colors.primary.gradient)
                 )
                 .padding(.horizontal)
                 .padding(.top, 60)

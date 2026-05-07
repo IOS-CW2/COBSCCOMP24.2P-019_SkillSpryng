@@ -6,6 +6,9 @@ struct SessionBookingView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var busyTimeSlots: [DateInterval] = []
     @State private var showCalendarToast = false
+    @State private var navigateToWallet = false
+    @State private var showMeetingSpot = false
+    @State private var selectedVenueName: String? = nil
     
     init(instructor: MatchProfile) {
         self.instructor = instructor
@@ -56,6 +59,62 @@ struct SessionBookingView: View {
                     FormatSelector(isOnline: $viewModel.isOnline)
                 }
                 .padding(.horizontal)
+
+                // Meeting Spot — only shown for in-person sessions
+                if !viewModel.isOnline {
+                    VStack(alignment: .leading, spacing: 12) {
+                        SectionHeader(title: "MEETING VENUE")
+
+                        Button(action: { showMeetingSpot = true }) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "mappin.circle.fill")
+                                    .font(.title3)
+                                    .foregroundColor(AppTheme.Colors.primary)
+                                    .accessibilityHidden(true)
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    if let venue = selectedVenueName {
+                                        Text(venue)
+                                            .font(AppTheme.Typography.subheadline)
+                                            .foregroundColor(.primary)
+                                        Text("Tap to change venue")
+                                            .font(AppTheme.Typography.caption2)
+                                            .foregroundColor(.gray)
+                                    } else {
+                                        Text("Choose a Meeting Spot")
+                                            .font(AppTheme.Typography.subheadline)
+                                            .foregroundColor(AppTheme.Colors.primary)
+                                        Text("Public venues near you — libraries, cafés, community centres")
+                                            .font(AppTheme.Typography.caption2)
+                                            .foregroundColor(.gray)
+                                    }
+                                }
+
+                                Spacer()
+
+                                Image(systemName: "chevron.right")
+                                    .font(AppTheme.Typography.caption)
+                                    .foregroundColor(.gray)
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(16)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(selectedVenueName != nil ? AppTheme.Colors.primary.opacity(0.4) : Color.clear, lineWidth: 1)
+                            )
+                        }
+                        .accessibilityLabel(selectedVenueName != nil ? "Selected venue: \(selectedVenueName!). Tap to change." : "Choose a meeting spot")
+                    }
+                    .padding(.horizontal)
+                    .sheet(isPresented: $showMeetingSpot) {
+                        MeetingSpotView { spot in
+                            selectedVenueName = spot.name
+                            viewModel.selectedVenueName = spot.name
+                            showMeetingSpot = false
+                        }
+                    }
+                }
                 
                 // Date Selector
                 VStack(alignment: .leading, spacing: 16) {
@@ -215,6 +274,14 @@ struct SessionBookingView: View {
                         .background(AppTheme.Colors.primary)
                         .cornerRadius(16)
                 }
+                .accessibilityButton(
+                    label: instructor.status == .active
+                        ? "Confirm and Pay \(viewModel.totalPrice) SKP"
+                        : "Send Booking Request",
+                    hint: instructor.status == .active
+                        ? "Deducts \(viewModel.totalPrice) SKP from your wallet and confirms the session"
+                        : "Sends a skill-swap request to \(instructor.fullName)"
+                )
                 .padding(.horizontal)
                 .padding(.bottom, 40)
             }
@@ -224,13 +291,22 @@ struct SessionBookingView: View {
             PaySessionView(viewModel: viewModel)
         }
         .sheet(isPresented: $viewModel.showInsufficientFunds) {
-            InsufficientFundsSheet()
+            InsufficientFundsSheet(onTopUp: { navigateToWallet = true })
+        }
+        .navigationDestination(isPresented: $navigateToWallet) {
+            WalletView()
         }
         .fullScreenCover(isPresented: $viewModel.showSuccess) {
             SessionSuccessView(viewModel: viewModel)
         }
         .fullScreenCover(isPresented: $viewModel.showRequestSent) {
-            BookingRequestSentView(instructor: instructor, sessionDate: viewModel.selectedDate, time: viewModel.selectedTime)
+            BookingRequestSentView(
+                instructor: instructor,
+                sessionDate: viewModel.selectedDate,
+                time: viewModel.selectedTime,
+                isOnline: viewModel.isOnline,
+                duration: viewModel.selectedDuration
+            )
         }
     }
     

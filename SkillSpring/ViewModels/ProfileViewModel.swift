@@ -28,6 +28,13 @@ final class ProfileViewModel: ObservableObject {
         isLoading = true
         if let fetched = await FirebaseDataService.shared.fetchCurrentUser() {
             user = fetched
+            // Write-through: keep the local Core Data cache fresh so the
+            // offline path always has the most recent profile available.
+            PersistenceService.shared.saveUser(fetched)
+        } else if let cached = PersistenceService.shared.fetchUser() {
+            // Offline fallback: Firestore unreachable — serve cached profile
+            // rather than showing a blank screen (Core Data requirement §2.1.8).
+            user = cached
         }
         isLoading = false
     }

@@ -43,7 +43,11 @@ struct PaymentFailedSheet: View {
                         .cornerRadius(16)
                 }
                 
-                Button(action: { }) {
+                Button(action: {
+                    if let url = URL(string: "mailto:support@skillspryng.com") {
+                        UIApplication.shared.open(url)
+                    }
+                }) {
                     Text("Contact Support")
                         .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.primary)

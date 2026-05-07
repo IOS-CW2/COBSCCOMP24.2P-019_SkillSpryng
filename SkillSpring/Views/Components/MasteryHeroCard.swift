@@ -31,7 +31,7 @@ struct MasteryHeroCard: View {
                         .foregroundColor(.white.opacity(0.7))
                     
                     Text("\(data.total)")
-                        .font(.system(size: 32, weight: .bold))
+                        .font(AppTheme.Typography.largeTitle)
                         .foregroundColor(.white)
                     
                     Image(systemName: "star.fill")

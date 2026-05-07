@@ -182,7 +182,7 @@ struct SkillSetupView: View {
                     .foregroundColor(isSelected ? .black : AppTheme.Colors.primary)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(isSelected ? Color(red: 39/255.0, green: 226/255.0, blue: 70/255.0) : AppTheme.Colors.primary.opacity(0.1))
+                    .background(isSelected ? AppTheme.Colors.primary.opacity(0.15) : AppTheme.Colors.primary.opacity(0.1))
                     .cornerRadius(16)
             }
             .buttonStyle(.plain)

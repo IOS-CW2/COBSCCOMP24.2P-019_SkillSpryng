@@ -2,8 +2,10 @@ import SwiftUI
 
 struct MatchDetailView: View {
     let profile: MatchProfile
+    @State private var showAllReviews = false
+    @State private var showReportSheet = false
     @Environment(\.dismiss) private var dismiss
-
+    
     /// Build a live Conversation from this MatchProfile.
     /// In production, MessagesViewModel fetches or creates this in Firestore.
     private var conversation: Conversation {
@@ -23,7 +25,7 @@ struct MatchDetailView: View {
             messages: []
         )
     }
-
+    
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
@@ -39,13 +41,13 @@ struct MatchDetailView: View {
                                     .foregroundColor(AppTheme.Colors.primary)
                                     .font(AppTheme.Typography.title3)
                             }
-                            .offset(x: 45, y: 45),
+                                .offset(x: 45, y: 45),
                             alignment: .center
                         )
                         .padding(.top, 60)
                     
                     HStack {
-                        AppHeader(title: "", backAction: { dismiss() }, actionIcon: "ellipsis", action: { })
+                        AppHeader(title: "", backAction: { dismiss() }, actionIcon: "ellipsis", action: { showReportSheet = true })
                     }
                     .padding(.top, 40)
                 }
@@ -53,7 +55,7 @@ struct MatchDetailView: View {
                 // Name & Stats Row
                 VStack(spacing: 8) {
                     Text(profile.fullName)
-                        .font(.system(size: 26, weight: .bold))
+                        .font(AppTheme.Typography.title)
                     
                     Text(profile.role)
                         .font(AppTheme.Typography.callout)
@@ -179,7 +181,7 @@ struct MatchDetailView: View {
                 
                 // Reviews
                 VStack(alignment: .leading, spacing: 16) {
-                    SectionHeader(title: "REVIEWS", actionTitle: "See All Reviews", action: { })
+                    SectionHeader(title: "REVIEWS", actionTitle: "See All Reviews", action: { showAllReviews = true })
                     
                     ForEach(profile.reviews) { review in
                         ReviewCard(review: review)
@@ -215,74 +217,82 @@ struct MatchDetailView: View {
                     .accessibilityIdentifier("bookSessionButton")
                 }
                 .padding()
-                .background(Color.white.opacity(0.95))
+            }
+        )
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(
+            NavigationLink(destination: GenericListView(title: "All Reviews", items: profile.reviews.map { "\($0.reviewerName): \($0.comment)" }), isActive: $showAllReviews) {
+                EmptyView()
             }
         )
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.top)
-    }
-}
-
-struct DetailStatCard: View {
-    let title: String
-    let value: String
-    var suffix: String? = nil
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(AppTheme.Typography.badge)
-                .foregroundColor(.gray)
-            HStack(alignment: .bottom, spacing: 2) {
-                Text(value)
-                    .font(AppTheme.Typography.title3)
-                if let suffix = suffix {
-                    Text(suffix)
-                        .font(AppTheme.Typography.headline)
-                        .foregroundColor(.orange)
-                }
-            }
+        .sheet(isPresented: $showReportSheet) {
+            ReportUserSheet(reportedUserId: profile.id, reportedUserName: profile.fullName)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
-}
-
-struct ReviewCard: View {
-    let review: UserReview
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(review.reviewerImageUrl)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 32, height: 32)
-                    .clipShape(Circle())
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(review.reviewerName)
-                        .font(AppTheme.Typography.subheadline)
-                    HStack(spacing: 2) {
-                        ForEach(0..<5) { i in
-                            Image(systemName: "star.fill")
-                                .font(AppTheme.Typography.caption2)
-                                .foregroundColor(i < review.rating ? .orange : .gray.opacity(0.3))
-                        }
+    struct DetailStatCard: View {
+        let title: String
+        let value: String
+        var suffix: String? = nil
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(AppTheme.Typography.badge)
+                    .foregroundColor(.gray)
+                HStack(alignment: .bottom, spacing: 2) {
+                    Text(value)
+                        .font(AppTheme.Typography.title3)
+                    if let suffix = suffix {
+                        Text(suffix)
+                            .font(AppTheme.Typography.headline)
+                            .foregroundColor(.orange)
                     }
                 }
             }
-            
-            Text("\"\(review.comment)\"")
-                .font(AppTheme.Typography.callout)
-                .foregroundColor(.gray)
-                .italic()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
         }
-        .padding()
-        .background(Color(.systemGray6).opacity(0.5))
-        .cornerRadius(16)
+    }
+    
+    struct ReviewCard: View {
+        let review: UserReview
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(review.reviewerImageUrl)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 32, height: 32)
+                        .clipShape(Circle())
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(review.reviewerName)
+                            .font(AppTheme.Typography.subheadline)
+                        HStack(spacing: 2) {
+                            ForEach(0..<5) { i in
+                                Image(systemName: "star.fill")
+                                    .font(AppTheme.Typography.caption2)
+                                    .foregroundColor(i < review.rating ? .orange : .gray.opacity(0.3))
+                            }
+                        }
+                    }
+                }
+                
+                Text("\"\(review.comment)\"")
+                    .font(AppTheme.Typography.callout)
+                    .foregroundColor(.gray)
+                    .italic()
+            }
+            .padding()
+            .background(Color(.systemGray6).opacity(0.5))
+            .cornerRadius(16)
+        }
     }
 }

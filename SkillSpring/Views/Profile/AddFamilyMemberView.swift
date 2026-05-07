@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseFirestore
 
 struct AddFamilyMemberView: View {
     @Environment(\.presentationMode) var presentationMode
@@ -121,11 +122,38 @@ struct AddFamilyMemberView: View {
                     // Bottom Buttons
                     VStack(spacing: 16) {
                         PrimaryButton(title: "Send Invitation", action: {
+                            guard !fullName.isEmpty else { return }
                             HapticManager.success()
-                            toast = .success("Invitation sent to \(fullName.isEmpty ? "family member" : fullName)!", icon: "envelope.fill")
-                            // Navigate to home after brief delay so toast is visible
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                                UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
+                            toast = .success("Invitation sent to \(fullName)!", icon: "envelope.fill")
+
+                            // Persist the family member contact to Firestore under users/{uid}/familyMembers
+                            Task {
+                                if let currentUser = await FirebaseDataService.shared.fetchCurrentUser(),
+                                   let uid = currentUser.id {
+                                    let data: [String: Any] = [
+                                        "fullName":     fullName,
+                                        "phoneNumber":  phoneNumber,
+                                        "email":        email,
+                                        "addedAt":      Date().timeIntervalSince1970
+                                    ]
+                                    try? await FirebaseDataService.shared.db
+                                        .collection("users").document(uid)
+                                        .collection("familyMembers")
+                                        .addDocument(data: data)
+
+                                    // Write in-app notification confirming the addition
+                                    await FirebaseDataService.shared.createNotification(AppNotification(
+                                        type: .systemAlert,
+                                        title: "Family Member Added",
+                                        body: "\(fullName) has been added as an emergency contact.",
+                                        referenceId: nil
+                                    ))
+                                }
+                                // Navigate to home after brief delay so toast is visible
+                                try? await Task.sleep(nanoseconds: 1_800_000_000)
+                                await MainActor.run {
+                                    UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
+                                }
                             }
                         })
 

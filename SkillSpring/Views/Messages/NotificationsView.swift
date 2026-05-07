@@ -3,7 +3,8 @@ import SwiftUI
 struct NotificationsView: View {
     @StateObject private var viewModel = MessagesViewModel()
     @State private var selectedConversation: Conversation?
-    @State private var navigateToMatches = false
+    @State private var navigateToMatches  = false
+    @State private var navigateToCalendar = false
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
@@ -22,9 +23,10 @@ struct NotificationsView: View {
                             // Title & Calendar
                             HStack {
                                 Text("Messages")
-                                    .font(.system(size: 32, weight: .bold))
+                                    .font(AppTheme.Typography.largeTitle)
                                 Spacer()
-                                Button(action: { }) {
+                                // CALENDAR button → navigates to MySessionsView
+                                Button(action: { navigateToCalendar = true }) {
                                     Label("CALENDAR", systemImage: "calendar")
                                         .font(AppTheme.Typography.badge)
                                         .padding(.horizontal, 12)
@@ -33,6 +35,8 @@ struct NotificationsView: View {
                                         .foregroundColor(AppTheme.Colors.primary)
                                         .cornerRadius(20)
                                 }
+                                .accessibilityLabel("View my session calendar")
+                                .accessibilityHint("Double-tap to open your upcoming sessions")
                             }
                             .padding(.horizontal)
                             
@@ -142,7 +146,7 @@ struct NotificationsView: View {
                 }
                 
                 // FAB
-                Button(action: { }) {
+                Button(action: { navigateToMatches = true }) {
                     Image(systemName: "square.and.pencil")
                         .font(.title2)
                         .foregroundColor(.white)
@@ -156,6 +160,9 @@ struct NotificationsView: View {
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $navigateToMatches) {
             MyMatchesInboxView()
+        }
+        .navigationDestination(isPresented: $navigateToCalendar) {
+            MySessionsView()
         }
     }
 }

@@ -144,7 +144,7 @@ struct RewardsTabView: View {
                         Text("Upcoming Milestones")
                             .font(.headline)
                         Spacer()
-                        Button("VIEW ALL") { }
+                        Button("VIEW ALL") { showAnalytics = true }
                             .font(.system(size: 10, weight: .black))
                             .foregroundColor(AppTheme.Colors.primary)
                             .accessibilityLabel("View all upcoming milestones")
@@ -195,10 +195,10 @@ struct RewardsTabView: View {
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .sheet(isPresented: $showLeaderboard) {
-            LeaderboardView()
+            LeaderboardView(vm: vm)
         }
         .sheet(isPresented: $showAnalytics) {
-            LearningAnalyticsView()
+            LearningAnalyticsView(vm: vm)
         }
     }
 }

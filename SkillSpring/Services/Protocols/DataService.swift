@@ -9,4 +9,5 @@ protocol DataService: AnyObject {
     func createTransaction(_ transaction: CreditTransaction) async
     func createMatch(_ match: MatchRequest) async throws
     func createNotification(_ notification: AppNotification) async
+    func createConversation(_ conversation: Conversation, currentUserId: String) async
 }

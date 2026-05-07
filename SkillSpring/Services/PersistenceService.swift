@@ -5,7 +5,11 @@ import Foundation
 /// This allows for offline access and faster launch times by caching the user profile locally.
 class PersistenceService {
     static let shared = PersistenceService()
-    private let context = PersistenceController.shared.container.viewContext
+    private let context: NSManagedObjectContext
+
+    init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
+        self.context = context
+    }
 
     /// Saves or updates the local user cache with the provided User data.
     func saveUser(_ user: User) {

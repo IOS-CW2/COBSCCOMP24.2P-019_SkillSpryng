@@ -46,9 +46,8 @@ final class RewardsViewModel: ObservableObject {
         
         (leaderboard, rewardBadges, milestones, skillMissions, masteryData, creditPacks, analyticsData) = await (ldb, badges, miles, misses, mast, packs, anls)
         
-        // Assume curators are entries with the highest ranks and distinct badges
-        // (Just fallback logic to prevent empty arrays breaking UI)
-        topCurators = leaderboard.suffix(3) // Fallback for the UI
+        // Top curators are the highest-ranked entries
+        topCurators = Array(leaderboard.prefix(3))
         
         isLoading = false
     }

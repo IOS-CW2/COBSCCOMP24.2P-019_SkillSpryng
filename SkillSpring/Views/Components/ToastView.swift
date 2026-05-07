@@ -17,7 +17,7 @@ struct ToastMessage: Equatable {
         
         var iconColor: Color {
             switch self {
-            case .success: return Color.green
+            case .success: return AppTheme.Colors.primary
             case .error:   return Color.red
             case .warning: return Color.orange
             case .info:    return AppTheme.Colors.primary

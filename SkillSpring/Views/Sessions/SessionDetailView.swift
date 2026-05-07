@@ -1,16 +1,19 @@
 import SwiftUI
+import FirebaseFirestore
 
 struct SessionDetailView: View {
     let session: Session
     @Environment(\.dismiss) var dismiss
     @State private var showRating = false
     @State private var showCancel = false
+    @State private var showRemoveAlert = false
+    @State private var showOptions = false
     
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
                 // Header
-                AppHeader(title: "Session Details", backAction: { dismiss() }, actionIcon: "ellipsis", action: { })
+                AppHeader(title: "Session Details", backAction: { dismiss() }, actionIcon: "ellipsis", action: { showOptions = true })
                 
                 // Hero Status Card
                 ZStack {
@@ -74,7 +77,7 @@ struct SessionDetailView: View {
                             .foregroundColor(.green)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.green.opacity(0.1))
+                            .background(AppTheme.Colors.primary.opacity(0.1))
                             .cornerRadius(4)
                     }
                 }
@@ -154,9 +157,19 @@ struct SessionDetailView: View {
                                 .background(AppTheme.Colors.primary)
                                 .cornerRadius(16)
                         }
+                        .accessibilityButton(
+                            label: "Rate Session",
+                            hint: "Opens rating sheet for this session"
+                        )
                     }
                     
-                    Button(action: { showCancel = true }) {
+                    Button(action: {
+                        if session.status == .upcoming {
+                            showCancel = true
+                        } else {
+                            showRemoveAlert = true
+                        }
+                    }) {
                         Text(session.status == .upcoming ? "Cancel Session" : "Remove from History")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.red)
@@ -165,6 +178,10 @@ struct SessionDetailView: View {
                             .background(Color.red.opacity(0.05))
                             .cornerRadius(16)
                     }
+                    .accessibilityButton(
+                        label: session.status == .upcoming ? "Cancel Session" : "Remove from History",
+                        hint: session.status == .upcoming ? "Cancels this upcoming session" : "Removes this session from your history"
+                    )
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 40)
@@ -172,10 +189,40 @@ struct SessionDetailView: View {
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .sheet(isPresented: $showRating) {
-            RateSessionSheet(instructor: session.instructorName)
+            RateSessionSheet(instructor: session.instructorName, session: session)
         }
         .sheet(isPresented: $showCancel) {
             CancelSessionSheet(session: session)
+        }
+        .alert("Remove from History?", isPresented: $showRemoveAlert) {
+            Button("Remove", role: .destructive) {
+                Task {
+                    if let uid = await FirebaseDataService.shared.fetchCurrentUser()?.id {
+                        try? await FirebaseDataService.shared.db
+                            .collection("users").document(uid)
+                            .collection("sessions").document(session.id)
+                            .delete()
+                    }
+                    await MainActor.run { dismiss() }
+                }
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This session will be permanently removed from your history.")
+        }
+        .confirmationDialog("Session Options", isPresented: $showOptions, titleVisibility: .visible) {
+            Button("Report User", role: .destructive) {
+                // Placeholder
+            }
+            if session.status == .upcoming {
+                Button("Cancel Session", role: .destructive) {
+                    showCancel = true
+                }
+            }
+            Button("Mute Notifications") {
+                // Placeholder
+            }
+            Button("Cancel", role: .cancel) { }
         }
     }
 }

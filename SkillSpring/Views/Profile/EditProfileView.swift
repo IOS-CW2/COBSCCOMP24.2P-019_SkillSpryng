@@ -1,4 +1,6 @@
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
 struct EditProfileView: View {
     @StateObject private var vm = ProfileViewModel()
@@ -12,6 +14,7 @@ struct EditProfileView: View {
     @State private var uploadError: String?
     @State private var isSaveLoading    = false
     @State private var showSaveSuccess  = false
+    @State private var showDeleteAccountAlert = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -119,7 +122,7 @@ struct EditProfileView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(showSaveSuccess ? Color.green : AppTheme.Colors.primary)
+                        .background(showSaveSuccess ? AppTheme.Colors.primary : AppTheme.Colors.primary)
                         .cornerRadius(16)
                         .animation(.easeInOut(duration: 0.3), value: showSaveSuccess)
                     }
@@ -127,12 +130,27 @@ struct EditProfileView: View {
                     .padding(.horizontal)
                     .padding(.top, 24)
 
-                    Button(action: {}) {
+                    Button(action: { showDeleteAccountAlert = true }) {
                         Text("Delete Account")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(.red)
                     }
                     .padding(.bottom, 40)
+                    .alert("Delete Account?", isPresented: $showDeleteAccountAlert) {
+                        Button("Delete", role: .destructive) {
+                            Task {
+                                try? await FirebaseAuth.Auth.auth().currentUser?.delete()
+                                try? await FirebaseDataService.shared.db
+                                    .collection("users")
+                                    .document(FirebaseDataService.shared.uid ?? "")
+                                    .delete()
+                                UserDefaults.standard.set(false, forKey: "skillspryng.isLoggedIn")
+                            }
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("This will permanently delete your account and all data. This action cannot be undone.")
+                    }
                 }
             }
         }

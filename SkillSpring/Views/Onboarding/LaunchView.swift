@@ -22,11 +22,11 @@ struct LaunchView: View {
                             .accessibilityHidden(true)
 
                         Text("SkillSpryng")
-                            .font(.system(size: 34, weight: .bold, design: .default))
+                            .font(AppTheme.Typography.displayTitle)
                             .foregroundColor(AppTheme.Colors.textPrimary)
 
                         Text("Teach. Learn. Grow.")
-                            .font(.system(size: 16, weight: .regular))
+                            .font(AppTheme.Typography.body)
                             .foregroundColor(AppTheme.Colors.textSecondary)
 
                         Spacer()

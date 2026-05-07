@@ -7,6 +7,7 @@ struct CredibilityCard: View {
     let subheadline: String
     var studentsTaught: Int = 12
     var rating: Double = 4.9
+    var onFindLearners: (() -> Void)? = nil
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -18,7 +19,7 @@ struct CredibilityCard: View {
                     .font(AppTheme.Typography.badge)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(badge == "EXPERT" ? Color.blue.opacity(0.1) : Color.green.opacity(0.1))
+                    .background(badge == "EXPERT" ? Color.blue.opacity(0.1) : AppTheme.Colors.primary.opacity(0.1))
                     .foregroundColor(badge == "EXPERT" ? .blue : .green)
                     .cornerRadius(4)
             }
@@ -82,7 +83,7 @@ struct CredibilityCard: View {
             
             HStack {
                 Spacer()
-                Button(action: { }) {
+                Button(action: { onFindLearners?() }) {
                     HStack(spacing: 4) {
                         Text("Find Learners")
                         Image(systemName: "arrow.right")

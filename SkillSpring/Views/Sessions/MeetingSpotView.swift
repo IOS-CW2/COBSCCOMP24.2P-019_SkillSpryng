@@ -92,7 +92,7 @@ struct MeetingSpotView: View {
                                         Circle()
                                             .fill(selectedSpot?.id == spot.id
                                                   ? AppTheme.Colors.primary
-                                                  : Color.green)
+                                                  : AppTheme.Colors.primary)
                                             .frame(width: 32, height: 32)
                                         Image(systemName: spot.categoryIcon)
                                             .font(AppTheme.Typography.footnote)
@@ -289,7 +289,7 @@ struct MeetingSpotCard: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(isSelected
                           ? AppTheme.Colors.primary.opacity(0.15)
-                          : Color.green.opacity(0.1))
+                          : AppTheme.Colors.primary.opacity(0.1))
                     .frame(width: 44, height: 44)
                 Image(systemName: spot.categoryIcon)
                     .font(AppTheme.Typography.title3)

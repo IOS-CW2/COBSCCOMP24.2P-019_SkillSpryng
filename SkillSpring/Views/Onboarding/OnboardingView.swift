@@ -38,6 +38,7 @@ struct OnboardingView: View {
                                 .padding(.vertical, 10)
                         }
                         .accessibilityIdentifier("onboardingSkipButton")
+                        .accessibilityHint("Skips onboarding and goes to sign in")
                     }
                     .padding(.top, 10)
                     
@@ -89,6 +90,7 @@ struct OnboardingView: View {
                             }
                         )
                         .accessibilityIdentifier("onboardingNextButton")
+                        .accessibilityHint(currentPage == steps.count - 1 ? "Opens the sign in screen" : "Goes to the next onboarding step")
                         .padding(.horizontal, 24)
                     }
                     .padding(.bottom, 40)

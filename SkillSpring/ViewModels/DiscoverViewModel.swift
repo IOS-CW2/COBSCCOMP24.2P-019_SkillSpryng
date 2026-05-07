@@ -52,4 +52,21 @@ final class DiscoverViewModel: ObservableObject {
             $0.instructor.localizedCaseInsensitiveContains(searchText)
         }
     }
+
+    // MARK: - Match Actions (called from InboxMatchCard)
+
+    func acceptIncomingMatch(profile: MatchProfile) async {
+        await FirebaseDataService.shared.acceptIncomingMatch(fromUserId: profile.id)
+        await loadData()
+    }
+
+    func declineIncomingMatch(profile: MatchProfile) async {
+        await FirebaseDataService.shared.declineIncomingMatch(fromUserId: profile.id)
+        await loadData()
+    }
+
+    func cancelSentMatch(profile: MatchProfile) async {
+        await FirebaseDataService.shared.cancelSentMatch(toUserId: profile.id)
+        await loadData()
+    }
 }

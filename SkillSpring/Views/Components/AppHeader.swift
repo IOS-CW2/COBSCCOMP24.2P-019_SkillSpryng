@@ -17,8 +17,8 @@ struct AppHeader: View {
             
             // Side Actions
             HStack {
-                if showBackButton {
-                    Button(action: { backAction?() }) {
+                if showBackButton, let backAction = backAction {
+                    Button(action: backAction) {
                         Image(systemName: "chevron.left")
                             .foregroundColor(AppTheme.Colors.primary)
                             .padding(8)

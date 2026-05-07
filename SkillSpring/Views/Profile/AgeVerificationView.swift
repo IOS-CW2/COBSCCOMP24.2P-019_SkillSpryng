@@ -4,6 +4,12 @@ struct AgeVerificationView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var birthDate = Date()
     @State private var navigateToParental = false
+    @State private var navigateToSkillSetup = false
+
+    private var isAdult: Bool {
+        let age = Calendar.current.dateComponents([.year], from: birthDate, to: Date()).year ?? 0
+        return age >= 18
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -112,9 +118,16 @@ struct AgeVerificationView: View {
                 NavigationLink(destination: ParentalSetupView(), isActive: $navigateToParental) {
                     EmptyView()
                 }
+                NavigationLink(destination: SkillSetupView(fullName: "", phoneNumber: ""), isActive: $navigateToSkillSetup) {
+                    EmptyView()
+                }
 
                 Button(action: {
-                    navigateToParental = true
+                    if isAdult {
+                        navigateToSkillSetup = true
+                    } else {
+                        navigateToParental = true
+                    }
                 }) {
                     HStack {
                         Text("Continue")

@@ -9,13 +9,13 @@ struct ChildSafetyView: View {
     @State private var showingSetupPinAlert = false
     @State private var enteredPin = ""
     
-    // Adult State Toggles
-    @State private var restrictedContent = true
-    @State private var verifiedInstructors = true
-    @State private var privateProfile = false
-    @State private var directMsgRestrictions = true
-    @State private var videoRecording = true
-    @State private var shareActivity = true
+    // Adult State Toggles — persisted across launches
+    @AppStorage("skillspryng.safety.restrictedContent")    private var restrictedContent = true
+    @AppStorage("skillspryng.safety.verifiedInstructors")  private var verifiedInstructors = true
+    @AppStorage("skillspryng.safety.privateProfile")       private var privateProfile = false
+    @AppStorage("skillspryng.safety.directMsgRestrictions") private var directMsgRestrictions = true
+    @AppStorage("skillspryng.safety.videoRecording")       private var videoRecording = true
+    @AppStorage("skillspryng.safety.shareActivity")        private var shareActivity = true
     
     var body: some View {
         VStack(spacing: 0) {

@@ -188,6 +188,7 @@ struct LiveSessionView: View {
     @State private var showJitsi      = false
     @State private var showEndAlert   = false
     @State private var isEnding       = false
+    @State private var showNoShow     = false
 
     // Jitsi delegate state (driven by JS bridge callbacks)
     @State private var participantCount: Int    = 0
@@ -237,7 +238,7 @@ struct LiveSessionView: View {
                     Text(formatDuration(callDuration))
                         .font(.system(size: 12, weight: .bold, design: .monospaced))
                         .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Color.green.opacity(0.85))
+                        .background(AppTheme.Colors.primary.opacity(0.85))
                         .foregroundColor(.white)
                         .cornerRadius(20)
                         .accessibilityLabel("Session duration: \(formatDuration(callDuration))")
@@ -252,7 +253,7 @@ struct LiveSessionView: View {
                 VStack(spacing: 6) {
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(jitsiStatus.contains("Joined") ? Color.green : Color.orange)
+                            .fill(jitsiStatus.contains("Joined") ? AppTheme.Colors.primary : Color.orange)
                             .frame(width: 8, height: 8)
                         Text(jitsiStatus)
                             .font(AppTheme.Typography.badge)
@@ -315,7 +316,29 @@ struct LiveSessionView: View {
                 .padding(.bottom, 32)
 
                 CallControlBar(onEndCall: { showEndAlert = true })
-                    .padding(.bottom, 50)
+                    .padding(.bottom, 16)
+
+                // Report No-Show — visible when participant count is 0 after the first 2 minutes
+                if callDuration >= 120 && participantCount == 0 {
+                    Button(action: { showNoShow = true }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "flag.fill")
+                                .font(AppTheme.Typography.badge)
+                            Text("Learner hasn't joined — Report No-Show")
+                                .font(AppTheme.Typography.badge)
+                        }
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.orange.opacity(0.15))
+                        .cornerRadius(20)
+                    }
+                    .transition(.opacity.combined(with: .scale))
+                    .accessibilityLabel("Report that the learner has not joined the session")
+                    .padding(.bottom, 24)
+                } else {
+                    Spacer().frame(height: 50)
+                }
             }
         }
         .statusBar(hidden: true)
@@ -337,7 +360,7 @@ struct LiveSessionView: View {
                     // Live status badge over the WebView
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(jitsiStatus.contains("Joined") ? Color.green : Color.orange)
+                            .fill(jitsiStatus.contains("Joined") ? AppTheme.Colors.primary : Color.orange)
                             .frame(width: 7, height: 7)
                         Text(jitsiStatus)
                             .font(.system(size: 11, weight: .semibold))
@@ -368,6 +391,13 @@ struct LiveSessionView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This will mark the session as completed and award your karma points.")
+        }
+        .sheet(isPresented: $showNoShow) {
+            ReportNoShowView(
+                session: session,
+                onKeepWaiting: { showNoShow = false },
+                onLeaveSession: { dismiss() }
+            )
         }
     }
 

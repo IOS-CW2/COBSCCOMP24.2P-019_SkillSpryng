@@ -69,7 +69,7 @@ struct MapSelectionView: View {
                         Spacer()
                         if geofenceManager.isMonitoring {
                             HStack(spacing: 4) {
-                                Circle().fill(Color.green).frame(width: 6, height: 6)
+                                Circle().fill(AppTheme.Colors.primary).frame(width: 6, height: 6)
                                 Text("MONITORING ACTIVE")
                                     .font(AppTheme.Typography.badge)
                                     .foregroundColor(.green)
@@ -110,7 +110,7 @@ struct MapSelectionView: View {
                             .foregroundColor(.green)
                     }
                     .padding(12)
-                    .background(Color.green.opacity(0.07))
+                    .background(AppTheme.Colors.primary.opacity(0.07))
                     .cornerRadius(12)
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel("Geofence active. Time elapsed: \(formatDuration(sessionSeconds)).")
@@ -241,7 +241,6 @@ struct MapSelectionView: View {
         .alert("Emergency Alert", isPresented: $showNeedHelpAlert) {
             Button("Confirm — Send Alert", role: .destructive) {
                 HapticManager.error()
-                // TODO: SOS / emergency contact API
             }
             Button("Cancel", role: .cancel) { }
         } message: {

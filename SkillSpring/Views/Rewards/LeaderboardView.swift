@@ -3,7 +3,17 @@ import SwiftUI
 struct LeaderboardView: View {
     @State private var selectedTab = "Weekly"
     @Environment(\.dismiss) var dismiss
-        @StateObject private var vm = RewardsViewModel()
+    @ObservedObject var vm: RewardsViewModel
+
+    @MainActor
+    init() {
+        _vm = ObservedObject(initialValue: .init())
+    }
+
+    @MainActor
+    init(vm: RewardsViewModel) {
+        _vm = ObservedObject(initialValue: vm)
+    }
     
     var body: some View {
         VStack(spacing: 0) {

@@ -2,8 +2,18 @@ import SwiftUI
 import Charts
 
 struct LearningAnalyticsView: View {
-        @StateObject private var vm = RewardsViewModel()
+    @ObservedObject var vm: RewardsViewModel
     @Environment(\.dismiss) var dismiss
+
+    @MainActor
+    init() {
+        _vm = ObservedObject(initialValue: .init())
+    }
+
+    @MainActor
+    init(vm: RewardsViewModel) {
+        _vm = ObservedObject(initialValue: vm)
+    }
     
     var body: some View {
         VStack(spacing: 0) {

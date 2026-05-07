@@ -33,7 +33,7 @@ final class FirebaseDataService: DataService {
 
     static let shared = FirebaseDataService()
     let db = Firestore.firestore()
-    var uid: String? { Auth.auth().currentUser?.uid ?? "DEMO_TEST_USER_ID" }
+    var uid: String? { Auth.auth().currentUser?.uid }
 
     // Active Firestore snapshot listeners (stored to cancel on deinit)
     private var sessionListener: ListenerRegistration?
@@ -162,6 +162,18 @@ final class FirebaseDataService: DataService {
         try db.collection("users").document(uid)
             .collection("sessions").document(session.id)
             .setData(from: session)
+    }
+
+    /// WRITE — saves star rating and written feedback onto the session document.
+    func rateSession(sessionId: String, rating: Int, feedback: String) async {
+        guard let uid else { return }
+        try? await db.collection("users").document(uid)
+            .collection("sessions").document(sessionId)
+            .updateData([
+                "rating": rating,
+                "reviewFeedback": feedback,
+                "ratedAt": FieldValue.serverTimestamp()
+            ])
     }
 
     /// UPDATE session status (e.g. upcoming → completed).
@@ -304,12 +316,19 @@ final class FirebaseDataService: DataService {
             .collection("messages").document(message.id)
             .setData(from: message)
 
-        // Update conversation metadata
+        // Update conversation metadata (formatted string so Codable decoding succeeds)
+        let timeString = Date().formatted(.dateTime.hour().minute())
         try? await db.collection("conversations").document(conversationId).updateData([
             "lastMessage": message.text ?? "",
-            "lastMessageTime": FieldValue.serverTimestamp(),
+            "lastMessageTime": timeString,
             "senderId": uid
         ])
+    }
+
+    func createConversation(_ conversation: Conversation, currentUserId: String) async {
+        var data = (try? Firestore.Encoder().encode(conversation)) ?? [:]
+        data["participantIds"] = [currentUserId, conversation.participant.id ?? UUID().uuidString]
+        try? await db.collection("conversations").document(conversation.id).setData(data)
     }
 
     func markMessageRead(_ messageId: String, conversationId: String) async {
@@ -602,17 +621,20 @@ final class FirebaseDataService: DataService {
             referenceId: sessionId
         ))
 
-        // Write transaction record
+        // Atomically increment wallet balance — avoids race-condition overwrites
+        try? await db.collection("users").document(uid)
+            .updateData(["walletBalance": FieldValue.increment(Int64(sessionCompletionPoints))])
+
+        // Write transaction record (fetch fresh balance after increment for the log)
         if let user = await fetchCurrentUser() {
             let tx = CreditTransaction(
                 amount: sessionCompletionPoints,
                 type: .sessionEarning,
                 description: "Session completion reward",
-                balanceAfter: user.walletBalance + sessionCompletionPoints,
+                balanceAfter: user.walletBalance,
                 referenceId: sessionId
             )
             await createTransaction(tx)
-            await updateWalletBalance(user.walletBalance + sessionCompletionPoints)
         }
     }
 
@@ -678,5 +700,97 @@ final class FirebaseDataService: DataService {
             }
         }
         print("==============================================\n")
+    }
+
+    // MARK: - ─────────────────────────────────────────────
+    // MARK: MATCH ACCEPTANCE (Instructor side)
+    // ─────────────────────────────────────────────────────
+
+    /// Returns the pending MatchRequest sent by `fromUserId` to the current user, if any.
+    func fetchPendingMatch(fromUserId: String) async -> MatchRequest? {
+        guard let uid else { return nil }
+        do {
+            let snap = try await db.collection("matches")
+                .whereField("toUserId", isEqualTo: uid)
+                .whereField("fromUserId", isEqualTo: fromUserId)
+                .whereField("status", isEqualTo: MatchRequestStatus.pending.rawValue)
+                .limit(to: 1)
+                .getDocuments()
+            return snap.documents.first.flatMap { try? $0.data(as: MatchRequest.self) }
+        } catch {
+            print("[FDS] fetchPendingMatch: ❌ \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    /// Finds the pending MatchRequest sent by `fromUserId` to the current user,
+    /// marks it as accepted, and creates an in-app notification for the learner.
+    /// Called from `MentorSessionRequestView` when the instructor taps "Accept Session".
+    func acceptIncomingMatch(fromUserId: String) async {
+        guard let uid else { return }
+        do {
+            let snap = try await db.collection("matches")
+                .whereField("toUserId", isEqualTo: uid)
+                .whereField("fromUserId", isEqualTo: fromUserId)
+                .whereField("status", isEqualTo: MatchRequestStatus.pending.rawValue)
+                .getDocuments()
+            guard let doc = snap.documents.first else {
+                print("[FDS] acceptIncomingMatch: no pending match found from \(fromUserId)")
+                return
+            }
+            let matchId = doc.documentID
+            await updateMatchStatus(matchId, status: .accepted)
+            await createNotification(AppNotification(
+                type: .sessionConfirmed,
+                title: "Session Accepted ✅",
+                body: "The instructor has accepted your session request.",
+                referenceId: matchId
+            ))
+            print("[FDS] acceptIncomingMatch: ✅ match \(matchId) accepted")
+        } catch {
+            print("[FDS] acceptIncomingMatch: ❌ \(error.localizedDescription)")
+        }
+    }
+
+    /// Cancels a pending MatchRequest sent by the current user to `toUserId`.
+    /// Called from `InboxMatchCard` "Cancel Request" button.
+    func cancelSentMatch(toUserId: String) async {
+        guard let uid else { return }
+        do {
+            let snap = try await db.collection("matches")
+                .whereField("fromUserId", isEqualTo: uid)
+                .whereField("toUserId", isEqualTo: toUserId)
+                .whereField("status", isEqualTo: MatchRequestStatus.pending.rawValue)
+                .limit(to: 1)
+                .getDocuments()
+            guard let doc = snap.documents.first else { return }
+            try? await db.collection("matches").document(doc.documentID).delete()
+            print("[FDS] cancelSentMatch: ✅ match \(doc.documentID) deleted")
+        } catch {
+            print("[FDS] cancelSentMatch: ❌ \(error.localizedDescription)")
+        }
+    }
+
+    /// Finds the pending MatchRequest and marks it as declined.
+    /// Called from `DeclineReasonSheet` when the instructor confirms the decline.
+    func declineIncomingMatch(fromUserId: String) async {
+        guard let uid else { return }
+        do {
+            let snap = try await db.collection("matches")
+                .whereField("toUserId", isEqualTo: uid)
+                .whereField("fromUserId", isEqualTo: fromUserId)
+                .whereField("status", isEqualTo: MatchRequestStatus.pending.rawValue)
+                .getDocuments()
+            guard let doc = snap.documents.first else { return }
+            await updateMatchStatus(doc.documentID, status: .declined)
+            await createNotification(AppNotification(
+                type: .systemAlert,
+                title: "Session Declined",
+                body: "The instructor is not available for this request. Try booking with another mentor.",
+                referenceId: doc.documentID
+            ))
+        } catch {
+            print("[FDS] declineIncomingMatch: ❌ \(error.localizedDescription)")
+        }
     }
 }
