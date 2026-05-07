@@ -11,6 +11,7 @@ struct OnboardingStep: Identifiable {
 struct OnboardingView: View {
     @State private var currentPage = 0
     @State private var navigateToSignIn = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     let steps = [
         OnboardingStep(image: "onboard1", title: "Share What You Know", description: "Offer your skills to others and build your reputation as a mentor."),
@@ -51,6 +52,7 @@ struct OnboardingView: View {
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
                     .onAppear {
+                        guard !reduceMotion else { return }
                         scrollTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { _ in
                             if currentPage < steps.count - 1 {
                                 withAnimation {
@@ -62,7 +64,7 @@ struct OnboardingView: View {
                     .onDisappear {
                         scrollTimer?.invalidate()
                     }
-                    .animation(.easeInOut, value: currentPage)
+                    .animation(reduceMotion ? nil : .easeInOut, value: currentPage)
                     
                     // Page Indicator & Footer
                     VStack(spacing: 32) {
@@ -72,7 +74,7 @@ struct OnboardingView: View {
                                 Capsule()
                                     .fill(currentPage == index ? AppTheme.Colors.primary : Color.gray.opacity(0.2))
                                     .frame(width: currentPage == index ? 24 : 8, height: 8)
-                                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: currentPage)
+                                    .animation(reduceMotion ? nil : .spring(response: 0.3, dampingFraction: 0.7), value: currentPage)
                             }
                         }
                         
@@ -81,8 +83,10 @@ struct OnboardingView: View {
                             title: currentPage == steps.count - 1 ? "Get Started" : "Next",
                             action: {
                                 if currentPage < steps.count - 1 {
-                                    withAnimation {
+                                    if reduceMotion {
                                         currentPage += 1
+                                    } else {
+                                        withAnimation { currentPage += 1 }
                                     }
                                 } else {
                                     navigateToSignIn = true

@@ -235,7 +235,7 @@ struct MapSelectionView: View {
         .alert("Safety Monitoring Started", isPresented: $showMonitoringStarted) {
             Button("Got It", role: .cancel) { }
         } message: {
-            Text("You'll be alerted if you move more than 100m from the venue.")
+            Text("You'll be alerted if you move more than 500m from the venue.")
         }
         // I Need Help emergency alert
         .alert("Emergency Alert", isPresented: $showNeedHelpAlert) {

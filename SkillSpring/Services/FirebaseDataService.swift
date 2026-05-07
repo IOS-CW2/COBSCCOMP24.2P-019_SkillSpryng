@@ -316,12 +316,13 @@ final class FirebaseDataService: DataService {
             .collection("messages").document(message.id)
             .setData(from: message)
 
-        // Update conversation metadata (formatted string so Codable decoding succeeds)
+        // Update conversation metadata (formatted string for display, Timestamp for ordering)
         let timeString = Date().formatted(.dateTime.hour().minute())
         try? await db.collection("conversations").document(conversationId).updateData([
-            "lastMessage": message.text ?? "",
-            "lastMessageTime": timeString,
-            "senderId": uid
+            "lastMessage":          message.text ?? "",
+            "lastMessageTime":      timeString,          // display only — not used for sort
+            "lastMessageTimestamp": FieldValue.serverTimestamp(), // used by fetchConversations
+            "senderId":             uid
         ])
     }
 
@@ -347,16 +348,32 @@ final class FirebaseDataService: DataService {
     func fetchConversations() async -> [Conversation] {
         guard let uid else { return MockDataProvider.shared.mockConversations }
         do {
+            // Order by `lastMessageTimestamp` (Firestore Timestamp) for correct
+            // chronological ordering. `lastMessageTime` is kept as a display String
+            // but must NOT be used for sorting (lexicographic ordering is incorrect).
             let snap = try await db.collection("conversations")
                 .whereField("participantIds", arrayContains: uid)
-                .order(by: "lastMessageTime", descending: true)
+                .order(by: "lastMessageTimestamp", descending: true)
                 .getDocuments()
             if snap.documents.isEmpty {
                 await seedConversations(uid: uid)
                 return MockDataProvider.shared.mockConversations
             }
             return snap.documents.compactMap { try? $0.data(as: Conversation.self) }
-        } catch { return MockDataProvider.shared.mockConversations }
+        } catch {
+            // Fallback: fetch without ordering if composite index not yet created
+            do {
+                let snap = try await db.collection("conversations")
+                    .whereField("participantIds", arrayContains: uid)
+                    .getDocuments()
+                let convs = snap.documents.compactMap { try? $0.data(as: Conversation.self) }
+                if convs.isEmpty {
+                    await seedConversations(uid: uid)
+                    return MockDataProvider.shared.mockConversations
+                }
+                return convs
+            } catch { return MockDataProvider.shared.mockConversations }
+        }
     }
 
     private func seedConversations(uid: String) async {

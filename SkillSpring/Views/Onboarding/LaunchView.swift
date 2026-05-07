@@ -3,11 +3,18 @@ import SwiftUI
 struct LaunchView: View {
     @State private var isActive: Bool = false
     @State private var activeDotIndex: Int = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var animationTimer: Timer?
     
     var body: some View {
         Group {
             if isActive {
                 OnboardingView()
+                    .onAppear {
+                        // Cancel the animation timer when transitioning away
+                        animationTimer?.invalidate()
+                        animationTimer = nil
+                    }
             } else {
                 ZStack {
                     Color.white.ignoresSafeArea()
@@ -41,7 +48,8 @@ struct LaunchView: View {
                         .padding(.bottom, 48)
                         .accessibilityHidden(true)
                         .onAppear {
-                            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                            guard !reduceMotion else { return }
+                            animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                                     activeDotIndex = (activeDotIndex + 1) % 3
                                 }
@@ -52,11 +60,16 @@ struct LaunchView: View {
             }
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            let delay = ProcessInfo.processInfo.arguments.contains("-skillspryng.skipLaunchDelay") ? 0.0 : (reduceMotion ? 0.5 : 2.0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 withAnimation {
                     self.isActive = true
                 }
             }
+        }
+        .onDisappear {
+            animationTimer?.invalidate()
+            animationTimer = nil
         }
     }
 }

@@ -155,6 +155,7 @@ struct NotificationsView: View {
                         .cornerRadius(16)
                         .shadow(color: AppTheme.Colors.primary.opacity(0.3), radius: 10, x: 0, y: 5)
                 }
+                .accessibilityIdentifier("matchesButton")
                 .padding()
         }
         .navigationBarHidden(true)

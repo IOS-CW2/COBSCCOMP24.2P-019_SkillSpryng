@@ -11,6 +11,11 @@ import MapKit
 import FirebaseCore
 @testable import SkillSpring
 
+private let _unitTestSummaryObserver: UnitTestSummaryObserver = {
+    let observer = UnitTestSummaryObserver.shared
+    return observer
+}()
+
 // MARK: - MockDataProvider Tests
 
 /// Verifies the integrity of the shared mock data layer.

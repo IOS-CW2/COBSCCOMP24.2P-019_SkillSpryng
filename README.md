@@ -37,7 +37,7 @@ SkillSpring/
 ├── ViewModels/                 # MVVM view models (@MainActor, ObservableObject)
 ├── Views/                      # SwiftUI views (Auth, Home, Sessions, Rewards, etc.)
 └── SupportingFiles/            # GoogleService-Info.plist, StoreKit config, GPX files
-SkillSpringTests/               # 93 XCTest unit tests
+SkillSpringTests/               # 181 unit tests (16 test files)
 SkillSpringUITests/             # XCUITest UI tests
 ```
 
@@ -97,17 +97,45 @@ Select the `SkillSpring` scheme and press **⌘R**.
 
 ## Running Tests
 
-### Unit Tests (93 tests)
+### Unit Tests (181 tests across 16 files)
 ```
 ⌘U  or  Product → Test
 ```
-Covers: Auth, Booking, Chat, Calendar, Geofence, Persistence (in-memory), StoreKit, Firebase data models, and more.
 
-### UI Tests
+| Test File | Tests | Covers |
+|---|---|---|
+| `AuthViewModelTests.swift` | 8 | OTP state machine, Combine async expectations, new/existing user routing |
+| `BiometricAndNotificationTests.swift` | 14 | Hardware detection, UserDefaults persistence, notification scheduling guards |
+| `BookingViewModelTests.swift` | 11 | Pricing, date parsing, insufficient funds, payment sheet, free request flow |
+| `CalendarServiceTests.swift` | 9 | Conflict detection, `DateInterval.intersects`, iOS 17 access path |
+| `ChatViewModelTests.swift` | 8 | Message send, optimistic UI, read marking |
+| `DiscoverViewModelTests.swift` | 14 | Search filter, category filter, map annotation, match % |
+| `FirebaseDataServiceModelTests.swift` | 7 | Codable model round-trips, field mapping |
+| `GeofenceManagerTests.swift` | 8 | Exit/re-entry state machine, 5-min escalation timer, Firestore log |
+| `LearningViewModelTests.swift` | 18 | Course filter, enrolment, progress clamping, events |
+| `MessagesViewModelTests.swift` | 13 | Conversation load, message send, soft delete, unread count |
+| `PersistenceTests.swift` | 3 | In-memory Core Data upsert, fetch, clear |
+| `ProfileViewModelTests.swift` | 18 | Profile completeness, skill arrays, wallet balance, stats |
+| `RewardsViewModelTests.swift` | 12 | Leaderboard derivation, mastery clamping, milestone integrity |
+| `SessionsViewModelTests.swift` | 13 | Upcoming/completed/cancelled filters, todaySession, tomorrowSession |
+| `SkillSpringTests.swift` | 12 | MockDataProvider data integrity, AnalyticsData, MapViewModel |
+| `StoreKitServiceTests.swift` | 13 | Credit calculation, entitlement checks, `VerificationResult` unwrapping |
+
+### UI Tests (8 tests)
 ```
 Select SkillSpringUITests scheme → ⌘U
 ```
-Covers: Onboarding flow, login, tab navigation, Discover search, chat message send.
+
+| Test | Verifies |
+|---|---|
+| `test_launch_showsOnboardingAfterDelay` | LaunchView → Onboarding navigation |
+| `test_loginFlow_navigatesToOTPVerification` | Full name → phone → OTP screen |
+| `test_tabBarNavigation_switchesTabsSuccessfully` | All 4 tabs navigable without crash |
+| `test_discoverSearch_noResults_showsEmptyState` | Search empty state |
+| `test_chat_sendMessage_appearsInBubble` | Optimistic UI after message send |
+| `test_matchDetail_tapBookSession_opensbookingView` | Connect → Match → Book flow |
+| `test_accessibility_keyElementsHaveLabels` | VoiceOver labels on key elements |
+| `test_offlineBanner_appearsWhenNoNetwork` | Network Link Conditioner / manual test |
 
 ---
 
@@ -129,6 +157,20 @@ Covers: Onboarding flow, login, tab navigation, Discover search, chat message se
 | Push Notifications | UserNotifications framework |
 | Network Monitoring | Network framework (NWPathMonitor) |
 | Accessibility | AccessibilityHelper, Dynamic Type, VoiceOver labels |
+
+---
+
+## Advanced iOS Features
+
+The following five advanced iOS framework integrations are implemented in full and are demonstrable during the VIVA:
+
+| # | Framework | Integration Depth |
+|---|---|---|
+| 1 | **LocalAuthentication** | `LAContext.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics)` — all 5 `LAError` cases handled (userCancel, biometryLockout, authenticationFailed, biometryNotEnrolled, biometryNotAvailable). Fresh `LAContext` created per-attempt to avoid silent failure. Biometric toggle persisted in `UserDefaults`. |
+| 2 | **EventKit** | 8-function `CalendarService` — `requestFullAccessToEvents` (iOS 17) with legacy fallback, `EKStructuredLocation` with 500 m radius for time-to-leave alerts, deep-link `URL` (`skillspryng://session/ID`) embedded in every event, dual `EKAlarm` (1 hr + 24 hr), conflict detection via `getBusyTimeSlots` + `isTimeSlotAvailable`. |
+| 3 | **MapKit + CoreLocation** | `MKLocalSearch` for venue lookup, `Map()` with `MapAnnotation` for custom instructor pins, `CLGeocoder` for address resolution, `CLCircularRegion` (500 m) geofence for in-person session safety monitoring. |
+| 4 | **CoreLocation Geofencing** | `CLLocationManager.startMonitoring(for:)` with `CLCircularRegion`. `locationManager(_:didExitRegion:)` fires `GeofenceManager.handleExit()` → safety alert sheet → 5-minute escalation timer → Firestore audit log → local push notification. |
+| 5 | **StoreKit 2** | `Product.products(for:)` async load, `product.purchase()` with `Transaction.updates` listener, `VerificationResult<Transaction>` unwrapping (no custom validation server), consumable credit pack purchases, auto-renewing Pro subscription with `checkSubscriptionStatus()` on every launch. |
 
 ---
 
@@ -237,13 +279,15 @@ The project includes two GPX route files for simulating location movement in the
 
 ## Known Limitations & Future Work
 
-| Area | Status |
-|---|---|
-| SOS / Emergency contact API | UI alert exists; API integration is a planned future enhancement |
-| Delete Account API | Confirmation dialog exists; backend deletion endpoint is a future task |
-| Map region | Currently seeded with Sri Lanka / Colombo data; region is configurable via `DataSeeder` |
-| Jitsi Meet rooms | Room names are generated from session IDs; production deployment requires a self-hosted Jitsi instance or 8x8 API key |
-| Child Mode | Toggle exists in settings; content filtering rules are a future enhancement |
+| Area | Current Status | Future Plan |
+|---|---|---|
+| SOS / Emergency contact API | `notifyFamilyMember()` sends a local push; real SMS requires Firebase Cloud Functions | Integrate Twilio SMS via Cloud Functions trigger |
+| Apple / Google Sign-In | Buttons present in UI; OAuth flow not wired | Add `AuthenticationServices` + Google Sign-In SDK |
+| Delete Account API | Confirmation dialog exists; Auth + Firestore deletion complete, Storage cleanup pending | Add `StorageReference.delete()` sweep on account deletion |
+| Map region | Seeded with Colombo, Sri Lanka coordinates; region configurable via `MockDataProvider` | Detect user country at onboarding and seed region-appropriate mock data |
+| Jitsi Meet rooms | Room names generated from session IDs; meet.jit.si public server used | Production: self-hosted Jitsi or 8x8.vc API key for branded rooms |
+| Child Mode | PIN-gated parent panel implemented; content filtering rules are a future enhancement | Add `SKAdNetworkConversionValue` and content category tagging per session |
+| Conversation ordering | `lastMessageTime` stored as formatted String; ordering is lexicographic | Migrate to Firestore `Timestamp` field for correct chronological ordering |
 
 ---
 
