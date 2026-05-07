@@ -1,5 +1,8 @@
 import SwiftUI
 
+/// Shows a full list of potential skill matches and suggested peers.
+///
+/// Includes search filters, category chips, and a weekly workshop highlight.
 struct SkillMatchesView: View {
     @StateObject private var vm = DiscoverViewModel()
     @Environment(\.dismiss) private var dismiss
@@ -12,6 +15,7 @@ struct SkillMatchesView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
                 // Navigation Header
+                // The top bar allows users to go back from the match list.
                 AppHeader(title: "Skill Matches", backAction: { dismiss() })
                 
                 // Title Area
@@ -25,6 +29,7 @@ struct SkillMatchesView: View {
                 .padding(.horizontal)
                 
                 // Search Bar
+                // Lets users filter matches by people, skills, or topics.
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
@@ -37,6 +42,7 @@ struct SkillMatchesView: View {
                 .padding(.horizontal)
                 
                 // Category Filters
+                // Lightweight horizontal chips used to narrow the match list.
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(categories, id: \.self) { category in
@@ -49,6 +55,7 @@ struct SkillMatchesView: View {
                 }
                 
                 // Matches List
+                // Each card is a tappable navigation link to the profile detail view.
                 VStack(spacing: 20) {
                     ForEach(vm.profiles) { profile in
                         NavigationLink(destination: MatchDetailView(profile: profile)) {
@@ -61,6 +68,7 @@ struct SkillMatchesView: View {
                 .padding(.horizontal)
                 
                 // Weekly Workshop Card
+                // Promotes a live group event and encourages users to join.
                 VStack(alignment: .leading, spacing: 16) {
                     ZStack(alignment: .bottomLeading) {
                         Image("event_ui") // Placeholder for workshop image
@@ -128,6 +136,8 @@ struct SkillMatchesView: View {
     }
 }
 
+/// A card representing a single skill match recommendation.
+/// Shows match score, location, and a short bio preview.
 struct SkillMatchCard: View {
     let profile: MatchProfile
     

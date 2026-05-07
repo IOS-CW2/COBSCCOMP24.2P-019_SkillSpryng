@@ -179,6 +179,9 @@ struct JitsiMeetWebView: UIViewRepresentable {
 }
 
 // MARK: - LiveSessionView
+// MARK: - LiveSessionView
+// Live session host screen that embeds Jitsi Meet and tracks
+// participant status, call duration, and no-show reporting.
 struct LiveSessionView: View {
     let session: Session
     var onEndSession: () -> Void = {}
@@ -404,6 +407,9 @@ struct LiveSessionView: View {
     // MARK: - Jitsi Event Handler
     /// Receives typed events from the WKScriptMessageHandler JS bridge and
     /// updates published UI state — equivalent to JMConferenceEventDelegate callbacks.
+    // MARK: - Jitsi Event Handler
+    /// Receives typed events from the WKScriptMessageHandler JS bridge and
+    /// updates UI state such as participant count, mute status, and session lifecycle.
     private func handleJitsiEvent(_ event: JitsiEvent, payload: [String: Any]) {
         let name = (payload["event"] as? String)
                 ?? (payload["type"] as? String)

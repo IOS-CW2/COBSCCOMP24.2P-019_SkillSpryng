@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - VerificationSuccessView
+// Confirmation screen displayed after successful phone verification.
+// Provides a clear success state and the next continue action into
+// the age verification flow.
 struct VerificationSuccessView: View {
     @ObservedObject var viewModel: AuthViewModel
     @State private var showingImagePicker = false

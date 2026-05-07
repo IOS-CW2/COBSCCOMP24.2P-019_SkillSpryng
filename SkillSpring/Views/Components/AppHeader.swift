@@ -1,3 +1,5 @@
+// MARK: - AppHeader
+// Consistent screen header with optional back and action buttons.
 import SwiftUI
 
 struct AppHeader: View {

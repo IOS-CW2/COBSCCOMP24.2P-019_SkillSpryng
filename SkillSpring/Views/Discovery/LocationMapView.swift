@@ -1,6 +1,10 @@
 import SwiftUI
 import MapKit
 
+/// Displays the nearby skills map and a draggable bottom sheet with learner details.
+///
+/// This view handles location permission states, shows map annotations for
+/// nearby learners, and lets users expand a sheet to browse nearby profiles.
 struct LocationMapView: View {
     @StateObject private var viewModel = MapViewModel()
     @State private var showPrivacyBanner = true
@@ -16,11 +20,14 @@ struct LocationMapView: View {
         ZStack(alignment: .bottom) {
 
             // ── Permission Denied State ─────────────────────────────────────
+            // Shows an explanation and a button to open Settings when location
+            // access is blocked or restricted.
             if viewModel.permissionStatus == .denied ||
                viewModel.permissionStatus == .restricted {
                 locationDeniedView
             } else {
                 // ── Full Screen Map ─────────────────────────────────────────
+                // Primary map content when location permission is available.
                 ZStack(alignment: .top) {
                     Map(
                         coordinateRegion: $viewModel.region,
@@ -106,6 +113,7 @@ struct LocationMapView: View {
                 }
 
                 // ── Selected Skill Card ─────────────────────────────────────
+                // Shows quick details for the currently tapped learner pin.
                 if let selected = viewModel.selectedSkill {
                     SelectedSkillCard(skill: selected) {
                         withAnimation { viewModel.selectedSkill = nil }
@@ -117,6 +125,7 @@ struct LocationMapView: View {
                 }
 
                 // ── Draggable Bottom Sheet ──────────────────────────────────
+                // Swipe up to expand and browse nearby learners in list form.
                 bottomSheet
             }
         }
@@ -126,6 +135,8 @@ struct LocationMapView: View {
 
     // MARK: - Bottom Sheet
 
+    /// The draggable card at the bottom that shows nearby learners and expands
+    /// into a more detailed list when pulled up.
     private var bottomSheet: some View {
         let currentHeight = sheetExpanded ? sheetFullHeight : sheetPeekHeight
         let offset = max(0, currentHeight - sheetPeekHeight - dragOffset)
@@ -217,6 +228,7 @@ struct LocationMapView: View {
 
     // MARK: - Permission Denied State
 
+    /// View shown when the user has denied or restricted location access.
     private var locationDeniedView: some View {
         VStack(spacing: 0) {
             Spacer()

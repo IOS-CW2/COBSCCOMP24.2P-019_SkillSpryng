@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - MySessionsView
+// The main session dashboard for learners. Displays upcoming sessions,
+// completed history, and actions like cancelling or rating sessions.
 struct MySessionsView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var vm = SessionsViewModel()

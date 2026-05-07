@@ -7,6 +7,10 @@ import FirebaseFirestore
 // Architecture: MySessionsView → SessionsViewModel → FirebaseDataService → Firestore
 
 @MainActor
+/// Manages the user's session history and live updates from Firestore.
+///
+/// Uses a snapshot listener to keep the session list in sync and exposes
+/// helper views for upcoming, completed, cancelled, and history sessions.
 final class SessionsViewModel: ObservableObject {
 
     // MARK: - Published State
@@ -37,6 +41,7 @@ final class SessionsViewModel: ObservableObject {
 
     // MARK: - Manual Refresh (pull-to-refresh)
 
+    /// Refreshes the session list from Firestore on demand.
     func refresh() async {
         isLoading = true
         sessions = await FirebaseDataService.shared.fetchSessions()
@@ -52,6 +57,7 @@ final class SessionsViewModel: ObservableObject {
     /// updates karma + leaderboard, and fires an in-app notification.
     /// This satisfies Proposal §2.1.7: "Completing sessions earns SKP atomically
     /// via Firestore's FieldValue.increment."
+    /// Completes a session and triggers associated gamification updates.
     func completeSession(_ session: Session) {
         Task {
             await FirebaseDataService.shared.updateSessionStatus(session.id, status: .completed)
@@ -59,6 +65,7 @@ final class SessionsViewModel: ObservableObject {
         }
     }
 
+    /// Cancels a session by updating its Firestore status.
     func cancelSession(_ session: Session) {
         Task {
             await FirebaseDataService.shared.cancelSession(session.id)

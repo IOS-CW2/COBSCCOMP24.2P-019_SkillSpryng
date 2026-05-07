@@ -1,71 +1,83 @@
 import Foundation
 import FirebaseFirestore
 
-// MARK: - User
-// Primary user document stored at: users/{uid}
-
+/// Primary user document stored in Firestore at: users/{uid}
+///
+/// Contains all user account data including identity, skills, profile info,
+/// wallet balance, subscription status, and engagement metrics.
 struct User: Identifiable, Codable {
     var id: String?
 
-    // Identity
+    // MARK: - Identity
     var fullName: String
     var email: String = ""
     var phoneNumber: String = ""
 
-    // Skills
+    // MARK: - Skills & Expertise
     var skillsToTeach: [String] = []
     var skillsToLearn: [String] = []
     var experienceLevel: String = ""
 
-    // Profile
+    // MARK: - Profile Information
     var location: String = ""
     var bio: String = ""
-    var profileImageURL: String = ""       // Firebase Storage URL
+    /// URL pointing to the image stored in Firebase Storage.
+    var profileImageURL: String = ""
     var role: String = "Member"
     var level: Int = 1
 
-    // Stats
+    // MARK: - Engagement Statistics
     var karmaPoints: Int = 0
     var sessionsCount: Int = 0
     var rating: Double = 0.0
     var awardsCount: Int = 0
 
-    // Wallet
-    var walletBalance: Int = 500           // Starter balance (SKP)
+    // MARK: - Wallet & Credits
+    /// User's SKP (SkillSpryng Points) balance. Starts at 500.
+    var walletBalance: Int = 500
 
-    // Subscription
+    // MARK: - Premium Subscription
     var isPremium: Bool = false
+    /// Date when Premium/Pro subscription expires.
     var proExpiryDate: Date?
 
-    // Settings
+    // MARK: - Accessibility & Settings
     var isChildMode: Bool = false
+    /// Percentage of profile completion (0-100).
     var profileCompleteness: Int = 0
+    /// Days user is available for sessions (e.g., ["Monday", "Wednesday"]).
     var availabilityDays: [String] = []
 
-    // Geolocation (last known)
+    // MARK: - Location Tracking
+    /// Last known latitude for geofencing and distance calculations.
     var latitude: Double?
     var longitude: Double?
 
-    // Timestamps
+    // MARK: - Timestamps
     var createdAt: Date = Date()
     var lastActiveAt: Date = Date()
 
-    // Skill-specific credibility stats
+    // MARK: - Skill-Specific Metrics
+    /// Per-skill credibility scores and teaching statistics.
     var skillStats: [String: SkillMetrics] = [:]
 
-    // MARK: - Convenience aliases
+    // MARK: - Convenience Aliases
+    /// Alias for phoneNumber to support legacy code.
     var phone: String {
         get { phoneNumber }
         set { phoneNumber = newValue }
     }
+    /// Alias for profileImageURL to support legacy code.
     var imageUrl: String {
         get { profileImageURL }
         set { profileImageURL = newValue }
     }
+    /// Alias for sessionsCount to support legacy code.
     var totalSessions: Int {
         get { sessionsCount }
         set { sessionsCount = newValue }
     }
+    /// Alias for isPremium to support legacy code.
     var isPro: Bool {
         get { isPremium }
         set { isPremium = newValue }
@@ -83,10 +95,15 @@ struct User: Identifiable, Codable {
     }
 }
 
-// MARK: - SkillMetrics
+/// Credibility and performance metrics for a specific skill.
+/// Tracks how well a user teaches or learns a particular skill.
 struct SkillMetrics: Codable {
+    /// Score based on student feedback and teaching performance.
     var credibilityScore: Int
+    /// Number of students the user has taught this skill to.
     var studentsTaught: Int
+    /// Average rating from students for this skill.
     var rating: Double
-    var level: String   // e.g., "EXPERT", "PRO"
+    /// Proficiency level (e.g., "EXPERT", "PRO", "BEGINNER").
+    var level: String
 }

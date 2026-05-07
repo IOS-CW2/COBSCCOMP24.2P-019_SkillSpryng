@@ -1,3 +1,5 @@
+// MARK: - GrowthChart
+// Analytics chart component for progress or streak visualization.
 import SwiftUI
 
 // MARK: - GrowthChart (Legacy — iOS 15 Bezier Fallback)

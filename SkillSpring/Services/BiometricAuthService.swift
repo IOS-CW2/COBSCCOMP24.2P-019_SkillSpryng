@@ -2,6 +2,10 @@ import Foundation
 import LocalAuthentication
 import Combine
 
+/// Manages biometric authentication for SkillSpryng.
+///
+/// Handles Face ID / Touch ID support checks, biometric login persistence,
+/// and user-friendly error messages for common biometric failures.
 @MainActor
 class BiometricAuthService: ObservableObject {
     static let shared = BiometricAuthService()
@@ -58,12 +62,16 @@ class BiometricAuthService: ObservableObject {
         checkBiometricSupport()
     }
     
+    /// Checks whether this device can evaluate biometric authentication.
+    /// Updates `isSupported` so the UI can show or hide biometric login options.
     func checkBiometricSupport() {
         let context = LAContext()
         var error: NSError?
         isSupported = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
     }
     
+    /// Prompts the user to authenticate with Face ID / Touch ID.
+    /// Returns true on success and updates internal state and error messages.
     func authenticate() async -> Bool {
         // Always create a fresh LAContext — reusing one after failure causes silent no-ops
         let context = LAContext()

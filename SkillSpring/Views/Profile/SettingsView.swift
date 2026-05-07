@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - SettingsView
+// User account settings hub.
+// Offers controls for profile, security, subscription, wallet,
+// preferences, privacy, and destructive actions like logout.
 struct SettingsView: View {
     @StateObject private var vm = ProfileViewModel()
     @AppStorage("skillspryng.pushNotifications") private var pushNotifications = true
@@ -87,6 +91,7 @@ struct SettingsView: View {
                             SettingsRow(icon: "lock.fill", title: "Password & Security", value: "2FA, Logins, Password")
                             
                             // Face ID / Touch ID toggle — shows on any device with biometric hardware
+                            // Enables a secure biometric sign-in path once confirmed.
                             if biometricService.hasBiometricHardware {
                                 Divider().padding(.leading, 48)
                                 SettingsRow(
@@ -229,6 +234,8 @@ struct SettingsView: View {
                     // Danger Zone
                     VStack(alignment: .leading, spacing: 16) {
                         SectionHeader(title: "DANGER ZONE")
+                        // This section includes irreversible account actions.
+                        // This section includes irreversible actions and should be used with care.
                         
                         VStack(spacing: 0) {
                             Button(action: { showDeleteConfirmation = true }) {

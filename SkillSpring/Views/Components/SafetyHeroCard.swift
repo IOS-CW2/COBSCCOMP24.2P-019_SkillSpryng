@@ -1,3 +1,5 @@
+// MARK: - SafetyHeroCard
+// Hero card presenting safety guidance and reassurance.
 import SwiftUI
 
 struct SafetyHeroCard: View {

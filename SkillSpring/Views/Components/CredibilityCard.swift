@@ -1,3 +1,5 @@
+// MARK: - CredibilityCard
+// Small profile credibility card used to signal trust and experience.
 import SwiftUI
 
 struct CredibilityCard: View {

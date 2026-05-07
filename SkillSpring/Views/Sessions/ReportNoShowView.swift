@@ -64,6 +64,7 @@ struct ReportNoShowView: View {
                     .accessibilityLabel("Keep waiting for the learner to join")
 
                     // Report No-Show
+                    // This action refunds SKP and creates a report record for audit.
                     OptionCard(
                         icon: "flag.fill",
                         iconColor: .orange,

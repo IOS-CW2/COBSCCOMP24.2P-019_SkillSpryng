@@ -1,3 +1,5 @@
+// MARK: - PlanCard
+// Subscription plan card showing benefit details and pricing.
 import SwiftUI
 
 struct PlanCard: View {

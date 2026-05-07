@@ -1,5 +1,8 @@
 import SwiftUI
 
+/// Main tab bar for the SkillSpryng app.
+///
+/// Hosts the core navigation tabs: Home, Sessions, Messages, Rewards, and Profile.
 struct MainTabView: View {
     @State private var selectedTab: Int = 0
     
@@ -62,7 +65,8 @@ struct MainTabView: View {
             selectedTab = 1
         }
         .task {
-            // Force seed on launch for returning users (DataSeeder safely skips already-seeded collections)
+            // Force seed on launch for returning users.
+            // DataSeeder is idempotent and will skip collections that already exist.
             await DataSeeder.shared.seedAll()
         }
     }

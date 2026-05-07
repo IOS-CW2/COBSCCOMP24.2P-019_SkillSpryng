@@ -1,3 +1,5 @@
+// MARK: - SkillProgressBar
+// Progress bar component for skill completion percentages.
 import SwiftUI
 
 struct SkillProgressBar: View {

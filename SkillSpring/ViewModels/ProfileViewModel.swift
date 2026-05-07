@@ -2,6 +2,7 @@ import UIKit
 import Foundation
 import Combine
 import FirebaseAuth
+import FirebaseFirestore
 
 // MARK: - ProfileViewModel
 // Drives ProfileView, EditProfileView, MySkillsView, SettingsView, WalletView.
@@ -24,6 +25,8 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Load Profile from Firestore
 
+    /// Loads the current user's profile from Firestore.
+    /// If Firestore is unavailable, falls back to locally cached Core Data data.
     func loadProfile() async {
         isLoading = true
         if let fetched = await FirebaseDataService.shared.fetchCurrentUser() {
@@ -41,6 +44,8 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Save Profile to Firestore
 
+    /// Persists the current profile object to Firestore.
+    /// Updates UI state and captures any save error messages.
     func saveProfile() async {
         isSaving = true
         do {
@@ -55,11 +60,13 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Wallet Operations
 
+    /// Decreases the user's wallet balance and syncs the change to Firestore.
     func deductBalance(amount: Int) async {
         user.walletBalance -= amount
         await FirebaseDataService.shared.updateWalletBalance(user.walletBalance)
     }
 
+    /// Increases the user's wallet balance and syncs it to Firestore.
     func addBalance(amount: Int) async {
         user.walletBalance += amount
         await FirebaseDataService.shared.updateWalletBalance(user.walletBalance)
@@ -67,6 +74,7 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Profile Image Upload
 
+    /// Uploads a profile picture to Firebase Storage and updates the user's profile URL.
     func uploadProfileImage(_ imageData: Data) async {
         guard let image = UIImage(data: imageData) else { return }
         isSaving = true
@@ -81,17 +89,20 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Update Skills
 
+    /// Adds a new teaching skill and saves the updated profile.
     func addTeachingSkill(_ skill: String) async {
         guard !skill.isEmpty, !user.skillsToTeach.contains(skill) else { return }
         user.skillsToTeach.append(skill)
         await saveProfile()
     }
 
+    /// Removes a teaching skill from the profile and saves the update.
     func removeTeachingSkill(_ skill: String) async {
         user.skillsToTeach.removeAll { $0 == skill }
         await saveProfile()
     }
 
+    /// Adds a new learning skill and persists the change.
     func addLearningSkill(_ skill: String) async {
         guard !skill.isEmpty, !user.skillsToLearn.contains(skill) else { return }
         user.skillsToLearn.append(skill)
@@ -100,6 +111,7 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Update Availability
 
+    /// Toggles a day in the user's availability list and saves the profile.
     func toggleAvailability(day: String) async {
         if user.availabilityDays.contains(day) {
             user.availabilityDays.removeAll { $0 == day }
@@ -112,7 +124,7 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Profile Visibility
 
     /// Updates the user's profile visibility in Firestore.
-    /// Called from SettingsView — avoids a direct Firestore write in the View layer.
+    /// Called from SettingsView so the View doesn’t write directly to Firestore.
     func updateProfileVisibility(_ visibility: String) async {
         guard let uid = user.id else { return }
         do {
@@ -145,15 +157,15 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Account Deletion
 
-    /// Permanently deletes the Firestore document and the Firebase Auth account.
-    /// Clears Core Data and signs out on completion.
+    /// Permanently deletes the user's Firestore document and Firebase Auth account.
+    /// Also clears local cache and cancels pending notifications.
     func deleteAccount() async {
         guard let uid = user.id else { return }
         isLoading = true
         do {
             try await FirebaseDataService.shared.db
                 .collection("users").document(uid).delete()
-            if let currentUser = FirebaseManager.shared.currentUser {
+            if let currentUser = Auth.auth().currentUser {
                 try await currentUser.delete()
             }
         } catch {
@@ -167,6 +179,7 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Sign Out
 
+    /// Signs the user out locally and clears the login flag.
     func signOut() {
         try? FirebaseManager.shared.signOut()
         UserDefaults.standard.set(false, forKey: "skillspryng.isLoggedIn")

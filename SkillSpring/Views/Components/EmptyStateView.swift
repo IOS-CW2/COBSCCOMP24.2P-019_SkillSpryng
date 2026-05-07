@@ -1,3 +1,5 @@
+// MARK: - EmptyStateView
+// Reusable empty state screen component for lists with call to action.
 import SwiftUI
 
 struct EmptyStateView: View {

@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - ProfileView
+// Main user profile dashboard.
+// Shows the user's photo, name, location, wallet balance, skill progress,
+// badges, and a quick path to profile editing and settings.
 struct ProfileView: View {
     @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) var dismiss
@@ -83,6 +87,8 @@ struct ProfileView: View {
                 }
                 
                 // Profile Completeness
+                // Visual progress bar for profile setup with a quick link
+                // to complete missing information.
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("Profile Completeness")

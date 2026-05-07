@@ -1,5 +1,7 @@
 import Foundation
 
+/// Represents a course listing shown in the Learning section.
+/// Contains course details, instructor info, and user progress if enrolled.
 struct Course: Identifiable, Codable {
     var id: String = UUID().uuidString
     let title: String
@@ -9,6 +11,7 @@ struct Course: Identifiable, Codable {
     let category: String
     let price: String
     let studentsCount: String
-    let progress: Double? // 0.0 to 1.0, nil if not started
+    /// Progress from 0.0 to 1.0. Nil if the user hasn't started this course.
+    let progress: Double?
     let instructorImage: String
 }

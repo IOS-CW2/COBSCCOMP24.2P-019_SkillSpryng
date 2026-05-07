@@ -1,3 +1,5 @@
+// MARK: - SafetyAlertSheet
+// Modal safety alert sheet for conditional action confirmation.
 import SwiftUI
 import Combine
 

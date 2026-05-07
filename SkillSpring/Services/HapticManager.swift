@@ -1,36 +1,42 @@
 import UIKit
 
-/// Wraps UIKit haptic generators for easy use across the app.
-/// Per Apple HIG: use haptics to confirm actions and communicate results.
+/// Provides haptic feedback for different interaction types.
+/// Uses UIKit haptic generators to give tactile feedback that confirms actions.
+/// Per Apple HIG: use haptics to communicate app state and confirm user actions.
 struct HapticManager {
     
-    /// Use for successful completions — e.g. Face ID success, form submitted
+    /// Triggers success haptic — a quick double tap pattern.
+    /// Use for: Face ID success, form submission success, session booking confirmed.
     static func success() {
         let generator = UINotificationFeedbackGenerator()
         generator.prepare()
         generator.notificationOccurred(.success)
     }
     
-    /// Use for errors — e.g. Face ID failed, validation error
+    /// Triggers error haptic — a distinct warning pattern.
+    /// Use for: Face ID failed, validation errors, session cancelled.
     static func error() {
         let generator = UINotificationFeedbackGenerator()
         generator.prepare()
         generator.notificationOccurred(.error)
     }
     
-    /// Use for warnings — e.g. toggling off a feature, low balance
+    /// Triggers warning haptic — subtle alert pattern.
+    /// Use for: Toggling off important features, low wallet balance warnings.
     static func warning() {
         let generator = UINotificationFeedbackGenerator()
         generator.prepare()
         generator.notificationOccurred(.warning)
     }
     
-    /// Use for light UI interactions — e.g. tapping a button, selecting a chip
+    /// Light impact feedback for subtle interactions.
+    /// Use for: Button taps, chip selection in a tag list.
     static func light() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
     
-    /// Use for medium feedback — e.g. confirming a toggle
+    /// Medium impact feedback for moderate interactions.
+    /// Use for: Toggle switches, carousel scrolling, confirming selections.
     static func medium() {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }

@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - SessionSuccessView
+// Confirmation screen shown after a session booking is successfully created.
+// Includes calendar integration, link sharing, and reminder setup.
 struct SessionSuccessView: View {
     @ObservedObject var viewModel: BookingViewModel
     @Environment(\.dismiss) private var dismiss

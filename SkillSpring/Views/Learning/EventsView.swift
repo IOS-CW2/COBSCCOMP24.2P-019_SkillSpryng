@@ -1,36 +1,27 @@
 import SwiftUI
 
+/// Displays upcoming learning events and workshops.
+///
+/// Includes filters for free/paid, online/nearby, and highlights the next
+/// happening event with a hero card.
+@MainActor
 struct EventsView: View {
-    @ObservedObject private var vm: LearningViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = "Events"
     @State private var selectedFilter = "All"
     let filters = ["All", "Free", "Paid", "Online", "Nearby"]
+    @ObservedObject var vm: LearningViewModel = LearningViewModel()
 
     var isNavigatedFromCourses: Bool = false
 
-    @MainActor
-    init() {
-        _vm = ObservedObject(initialValue: .init())
-        self.isNavigatedFromCourses = false
-    }
-
-    @MainActor
-    init(isNavigatedFromCourses: Bool) {
-        _vm = ObservedObject(initialValue: .init())
-        self.isNavigatedFromCourses = isNavigatedFromCourses
-    }
-
-    @MainActor
-    init(vm: LearningViewModel, isNavigatedFromCourses: Bool = false) {
-        _vm = ObservedObject(initialValue: vm)
+    init(isNavigatedFromCourses: Bool = false) {
         self.isNavigatedFromCourses = isNavigatedFromCourses
     }
     
     var body: some View {
         VStack(spacing: 0) {
             if !isNavigatedFromCourses {
-                // Header if not included by parent
+                // Standalone header for Events when this view is not embedded inside CoursesView.
                 AppHeader(
                     title: "Events",
                     backAction: { dismiss() },
@@ -73,6 +64,7 @@ struct EventsView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
                     // Selection filters
+                // These chips let users narrow events by type and location.
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(filters, id: \.self) { filter in
@@ -92,6 +84,7 @@ struct EventsView: View {
                     }
                     
                     // Happening Soon
+                    // Promotes the next available live event front and center.
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Happening Soon")
                             .font(AppTheme.Typography.title3)
@@ -104,6 +97,7 @@ struct EventsView: View {
                     }
                     
                     // Upcoming
+                    // Lists all upcoming events after the hero highlight.
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Upcoming")
                             .font(AppTheme.Typography.title3)
@@ -127,6 +121,8 @@ struct EventsView: View {
 
 // MARK: - Subcomponents
 
+/// The feature card for a single upcoming event.
+/// Includes attendance info and a calendar join flow.
 struct EventHeroCard: View {
     let event: Event
     
@@ -305,6 +301,8 @@ struct EventHeroCard: View {
     }
 }
 
+/// Compact row for an individual upcoming event.
+/// Shows the event title, timing, and location details.
 struct UpcomingEventRow: View {
     let event: Event
     

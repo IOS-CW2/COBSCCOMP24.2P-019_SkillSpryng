@@ -3,6 +3,10 @@ import UserNotifications
 import Combine
 
 @MainActor
+/// Manages local notification authorization, scheduling, and category actions.
+///
+/// Handles session reminder alerts, booking confirmations, safety alerts,
+/// and app onboarding notifications.
 class NotificationManager: ObservableObject {
     static let shared = NotificationManager()
 

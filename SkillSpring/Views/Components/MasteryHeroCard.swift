@@ -1,3 +1,5 @@
+// MARK: - MasteryHeroCard
+// Hero card for mastery-level achievement display.
 import SwiftUI
 
 struct MasteryHeroCard: View {

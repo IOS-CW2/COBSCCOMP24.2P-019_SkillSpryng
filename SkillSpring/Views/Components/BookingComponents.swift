@@ -1,3 +1,5 @@
+// MARK: - BookingComponents
+// Shared booking form controls such as format selector and date chips.
 import SwiftUI
 
 struct FormatSelector: View {

@@ -1,3 +1,5 @@
+// MARK: - SectionHeader
+// Section header component with optional right-side action.
 import SwiftUI
 
 struct SectionHeader: View {

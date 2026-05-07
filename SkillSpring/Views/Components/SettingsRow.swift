@@ -1,3 +1,5 @@
+// MARK: - SettingsRow
+// Settings row component with title, detail, and optional toggle.
 import SwiftUI
 
 struct SettingsRow: View {

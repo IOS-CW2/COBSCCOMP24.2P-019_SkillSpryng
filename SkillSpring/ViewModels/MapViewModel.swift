@@ -17,6 +17,10 @@ struct SkillLocation: Identifiable {
 
 // MARK: - MapViewModel
 
+/// Manages the Discover map view and nearby skill pins.
+///
+/// Tracks current region, location permissions, reverse geocoded city name,
+/// and geocodes instructor profiles into map annotations.
 class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     // MARK: - Published State
@@ -57,6 +61,8 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     // MARK: - Location Permission & GPS
 
+    /// Requests foreground location permission and begins updating location.
+    /// Used by the map screen to center on the user's current region.
     func requestPermission() {
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
@@ -86,6 +92,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     // MARK: - Reverse Geocode (city name from GPS)
 
+    /// Updates the city label for the map using the current GPS location.
     @MainActor
     private func fetchCityName(for location: CLLocation) {
         Task {
@@ -102,16 +109,15 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     // MARK: - Forward Geocode (location string → real coordinates)
 
-    /// Fetches nearby users (from MockData in DEBUG, Firestore in production)
-    /// and geocodes their location strings to map coordinates.
+    /// Refreshes the nearby skill pins by loading profiles and geocoding their locations.
     @MainActor
     func loadNearbyUsers() async {
         self.currentUser = await FirebaseDataService.shared.fetchCurrentUser()
         await geocodeProfiles()
     }
 
-    /// Converts each MatchProfile's location string into real map coordinates.
-    /// CLGeocoder rate-limits concurrent requests, so we process with a 0.3s delay.
+    /// Converts profile address strings into map annotations.
+    /// Uses a small delay between requests to avoid CLGeocoder throttling.
     @MainActor
     func geocodeProfiles() async {
         isLoadingPins = true
@@ -144,10 +150,8 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     // MARK: - Distance Calculation
 
-    /// Returns a formatted distance string from the user's current location to a profile.
-    /// Returns "Nearby" if user location is unavailable.
-    ///
-    /// Example: "1.2 km" or "850 m"
+    /// Returns a formatted walking/driving distance string to a profile.
+    /// Falls back to the profile's stored distance string if GPS is unavailable.
     func calculateDistance(to profile: MatchProfile) -> String {
         guard let userLocation = LocationService.shared.userLocation else {
             return profile.distance // Fall back to the static string in the profile
@@ -173,12 +177,8 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
 
-    /// Calculates a skill-overlap match percentage between the current user and a profile.
-    ///
-    /// Algorithm:
-    /// - Count skills where currentUser.skillsToTeach ∩ targetUser.skillsToLearn
-    /// - Count skills where currentUser.skillsToLearn ∩ targetUser.skillsToTeach
-    /// - Return (matches / max possible) * 100, clamped to 0–100
+    /// Calculates a skills match score between the current user and a profile.
+    /// This score is based on mutual teach/learn overlap and is capped at 100%.
     func calculateMatchPercentage(with profile: MatchProfile) -> Int {
         guard let currentUser = self.currentUser else { return 0 }
 

@@ -1,6 +1,9 @@
 import SwiftUI
 import Combine
 
+// MARK: - WalletView
+// Wallet dashboard for SKP credits. Displays balance, quick actions,
+// transaction history, credit replenishment options, and missions.
 struct WalletView: View {
     @State private var balance: Int = 0
     @State private var transactions: [CreditTransaction] = []
@@ -96,6 +99,7 @@ struct WalletView: View {
                 .padding(.horizontal)
                 
                 // Dashboard Quick Actions
+                // Immediate wallet actions for earning, spending, and transferring credits.
                 HStack(spacing: 32) {
                     WalletActionView(icon: "plus.circle.fill",               label: "EARN",     color: .green) { showEarnSheet     = true }
                     WalletActionView(icon: "bag.circle.fill",                label: "SPEND",    color: .blue)  { showSpendSheet    = true }
@@ -186,6 +190,7 @@ struct WalletView: View {
             }
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        // Load the latest StoreKit products and refresh the user's wallet balance.
         .task {
             await storeKit.loadProducts()
             if let user = await FirebaseDataService.shared.fetchCurrentUser() {
@@ -201,11 +206,13 @@ struct WalletView: View {
             }
         }
         // MARK: - EARN sheet: ways to earn SKP credits
+        // Opens a modal for earning more SKP through tasks or achievements.
         .sheet(isPresented: $showEarnSheet) {
             EarnCreditsSheet()
                 .presentationDetents([.medium])
         }
         // MARK: - SPEND sheet: go to PremiumView / credit packs
+        // Presents purchase options for spending wallet credits or buying more.
         .sheet(isPresented: $showSpendSheet) {
             NavigationView { PremiumView() }
         }

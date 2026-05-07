@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - ProfileSetupView
+// Lets users personalize their profile with a photo, bio, and location
+// preference before entering the app. Supports skip, camera/library photo selection,
+// and navigation to the next onboarding step.
 struct ProfileSetupView: View {
     @ObservedObject var viewModel: SkillSetupViewModel
     var fullName: String
@@ -14,6 +18,7 @@ struct ProfileSetupView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header with Skip
+            // Provides a quick path to bypass profile setup and enter the app.
             HStack {
                 Spacer()
                 Button(action: {
@@ -45,6 +50,7 @@ struct ProfileSetupView: View {
                     .padding(.top, 20)
                     
                     // Profile Image Area
+                    // Users can tap the camera action to choose or capture a photo.
                     ZStack(alignment: .bottomTrailing) {
                         Circle()
                             .fill(Color(.systemGray6))
@@ -81,6 +87,7 @@ struct ProfileSetupView: View {
                     }
                     
                     // Bio Section
+                    // Collects a short personal description to surface on the profile.
                     VStack(alignment: .leading, spacing: 12) {
                         Text("TELL US ABOUT YOURSELF")
                             .font(AppTheme.Typography.sectionHeader)
@@ -111,6 +118,7 @@ struct ProfileSetupView: View {
                     .padding(.horizontal, 24)
                     
                     // Location Toggle Card
+                    // Lets the user decide whether to enable local discovery features.
                     HStack(spacing: 16) {
                         ZStack {
                             Circle()
@@ -147,6 +155,7 @@ struct ProfileSetupView: View {
             }
             
             // Floating Bottom Button
+            // Final action to complete profile setup and move to the next onboarding step.
             VStack(spacing: 16) {
                 PrimaryButton(title: "Finish Setup →", action: {
                     HapticManager.light()

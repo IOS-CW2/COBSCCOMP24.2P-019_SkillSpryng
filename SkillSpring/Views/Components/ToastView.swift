@@ -1,3 +1,5 @@
+// MARK: - ToastView
+// Transient toast notification view and view modifier helper.
 import SwiftUI
 
 // MARK: - Toast Model

@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - AgeVerificationView
+// Screen that confirms the user's age before continuing onboarding.
+// Uses a wheel date picker to calculate whether the user is over 18,
+// then routes to parental setup or skill setup accordingly.
 struct AgeVerificationView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var birthDate = Date()

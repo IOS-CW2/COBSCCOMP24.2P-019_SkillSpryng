@@ -2,6 +2,9 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
 
+// MARK: - ParentalSetupView
+// Collects parent or guardian information when the user is underage.
+// Writes approval requests to Firestore and then continues onboarding.
 struct ParentalSetupView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var parentName = ""
@@ -97,6 +100,7 @@ struct ParentalSetupView: View {
                             Button(action: {
                                 guard !parentName.isEmpty, !parentEmail.isEmpty else { return }
                                 // Save parental setup request to Firestore
+                                // This creates a pending approval document for the current user.
                                 Task {
                                     if let uid = Auth.auth().currentUser?.uid {
                                         let data: [String: Any] = [

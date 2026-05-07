@@ -2,6 +2,9 @@ import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 
+// MARK: - EditProfileView
+// Editing interface for updating the user's profile information,
+// profile picture, bio, and location. Also supports account deletion.
 struct EditProfileView: View {
     @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) var dismiss
@@ -108,7 +111,9 @@ struct EditProfileView: View {
                     }
                     .padding(.horizontal)
 
-                    // MARK: Save Button — persists to Firestore
+                    // MARK: Save Button — persists updates to Firestore
+                    // When tapped, this button sends changed profile fields
+                    // to the backend and shows loading / success feedback.
                     Button(action: saveProfile) {
                         HStack(spacing: 8) {
                             if isSaveLoading {
@@ -158,6 +163,7 @@ struct EditProfileView: View {
         .navigationBarHidden(true)
 
         // MARK: Source picker — Camera (AVFoundation) or Library
+        // Lets the user choose between taking a new picture or selecting an existing one.
         .confirmationDialog("Change Profile Photo", isPresented: $showSourcePicker, titleVisibility: .visible) {
             Button("Take Photo") { showCamera = true }
             Button("Choose from Library") { showLibraryPicker = true }

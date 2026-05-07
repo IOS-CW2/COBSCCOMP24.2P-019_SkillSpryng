@@ -2,11 +2,10 @@ import SwiftUI
 import Combine
 import FirebaseFirestore
 
-// MARK: - BookingViewModel
-// Handles the full booking flow:
-//   1. Check wallet balance from Firestore
-//   2. On confirm: deduct wallet → write Session → write MatchRequest → write Transaction → send Notification
-
+/// Coordinates the booking flow for a tutor session.
+///
+/// Handles pricing, balance checks, payment decisions, session creation,
+/// match request lifecycle, notifications, and local persistence.
 @MainActor
 class BookingViewModel: ObservableObject {
     let instructor: MatchProfile
@@ -27,7 +26,9 @@ class BookingViewModel: ObservableObject {
 
     let platformFee: Int = 12
 
+    /// The session price before platform fees.
     var sessionPrice: Int { (instructor.hourlyRate * selectedDuration) / 60 }
+    /// Total amount charged to the user including platform fee.
     var totalPrice: Int   { sessionPrice + platformFee }
 
     @Published var userBalance: Int = 0
@@ -42,6 +43,7 @@ class BookingViewModel: ObservableObject {
 
     // MARK: - Load Balance
 
+    /// Loads the current user's wallet balance from Firestore.
     func loadBalance() async {
         if let user = await dataService.fetchCurrentUser() {
             self.userBalance = user.walletBalance
@@ -50,6 +52,8 @@ class BookingViewModel: ObservableObject {
 
     // MARK: - Initiate Booking
 
+    /// Decides whether to show payment flow or send a free request.
+    /// Paid bookings require enough balance; free requests go straight to pending status.
     func initiateBooking() {
         if instructor.status == .active {
             if userBalance >= totalPrice {
@@ -64,6 +68,8 @@ class BookingViewModel: ObservableObject {
 
     // MARK: - Confirm Booking (writes to Firestore)
 
+    /// Creates the session, transaction, match request, conversation, and notifications.
+    /// Handles both paid and free booking workflows depending on instructor status.
     func confirmBooking() {
         guard !isBooking else { return }
         isBooking = true
@@ -248,6 +254,8 @@ class BookingViewModel: ObservableObject {
 
     // MARK: - Helpers
 
+    /// Combines the selected day and time string into a concrete Date.
+    /// Falls back to 10:00 AM if the time string cannot be parsed.
     func buildSessionDate(day: Date, timeString: String) -> Date {
         var components = Calendar.current.dateComponents([.year, .month, .day], from: day)
         let formatter = DateFormatter()

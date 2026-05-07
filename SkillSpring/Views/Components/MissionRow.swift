@@ -1,3 +1,5 @@
+// MARK: - MissionRow
+// Mission card row used for gamified learning objectives.
 import SwiftUI
 
 struct MissionRow: View {

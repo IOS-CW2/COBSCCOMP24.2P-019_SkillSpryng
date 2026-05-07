@@ -1,3 +1,5 @@
+// MARK: - OTPInputField
+// One-time password input component with separate digit fields.
 import SwiftUI
 
 struct OTPInputField: View {

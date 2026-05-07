@@ -1,3 +1,5 @@
+// MARK: - StatCard
+// Card component for displaying a single numeric statistic.
 import SwiftUI
 
 struct StatCard: View {

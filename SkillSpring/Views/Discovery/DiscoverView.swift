@@ -1,5 +1,10 @@
 import SwiftUI
 
+/// The main discovery screen where users search for skills, browse categories,
+/// and explore recommended matches or nearby instructors.
+///
+/// This view is a high-level orchestrator for the discovery feed and routes
+/// to other screens such as map view, skill matches, and courses.
 struct DiscoverView: View {
     @StateObject private var viewModel = DiscoverViewModel()
 
@@ -7,6 +12,7 @@ struct DiscoverView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
                 // Header
+                // Top bar with logo and notification access for the discovery tab.
                 HStack {
                     Image("AppLogo")
                         .resizable()
@@ -36,6 +42,7 @@ struct DiscoverView: View {
                 .padding(.horizontal)
                 
                 // Search Bar
+                // Lets the user search by skill, topic, or instructor name.
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
@@ -56,6 +63,7 @@ struct DiscoverView: View {
                 .padding(.horizontal)
                 
                 // Category Filters
+                // Quick filter chips to narrow discovery results by interest area.
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(viewModel.categories, id: \.self) { category in
@@ -68,6 +76,8 @@ struct DiscoverView: View {
                 }
                 
                 // Perfect Match Card
+                // Highlights a strong recommended connection and encourages users
+                // to open the matching experience.
                 HeroMatchCard(action: { viewModel.navigateToSkillMatches = true })
                     .padding(.horizontal)
                     .onTapGesture { viewModel.navigateToSkillMatches = true }
@@ -81,6 +91,7 @@ struct DiscoverView: View {
                     .padding(.horizontal)
                 
                 if viewModel.filteredSkills.isEmpty {
+                    // Empty state when the search/filter criteria return no matches.
                     EmptyStateView(
                         icon: "magnifyingglass",
                         title: "No Skills Found",
@@ -137,6 +148,8 @@ struct DiscoverView: View {
 
 // MARK: - Subcomponents
 
+/// A reusable filter chip used in the discover category row.
+/// Highlights the current selection and updates the selected category when tapped.
 struct CategoryChip: View {
     let title: String
     let isSelected: Bool
@@ -156,6 +169,8 @@ struct CategoryChip: View {
     }
 }
 
+/// A featured hero card showing a perfect local match.
+/// Tapping it encourages the user to connect and explore skill matches.
 struct HeroMatchCard: View {
     var action: () -> Void = {}
     
@@ -213,6 +228,8 @@ struct HeroMatchCard: View {
 
 
 
+/// Displays a horizontal scroll section of recommended skills.
+/// Each section includes a title and optional "See all" action.
 struct SkillSection: View {
     let title: String
     let items: [RecommendedSkill]
@@ -242,6 +259,8 @@ struct SkillSection: View {
     }
 }
 
+/// A large, prominent skill card used in the "Most Popular Skills" carousel.
+/// It shows the skill title, instructor, rating, and pricing badge.
 struct LargeSkillCard: View {
     let skill: RecommendedSkill
     
@@ -298,6 +317,8 @@ struct LargeSkillCard: View {
     }
 }
 
+/// A compact card used for the "Recommended for you" section.
+/// Shows the skill title with instructor attribution.
 struct RecommendedSkillCard: View {
     let skill: RecommendedSkill
     
@@ -318,6 +339,8 @@ struct RecommendedSkillCard: View {
     }
 }
 
+/// Call-to-action card prompting users to post a new skill if nothing matches.
+/// Encourages engagement by letting learners create their own listing.
 struct PostSkillCard: View {
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
@@ -354,6 +377,8 @@ struct PostSkillCard: View {
 
 // MARK: - Nearby Map Banner
 
+/// A banner card linking the user to the nearby skill map view.
+/// This is a visual prompt to explore in-person or nearby opportunities.
 struct NearbyMapBannerCard: View {
     var action: () -> Void = {}
     

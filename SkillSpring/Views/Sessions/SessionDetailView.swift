@@ -1,6 +1,9 @@
 import SwiftUI
 import FirebaseFirestore
 
+// MARK: - SessionDetailView
+// Detailed view for a specific session, including status, instructor info,
+// recording access, and session management actions.
 struct SessionDetailView: View {
     let session: Session
     @Environment(\.dismiss) var dismiss

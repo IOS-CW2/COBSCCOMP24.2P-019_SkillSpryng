@@ -1,3 +1,5 @@
+// MARK: - PaymentFeedbackSheets
+// Success and failure feedback sheets for payment flows.
 import SwiftUI
 
 struct PaymentFailedSheet: View {

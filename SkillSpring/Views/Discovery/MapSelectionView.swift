@@ -3,6 +3,10 @@ import MapKit
 import CoreLocation
 import Combine
 
+/// Shows a venue map for a session and manages optional geofence safety monitoring.
+///
+/// Users can see the session location, start monitoring, and receive alerts if
+/// they move outside the safe zone during the session.
 struct MapSelectionView: View {
     var session: Session? = nil
 
@@ -16,6 +20,7 @@ struct MapSelectionView: View {
     @State private var showNeedHelpAlert = false
 
     // Live session timer — counts up from 0 once monitoring starts
+    // Used to show how long the user has been under geofence supervision.
     @State private var sessionSeconds: Int = 0
     private let sessionTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -58,6 +63,7 @@ struct MapSelectionView: View {
             }
 
             // Bottom Card
+            // This card contains venue details, monitoring actions, and live session status.
             VStack(spacing: 20) {
 
                 // Venue header
@@ -95,6 +101,7 @@ struct MapSelectionView: View {
 
                 if geofenceManager.isMonitoring {
                     // Live session timer row
+                    // Displays active monitoring state and elapsed time.
                     HStack(spacing: 6) {
                         Image(systemName: "timer")
                             .foregroundColor(AppTheme.Colors.primary)
@@ -205,6 +212,7 @@ struct MapSelectionView: View {
 
                 } else {
                     // Start monitoring button
+                    // This begins the geofence supervision flow for the session.
                     Button(action: startSafetyMonitoring) {
                         HStack {
                             Image(systemName: "shield.fill")

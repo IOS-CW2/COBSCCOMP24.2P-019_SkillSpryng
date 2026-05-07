@@ -2,10 +2,10 @@ import Foundation
 import FirebaseAuth
 import Combine
 
-// MARK: - AuthViewModel
-// Drives OTPEntryView and LoginView.
-// Wired to real Firebase Phone Authentication.
-
+/// Manages the OTP login flow for SkillSpryng.
+///
+/// Handles phone number validation, OTP sending, verification,
+/// new-user profile creation, biometric sign-in, and navigation state.
 @MainActor
 class AuthViewModel: ObservableObject {
 
@@ -58,6 +58,8 @@ class AuthViewModel: ObservableObject {
 
     // MARK: - Step 1: Send OTP
 
+    /// Sends a verification code to the entered phone number.
+    /// Updates loading state and shows errors for invalid input or network failures.
     func sendOTP() {
         guard !phoneNumber.isEmpty else {
             errorMessage = "Please enter your phone number."
@@ -80,6 +82,8 @@ class AuthViewModel: ObservableObject {
 
     // MARK: - Step 2: Verify OTP
 
+    /// Verifies the OTP code and routes the user based on whether they are new.
+    /// New users are sent to skill setup; returning users are seeded and sent home.
     func verifyCode() {
         guard let verificationID, !verificationCode.isEmpty else {
             errorMessage = "Please enter the verification code."
@@ -119,6 +123,8 @@ class AuthViewModel: ObservableObject {
 
     // MARK: - Create User Profile (new users only)
 
+    /// Builds a new Firestore user record for first-time sign-ins.
+    /// Also sends a welcome notification and seeds baseline app data.
     private func createUserProfile(uid: String) async {
         let newUser = User(
             id: uid,
@@ -148,6 +154,8 @@ class AuthViewModel: ObservableObject {
 
     // MARK: - Biometric Auth (returning users)
 
+    /// Attempts Face ID / Touch ID login for returning users.
+    /// On success, seeds the app state and marks the user as logged in.
     func authenticateWithBiometrics() {
         isLoading = true
         errorMessage = nil

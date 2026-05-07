@@ -4,6 +4,10 @@ import CoreLocation
 import Combine
 import UIKit
 
+/// Manages Calendar access and event scheduling for SkillSpryng sessions.
+///
+/// Supports adding session events, updating or deleting existing events,
+/// and checking available time slots before booking.
 class CalendarService: ObservableObject {
     
     static let shared = CalendarService()
@@ -30,6 +34,8 @@ class CalendarService: ObservableObject {
     // If event doesn't appear: force close Calendar and reopen it
     
     // FUNCTION 1: requestAccess
+    /// Asks the user for calendar permissions and updates local state.
+    /// This should be called once before trying to write events.
     func requestAccess() async {
         if #available(iOS 17, *) {
             let granted = (try? await eventStore.requestFullAccessToEvents()) ?? false
@@ -156,6 +162,7 @@ class CalendarService: ObservableObject {
     }
 
     // FUNCTION 3: updateCalendarEvent
+    /// Edits an existing calendar event by identifier and saves the changes.
     func updateCalendarEvent(identifier: String, newStartDate: Date, newDurationMinutes: Int, newLocation: String?) async -> Bool {
         guard let event = eventStore.event(withIdentifier: identifier) else { return false }
         
@@ -175,6 +182,7 @@ class CalendarService: ObservableObject {
     }
     
     // FUNCTION 4: deleteCalendarEvent
+    /// Deletes a previously created SkillSpryng event from the calendar.
     func deleteCalendarEvent(identifier: String) async -> Bool {
         guard let event = eventStore.event(withIdentifier: identifier) else { return false }
         
@@ -187,6 +195,7 @@ class CalendarService: ObservableObject {
     }
     
     // FUNCTION 5: addEventToCalendar (Generic Version)
+    /// Adds a generic event to the user's calendar with a 1-hour reminder.
     func addEventToCalendar(title: String, startDate: Date, endDate: Date, location: String?, notes: String?) async -> String? {
         // Same fix: check without re-requesting to avoid double-prompt
         guard checkCalendarAccess() else { return nil }
@@ -214,6 +223,7 @@ class CalendarService: ObservableObject {
     }
     
     // FUNCTION 6: getBusyTimeSlots
+    /// Returns all busy calendar intervals for the given date.
     func getBusyTimeSlots(on date: Date) -> [DateInterval] {
         let startOfDay = Calendar.current.startOfDay(for: date)
         guard let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) else { return [] }
@@ -225,6 +235,7 @@ class CalendarService: ObservableObject {
     }
     
     // FUNCTION 7: isTimeSlotAvailable
+    /// Checks whether a proposed session slot intersects any busy calendar intervals.
     func isTimeSlotAvailable(startTime: Date, durationMinutes: Int, busySlots: [DateInterval]) -> Bool {
         guard let endTime = Calendar.current.date(byAdding: .minute, value: durationMinutes, to: startTime) else { return true }
         let proposedSlot = DateInterval(start: startTime, end: endTime)
@@ -238,6 +249,7 @@ class CalendarService: ObservableObject {
     }
     
     // FUNCTION 8: checkCalendarAccess
+    /// Returns true when the app is allowed to write events to the Calendar.
     func checkCalendarAccess() -> Bool {
         let status = EKEventStore.authorizationStatus(for: .event)
         if #available(iOS 17.0, *) {

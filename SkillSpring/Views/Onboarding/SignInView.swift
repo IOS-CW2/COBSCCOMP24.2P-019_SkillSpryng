@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - SignInView
+// Core sign in screen for new and returning users.
+// Captures a name and phone number, sends OTP verification,
+// and also offers alternate sign-in options via Apple, Google, or biometrics.
 struct SignInView: View {
     @StateObject private var viewModel = AuthViewModel()
     @ObservedObject private var biometricService = BiometricAuthService.shared
@@ -10,6 +14,7 @@ struct SignInView: View {
             VStack(spacing: 24) {
                 
                 // Header
+                // Basic sign in page title and back navigation for the onboarding stack.
                 AppHeader(title: "Get Started", backAction: { presentationMode.wrappedValue.dismiss() })
                     .padding(.top, 10)
                 
@@ -63,6 +68,7 @@ struct SignInView: View {
                 .accessibilityLabel("Or continue with")
                 
                 VStack(spacing: 16) {
+                    // Alternative sign-in methods.
                     Button(action: { /* Apple Auth Placeholder */ }) {
                         HStack {
                             Image(systemName: "applelogo")
@@ -109,6 +115,7 @@ struct SignInView: View {
                         .overlay(RoundedRectangle(cornerRadius: AppTheme.Radius.md).stroke(Color.gray.opacity(0.3), lineWidth: 1))
                     }
                     
+                    // Biometric login is shown only when supported and enabled.
                     if biometricService.isSupported && biometricService.isBiometricLoginEnabled {
                         Button(action: {
                             viewModel.authenticateWithBiometrics()

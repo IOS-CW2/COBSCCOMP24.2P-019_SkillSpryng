@@ -1,3 +1,5 @@
+// MARK: - ReviewRow
+// Review card component for displaying user comments and ratings.
 import SwiftUI
 
 struct ReviewRow: View {

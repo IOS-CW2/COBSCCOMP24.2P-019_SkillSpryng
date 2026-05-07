@@ -1,3 +1,5 @@
+// MARK: - AVCameraView
+// Camera capture helper components for live profile/image capture flows.
 import SwiftUI
 import AVFoundation
 import UIKit
@@ -70,6 +72,15 @@ final class CameraController: NSObject, ObservableObject {
             guard let self else { return }
             await self.configureSession(position: self.currentPosition)
         }
+    }
+
+    // MARK: - Lifecycle
+
+    deinit {
+        session.stopRunning()
+        session.inputs.forEach { session.removeInput($0) }
+        session.outputs.forEach { session.removeOutput($0) }
+        print("[CameraController] ♻️ Session cleaned up on deinit")
     }
 
     // MARK: - Private

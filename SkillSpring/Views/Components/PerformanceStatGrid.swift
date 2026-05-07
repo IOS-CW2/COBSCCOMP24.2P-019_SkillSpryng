@@ -1,3 +1,5 @@
+// MARK: - PerformanceStatGrid
+// Stats grid visualizing session performance metrics.
 import SwiftUI
 
 struct PerformanceStatGrid: View {

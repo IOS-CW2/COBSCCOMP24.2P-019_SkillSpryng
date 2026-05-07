@@ -1,5 +1,9 @@
 import SwiftUI
 
+/// Displays the courses and events discovery experience within the learning tab.
+///
+/// Users can switch between a course catalog and live event listings while
+/// browsing featured classes, popular recommendations, and their personal learning path.
 struct CoursesView: View {
     @ObservedObject private var vm: LearningViewModel
     @Environment(\.dismiss) private var dismiss
@@ -20,6 +24,7 @@ struct CoursesView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header with Back Button and Search
+            // This top bar is the fixed entry point for the learning section.
             AppHeader(
                 title: "Courses",
                 backAction: { dismiss() },
@@ -28,6 +33,7 @@ struct CoursesView: View {
             )
             
             // Courses/Events Selector
+            // Toggles between the course catalog and the events listing.
             HStack(spacing: 0) {
                 Button(action: { selectedTab = "Courses" }) {
                     Text("Courses")
@@ -67,6 +73,7 @@ struct CoursesView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 24) {
                         // Category filters
+                        // These chips let the user narrow the course catalog by topic.
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 12) {
                                 ForEach(categories, id: \.self) { cat in
@@ -86,6 +93,7 @@ struct CoursesView: View {
                         }
                         
                         // Featured Section
+                        // Highlights the most important courses for the user.
                         VStack(alignment: .leading, spacing: 16) {
                             HStack {
                                 Text("Featured")
@@ -106,6 +114,7 @@ struct CoursesView: View {
                         }
                         
                         // Popular This Week
+                        // Surfaced courses that are trending with the community.
                         VStack(alignment: .leading, spacing: 16) {
                             HStack {
                                 Text("Popular This Week")
@@ -126,6 +135,7 @@ struct CoursesView: View {
                         }
                         
                         // Your Learning Path
+                        // Displays courses the user is already following.
                         VStack(alignment: .leading, spacing: 16) {
                             HStack {
                                 Text("Your Learning Path")
@@ -156,6 +166,8 @@ struct CoursesView: View {
 
 // MARK: - Subcomponents
 
+/// A large cardio-style card used for featured courses.
+/// Includes category badge, instructor details, rating, and pricing.
 struct FeaturedCourseCard: View {
     let course: Course
     
@@ -217,6 +229,8 @@ struct FeaturedCourseCard: View {
     }
 }
 
+/// A compact card representing a popular course choice for the week.
+/// Shows the course title, instructor, rating, and cost.
 struct PopularCourseCard: View {
     let course: Course
     
@@ -261,6 +275,8 @@ struct PopularCourseCard: View {
     }
 }
 
+/// Displays a course already in the user's personalized learning path.
+/// Includes a progress indicator and quick access action.
 struct LearningPathCard: View {
     let course: Course
     

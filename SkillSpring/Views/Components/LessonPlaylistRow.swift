@@ -1,3 +1,5 @@
+// MARK: - LessonPlaylistRow
+// Reusable row for lessons in a playlist or curriculum view.
 import SwiftUI
 
 struct LessonPlaylistRow: View {
