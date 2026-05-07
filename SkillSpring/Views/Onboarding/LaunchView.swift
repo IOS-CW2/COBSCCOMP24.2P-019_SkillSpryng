@@ -3,6 +3,7 @@ import SwiftUI
 struct LaunchView: View {
     @State private var isActive: Bool = false
     @State private var activeDotIndex: Int = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
         Group {
@@ -41,6 +42,7 @@ struct LaunchView: View {
                         .padding(.bottom, 48)
                         .accessibilityHidden(true)
                         .onAppear {
+                            guard !reduceMotion else { return }
                             Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                                     activeDotIndex = (activeDotIndex + 1) % 3
@@ -53,8 +55,12 @@ struct LaunchView: View {
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                withAnimation {
+                if reduceMotion {
                     self.isActive = true
+                } else {
+                    withAnimation {
+                        self.isActive = true
+                    }
                 }
             }
         }
