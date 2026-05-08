@@ -27,7 +27,7 @@ extension MockDataProvider {
             imageName: "vegan_cooking",
             category: "Lifestyle",
             isTopRated: false,
-            instructorImage: nil
+            instructorImage: "instructor1"
         ),
         RecommendedSkill(
             title: "Sound Engineering",
@@ -37,7 +37,7 @@ extension MockDataProvider {
             imageName: "sound_engineering",
             category: "Music",
             isTopRated: false,
-            instructorImage: nil
+            instructorImage: "instructor2"
         )
         ]
     }
@@ -45,22 +45,22 @@ extension MockDataProvider {
     // MARK: Courses
     var featuredCourses: [Course] {
         [
-        Course(title: "Mastering 3D Spatial Systems & Glassmorphism", instructor: "Julian Vore",  rating: 4.8, imageName: "course_3d",      category: "DESIGN",  price: "Free",      studentsCount: "2.4k", progress: nil, instructorImage: "julian_profile"),
-        Course(title: "Advanced UI Patterns in 2024",                  instructor: "Sarah Chen",   rating: 4.9, imageName: "course_ui",      category: "CODING",  price: "1,200 SKP", studentsCount: "12k",  progress: nil, instructorImage: "sarah_profile")
+        Course(title: "Mastering 3D Spatial Systems & Glassmorphism", instructor: "Julian Vore",  rating: 4.8, imageName: "course_3d",      category: "DESIGN",  price: "Free",      studentsCount: "2.4k", progress: nil, instructorImage: "instructor1"),
+        Course(title: "Advanced UI Patterns in 2024",                  instructor: "Sarah Chen",   rating: 4.9, imageName: "course_ui",      category: "CODING",  price: "1,200 SKP", studentsCount: "12k",  progress: nil, instructorImage: "instructor2")
         ]
     }
 
     var popularCourses: [Course] {
         [
-        Course(title: "Vocal Production Secrets", instructor: "Michael Ross", rating: 4.7, imageName: "course_vocal",    category: "MUSIC",     price: "Free",     studentsCount: "1.2k", progress: nil, instructorImage: "michael_profile"),
-        Course(title: "Startup Foundations",       instructor: "Dr. Elena Wu", rating: 4.8, imageName: "course_startup", category: "BUSINESS",  price: "800 SKP",  studentsCount: "5k",   progress: nil, instructorImage: "elena_profile")
+        Course(title: "Vocal Production Secrets", instructor: "Michael Ross", rating: 4.7, imageName: "course_vocal",    category: "MUSIC",     price: "Free",     studentsCount: "1.2k", progress: nil, instructorImage: "instructor1"),
+        Course(title: "Startup Foundations",       instructor: "Dr. Elena Wu", rating: 4.8, imageName: "course_startup", category: "BUSINESS",  price: "800 SKP",  studentsCount: "5k",   progress: nil, instructorImage: "instructor2")
         ]
     }
 
     var learningPath: [Course] {
         [
-        Course(title: "Visual Storytelling Masterclass", instructor: "Anna Giraud",  rating: 4.9, imageName: "course_story",  category: "ARTS",      price: "Paid", studentsCount: "3k", progress: 0.65, instructorImage: "anna_profile"),
-        Course(title: "French for Explorers",             instructor: "Jean-Pierre",  rating: 4.6, imageName: "course_french", category: "LANGUAGES", price: "Free", studentsCount: "8k", progress: 0.25, instructorImage: "jean_profile")
+        Course(title: "Visual Storytelling Masterclass", instructor: "Anna Giraud",  rating: 4.9, imageName: "course_story",  category: "ARTS",      price: "Paid", studentsCount: "3k", progress: 0.65, instructorImage: "instructor2"),
+        Course(title: "French for Explorers",             instructor: "Jean-Pierre",  rating: 4.6, imageName: "course_french", category: "LANGUAGES", price: "Free", studentsCount: "8k", progress: 0.25, instructorImage: "instructor1")
         ]
     }
 

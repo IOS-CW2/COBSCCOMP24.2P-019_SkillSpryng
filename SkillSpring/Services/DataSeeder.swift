@@ -22,7 +22,7 @@ final class DataSeeder: DataSeedingService {
 
     static let shared = DataSeeder()
     private let db = Firestore.firestore()
-    private var uid: String? { Auth.auth().currentUser?.uid ?? "DEMO_TEST_USER_ID" }
+    private var uid: String? { FirebaseManager.currentUID ?? "DEMO_TEST_USER_ID" }
     private let mock = MockDataProvider.shared
 
     private init() {}

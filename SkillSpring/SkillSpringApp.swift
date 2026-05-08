@@ -118,7 +118,7 @@ struct SkillSpringApp: App {
 /// when UserDefaults changes — this is the root login/logout gate.
 struct RootCoordinatorView: View {
     @AppStorage("skillspryng.isLoggedIn") var isLoggedIn = false
-    @State private var previouslyLoggedIn = false
+    @State private var welcomeScheduled = false
     
     var body: some View {
         Group {
@@ -129,12 +129,21 @@ struct RootCoordinatorView: View {
             }
         }
         .onChange(of: isLoggedIn) { loggedIn in
-            if loggedIn && !previouslyLoggedIn {
-                // First time logging in this session — fire welcome notification
+            if loggedIn && !welcomeScheduled {
                 let userName = PersistenceService.shared.fetchUser()?.fullName ?? "there"
                 NotificationManager.shared.scheduleWelcomeNotification(userName: userName)
+                welcomeScheduled = true
             }
-            previouslyLoggedIn = loggedIn
+            if !loggedIn {
+                welcomeScheduled = false
+            }
+        }
+        .onAppear {
+            if isLoggedIn && !welcomeScheduled {
+                let userName = PersistenceService.shared.fetchUser()?.fullName ?? "there"
+                NotificationManager.shared.scheduleWelcomeNotification(userName: userName)
+                welcomeScheduled = true
+            }
         }
     }
 }

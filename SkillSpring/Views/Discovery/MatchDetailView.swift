@@ -149,45 +149,61 @@ struct MatchDetailView: View {
                         .font(.headline)
                         .fontWeight(.bold)
                     
-                    HStack(spacing: 10) {
-                        ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { day in
-                            Text(day)
-                                .font(AppTheme.Typography.badge)
-                                .frame(width: 36, height: 36)
-                                .background(profile.availability.contains(day) ? AppTheme.Colors.primary : Color(.systemGray6))
-                                .foregroundColor(profile.availability.contains(day) ? .white : .gray)
-                                .cornerRadius(8)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { day in
+                                Text(day)
+                                    .font(AppTheme.Typography.caption)
+                                    .fontWeight(.semibold)
+                                    .frame(width: 42, height: 42)
+                                    .background(profile.availability.contains(day) ? AppTheme.Colors.primary : Color(.systemGray5))
+                                    .foregroundColor(profile.availability.contains(day) ? .white : .gray)
+                                    .cornerRadius(14)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .stroke(profile.availability.contains(day) ? AppTheme.Colors.primary.opacity(0.25) : Color(.systemGray4), lineWidth: 1)
+                                    )
+                            }
                         }
+                        .padding(.vertical, 4)
                     }
                     
-                    HStack(spacing: 12) {
-                        Image(systemName: "calendar")
-                            .foregroundColor(AppTheme.Colors.primary)
-                            .padding(10)
-                            .background(AppTheme.Colors.primary.opacity(0.1))
-                            .cornerRadius(10)
-                        
-                        VStack(alignment: .leading) {
-                            SectionHeader(title: "NEXT OPENING")
-                            Text("Tue, Oct 24")
-                                .font(AppTheme.Typography.headline)
+                    HStack(spacing: 14) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "calendar")
+                                .foregroundColor(AppTheme.Colors.primary)
+                                .padding(10)
+                                .background(AppTheme.Colors.primary.opacity(0.1))
+                                .cornerRadius(10)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                SectionHeader(title: "NEXT OPENING")
+                                Text("Tue, Oct 24")
+                                    .font(AppTheme.Typography.headline)
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Spacer()
-                        
-                        Image(systemName: "person.2.fill")
-                            .foregroundColor(AppTheme.Colors.primary)
-                            .padding(10)
-                            .background(AppTheme.Colors.primary.opacity(0.1))
-                            .cornerRadius(10)
-                        
-                        VStack(alignment: .leading) {
-                            SectionHeader(title: "PAST MATCHES")
-                            Text("14 Students")
-                                .font(AppTheme.Typography.headline)
+                        HStack(spacing: 12) {
+                            Image(systemName: "person.2.fill")
+                                .foregroundColor(AppTheme.Colors.primary)
+                                .padding(10)
+                                .background(AppTheme.Colors.primary.opacity(0.1))
+                                .cornerRadius(10)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                SectionHeader(title: "PAST MATCHES")
+                                Text("14 Students")
+                                    .font(AppTheme.Typography.headline)
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
+                .padding()
+                .background(Color.white)
+                .cornerRadius(24)
+                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                 .padding(.horizontal)
                 
                 // Reviews
@@ -201,34 +217,58 @@ struct MatchDetailView: View {
                 }
                 .padding(.horizontal)
                 
-                Spacer().frame(height: 120)
+                Spacer().frame(height: 180)
             }
         }
         .overlay(
             VStack {
                 Spacer()
-                HStack(spacing: 16) {
+                HStack(spacing: 14) {
                     NavigationLink(destination: ChatDetailView(conversation: conversation)) {
                         Label("Message", systemImage: "bubble.left.fill")
                             .font(AppTheme.Typography.headline)
                             .foregroundColor(AppTheme.Colors.primary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                             .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 16).stroke(AppTheme.Colors.primary, lineWidth: 2))
+                            .padding(.vertical, 14)
+                            .padding(.horizontal, 18)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color(.systemBackground).opacity(0.95))
+                                    .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .stroke(AppTheme.Colors.primary.opacity(0.25), lineWidth: 1)
+                                    )
+                            )
                     }
                     
                     NavigationLink(destination: SessionBookingView(instructor: profile)) {
                         Text("Book a Session")
                             .font(AppTheme.Typography.headline)
                             .foregroundColor(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                             .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(AppTheme.Colors.primary)
-                            .cornerRadius(16)
+                            .padding(.vertical, 14)
+                            .padding(.horizontal, 18)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(AppTheme.Colors.primary)
+                                    .shadow(color: AppTheme.Colors.primary.opacity(0.25), radius: 10, x: 0, y: 4)
+                            )
                     }
                     .accessibilityIdentifier("bookSessionButton")
                 }
-                .padding()
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .fill(Color(.systemBackground).opacity(0.95))
+                        .shadow(color: Color.black.opacity(0.08), radius: 15, x: 0, y: -6)
+                )
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
             }
         )
         .background(Color(.systemGroupedBackground).ignoresSafeArea())

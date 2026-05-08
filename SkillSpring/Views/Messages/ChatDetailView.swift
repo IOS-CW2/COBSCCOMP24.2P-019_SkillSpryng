@@ -34,11 +34,7 @@ struct ChatDetailView: View {
                 }
                 .accessibilityLabel("Back")
 
-                Image(conversation.participant.profileImageURL)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
+                SmartAvatar(imageUrl: conversation.participant.profileImageURL, width: 40, height: 40)
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 2) {

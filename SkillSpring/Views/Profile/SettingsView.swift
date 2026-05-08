@@ -32,22 +32,9 @@ struct SettingsView: View {
                     // User Profile Brief
                     VStack(spacing: 16) {
                         // WCAG 1.1.1: non-decorative image must have a text alternative
-                        Group {
-                            if vm.user.profileImageURL.hasPrefix("http") {
-                                AsyncImage(url: URL(string: vm.user.profileImageURL)) { img in
-                                    img.resizable().scaledToFill()
-                                } placeholder: {
-                                    Image(systemName: "person.circle.fill")
-                                        .resizable().foregroundColor(AppTheme.Colors.primary.opacity(0.4))
-                                }
-                            } else {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable().foregroundColor(AppTheme.Colors.primary.opacity(0.4))
-                            }
-                        }
-                        .frame(width: 80, height: 80)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.white, lineWidth: 3))
+                        SmartAvatar(imageUrl: vm.user.profileImageURL, width: 80, height: 80)
+                            .overlay(Circle().stroke(Color.white, lineWidth: 3))
+                        
                         .shadow(radius: 5)
                         .accessibilityLabel("Profile photo of \(vm.user.fullName)")
                         
@@ -187,42 +174,49 @@ struct SettingsView: View {
                         
                         VStack(spacing: 0) {
                             // Profile Visibility
-                            HStack {
+                            HStack(alignment: .center, spacing: 12) {
                                 Text("PROFILE VISIBILITY")
                                     .font(AppTheme.Typography.badge)
                                     .foregroundColor(.gray)
                                 Spacer()
-                                HStack(spacing: 0) {
+                                HStack(spacing: 8) {
                                     ForEach(["Public", "Private", "Mutuals"], id: \.self) { option in
                                         Button(action: {
                                             profileVisibility = option
                                             Task { await vm.updateProfileVisibility(option) }
                                         }) {
                                             Text(option)
-                                                .padding(.horizontal, 12).padding(.vertical, 6)
-                                                .background(profileVisibility == option ? AppTheme.Colors.primary : Color.clear)
+                                                .font(AppTheme.Typography.subheadline)
                                                 .foregroundColor(profileVisibility == option ? .white : .gray)
-                                                .cornerRadius(6)
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.75)
+                                                .padding(.horizontal, 14)
+                                                .padding(.vertical, 10)
+                                                .frame(minWidth: 72)
+                                                .background(profileVisibility == option ? AppTheme.Colors.primary : Color(.systemGray6))
+                                                .clipShape(Capsule())
                                         }
                                         .accessibilityAddTraits(profileVisibility == option ? .isSelected : [])
                                     }
                                 }
+                                .padding(6)
                                 .background(Color(.systemGray6))
-                                .cornerRadius(8)
+                                .cornerRadius(20)
                             }
-                            .padding()
+                            .padding(.vertical, 16)
+                            .padding(.horizontal, 20)
                             
                             Divider()
                             
                             NavigationLink(destination: ChildSafetyView()) {
-                                SettingsRow(icon: "shield.lefthalf.filled", title: "Child Safety Mode", toggleValue: .constant(true))
+                                SettingsRow(icon: "shield.lefthalf.filled", title: "Child Safety Mode")
                             }
                             .buttonStyle(PlainButtonStyle())
                             
                             Divider().padding(.leading, 48)
                             
                             NavigationLink(destination: AddFamilyMemberView()) {
-                                SettingsRow(icon: "person.badge.plus", title: "Add Family Member", toggleValue: .constant(true))
+                                SettingsRow(icon: "person.badge.plus", title: "Add Family Member")
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
@@ -292,11 +286,19 @@ struct SettingsView: View {
         .alert("Log Out", isPresented: $showLogoutConfirmation) {
             Button("Log Out", role: .destructive) {
                 biometricService.errorMessage = nil
-                try? FirebaseManager.shared.signOut()
-                PersistenceService.shared.clearCache()
-                PersistenceService.shared.clearSessionCache()
-                NotificationManager.shared.cancelAllPendingNotifications()
-                isLoggedIn = false
+                if biometricService.isBiometricLoginEnabled {
+                    // Preserve Firebase auth session for biometric re-login.
+                    PersistenceService.shared.clearCache()
+                    PersistenceService.shared.clearSessionCache()
+                    NotificationManager.shared.cancelAllPendingNotifications()
+                    isLoggedIn = false
+                } else {
+                    try? FirebaseManager.shared.signOut()
+                    PersistenceService.shared.clearCache()
+                    PersistenceService.shared.clearSessionCache()
+                    NotificationManager.shared.cancelAllPendingNotifications()
+                    isLoggedIn = false
+                }
             }
             Button("Cancel", role: .cancel) { }
         } message: {

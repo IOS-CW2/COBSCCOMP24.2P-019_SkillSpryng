@@ -37,18 +37,25 @@ final class MessagesViewModel: ObservableObject {
 
     // MARK: - Derived
 
+    private var filteredConversations: [Conversation] {
+        let search = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let filtered = allConversations.filter { applyFilter($0) }
+
+        guard !search.isEmpty else { return filtered }
+        return filtered.filter {
+            $0.participant.fullName.localizedCaseInsensitiveContains(search) ||
+            $0.lastMessage.localizedCaseInsensitiveContains(search) ||
+            $0.participant.bio.localizedCaseInsensitiveContains(search) ||
+            $0.participant.skillsToTeach.joined(separator: " ").localizedCaseInsensitiveContains(search)
+        }
+    }
+
     var todayConversations: [Conversation] {
-        allConversations
-            .filter { $0.lastMessageTime != "YESTERDAY" }
-            .filter { applyFilter($0) }
-            .filter { matchesSearch($0) }
+        filteredConversations.filter { $0.lastMessageTime != "YESTERDAY" }
     }
 
     var yesterdayConversations: [Conversation] {
-        allConversations
-            .filter { $0.lastMessageTime == "YESTERDAY" }
-            .filter { applyFilter($0) }
-            .filter { matchesSearch($0) }
+        filteredConversations.filter { $0.lastMessageTime == "YESTERDAY" }
     }
 
     var isTodayEmpty: Bool {
@@ -57,14 +64,28 @@ final class MessagesViewModel: ObservableObject {
 
     private func applyFilter(_ conversation: Conversation) -> Bool {
         switch selectedFilter {
-        case "Unread":  return conversation.unreadCount > 0
-        default:        return true
+        case "Unread":
+            return conversation.unreadCount > 0
+        case "Matches":
+            return isMatchConversation(conversation)
+        case "Groups":
+            return isGroupConversation(conversation)
+        default:
+            return true
         }
     }
 
-    private func matchesSearch(_ conversation: Conversation) -> Bool {
-        guard !searchText.isEmpty else { return true }
-        return conversation.participant.fullName.localizedCaseInsensitiveContains(searchText) ||
-               conversation.lastMessage.localizedCaseInsensitiveContains(searchText)
+    private func isMatchConversation(_ conversation: Conversation) -> Bool {
+        let searchTarget = [conversation.lastMessage, conversation.participant.bio]
+            .joined(separator: " ")
+            .localizedCaseInsensitiveContains("match")
+        return searchTarget || conversation.participant.skillsToTeach.contains(where: { $0.localizedCaseInsensitiveContains("match") })
+    }
+
+    private func isGroupConversation(_ conversation: Conversation) -> Bool {
+        let searchTarget = [conversation.lastMessage, conversation.participant.bio]
+            .joined(separator: " ")
+            .localizedCaseInsensitiveContains("group")
+        return searchTarget
     }
 }

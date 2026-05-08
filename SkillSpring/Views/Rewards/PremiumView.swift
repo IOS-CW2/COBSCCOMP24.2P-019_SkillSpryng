@@ -321,6 +321,8 @@ struct PremiumView: View {
                 .animation(.spring(response: 0.4, dampingFraction: 0.7), value: showToast)
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
 }
 

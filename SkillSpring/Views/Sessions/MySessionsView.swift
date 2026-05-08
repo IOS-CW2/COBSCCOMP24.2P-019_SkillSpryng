@@ -12,7 +12,6 @@ struct MySessionsView: View {
     @State private var showCancelAlert = false
     @State private var sessionToRate: Session?
     @State private var navigateToSkillMatches = false
-    @State private var showAllSessions = false
     @Namespace private var animation
     let filters = ["All", "Upcoming", "Completed", "Cancelled"]
 
@@ -48,8 +47,6 @@ struct MySessionsView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                                 sessionToRate = session
                             }
-                        }, onSeeAll: {
-                            showAllSessions = true
                         })
                     }
 
@@ -128,9 +125,9 @@ struct UpcomingSessionsSection: View {
             }
 
             VStack(alignment: .leading, spacing: 16) {
-                SectionHeader(title: "NEXT WEEK", actionTitle: "See All", action: { onSeeAll() }).padding(.horizontal)
+                SectionHeader(title: "UPCOMING").padding(.horizontal)
                 VStack(spacing: 12) {
-                    ForEach(vm.upcomingSessions.prefix(3)) { session in
+                    ForEach(vm.upcomingSessions) { session in
                         HStack {
                             NavigationLink(destination: SessionDetailView(session: session)) {
                                 CompactSessionRow(date: session.date, title: session.title, time: session.time)
@@ -303,6 +300,19 @@ struct MainSessionCard: View {
                     }
                 }
             }
+            // End session
+            Button {
+                onEndSession(session)
+            } label: {
+                Text("End Session")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(.green.opacity(0.8))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(Color.green.opacity(0.06))
+                    .cornerRadius(10)
+            }
+            .accessibilityLabel("End this session")
             // Cancel session
             Button {
                 onCancel(session)

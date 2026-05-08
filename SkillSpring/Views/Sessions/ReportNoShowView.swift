@@ -77,7 +77,11 @@ struct ReportNoShowView: View {
                         isReporting = true
                         Task {
                             // 1. Mark session as cancelled in Firestore
-                            await FirebaseDataService.shared.cancelSession(session.id)
+                            await FirebaseDataService.shared.cancelSession(
+                                session.id,
+                                sessionTitle: session.title,
+                                instructorName: session.instructorName
+                            )
 
                             // 2. Refund the session cost to the user's wallet
                             if let user = await FirebaseDataService.shared.fetchCurrentUser() {

@@ -9,51 +9,62 @@ struct ProfileView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showAllReviews = false
     @State private var navigateToSettings = false
+    @State private var isRefreshing = false
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 24) {
-                // Header Navigation
-                AppHeader(
-                    title: "Profile",
-                    showBackButton: false,
-                    actionIcon: "gearshape",
-                    action: { navigateToSettings = true }
-                )
-                
-                NavigationLink(destination: SettingsView(), isActive: $navigateToSettings) {
-                    EmptyView()
-                }
+        ZStack {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    // Header Navigation with Refresh & Settings
+                    HStack {
+                        Text("Profile")
+                            .font(AppTheme.Typography.title2)
+                            .fontWeight(.bold)
+                        
+                        Spacer()
+                        
+                        // Refresh Button
+                        Button(action: {
+                            isRefreshing = true
+                            Task {
+                                await vm.refreshProfile()
+                                isRefreshing = false
+                            }
+                        }) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(AppTheme.Typography.subheadline)
+                                .foregroundColor(AppTheme.Colors.primary)
+                                .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                                .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: isRefreshing)
+                        }
+                        .disabled(vm.isLoading)
+                        
+                        // Settings Button
+                        NavigationLink(destination: SettingsView()) {
+                            Image(systemName: "gearshape")
+                                .font(AppTheme.Typography.subheadline)
+                                .foregroundColor(AppTheme.Colors.primary)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Profile header with refresh and settings")
+                    
+                    NavigationLink(destination: SettingsView(), isActive: $navigateToSettings) {
+                        EmptyView()
+                    }
+                    
+                    // Loading State Overlay
+                    if vm.isLoading {
+                        LoadingStateCard(message: "Updating profile...")
+                            .transition(.opacity)
+                    }
                 
                 // Profile Hero 
                 VStack(spacing: 16) {
                     ZStack(alignment: .bottomTrailing) {
-                        if !vm.user.profileImageURL.isEmpty {
-                            Image(vm.user.profileImageURL)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                                .overlay(
-                                    Circle()
-                                        .stroke(AppTheme.Colors.primary, lineWidth: 2)
-                                        .frame(width: 108, height: 108)
-                                )
-                        } else {
-                            Circle()
-                                .fill(Color(.systemGray6))
-                                .frame(width: 100, height: 100)
-                                .overlay(Image(systemName: "person.fill").font(.system(size: 40)).foregroundColor(.gray))
-                                .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                                .overlay(
-                                    Circle()
-                                        .stroke(AppTheme.Colors.primary, lineWidth: 2)
-                                        .frame(width: 108, height: 108)
-                                )
-                        }
-                        
-                        Image(systemName: "checkmark.seal.fill")
+                            SmartAvatar(imageUrl: vm.user.profileImageURL, width: 100, height: 100)
+                                .overlay(Circle().stroke(AppTheme.Colors.primary, lineWidth: 2).frame(width: 108, height: 108))
                             .foregroundColor(AppTheme.Colors.primary)
                             .background(Color.white)
                             .clipShape(Circle())
@@ -94,7 +105,7 @@ struct ProfileView: View {
                         Text("Profile Completeness")
                             .font(AppTheme.Typography.subheadline)
                         Spacer()
-                        Text("\(vm.user.profileCompleteness)%")
+                        Text("\(vm.user.calculatedCompleteness)%")
                             .font(AppTheme.Typography.subheadline)
                             .foregroundColor(AppTheme.Colors.primary)
                     }
@@ -106,7 +117,7 @@ struct ProfileView: View {
                                 .frame(height: 8)
                             Capsule()
                                 .fill(AppTheme.Colors.primary)
-                                .frame(width: geo.size.width * CGFloat(vm.user.profileCompleteness) / 100, height: 8)
+                                .frame(width: geo.size.width * CGFloat(vm.user.calculatedCompleteness) / 100, height: 8)
                         }
                     }
                     .frame(height: 8)
@@ -268,6 +279,7 @@ struct ProfileView: View {
                 self.vm.user = cachedUser
             }
         }
+        }  // Close ZStack
     }
 }
 

@@ -33,6 +33,7 @@
 		6227C22A2F7A96D200E964BB /* SkillSpring.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkillSpring.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6227C2422F7A9AF600E964BB /* SkillSpringTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkillSpringTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6227C24F2F7A9B1D00E964BB /* SkillSpringUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkillSpringUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A40F3CE2FAE4BDF005D8A46 /* SkillSpring.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SkillSpring.xcodeproj; path = SkillSpring/SkillSpring.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -122,6 +123,13 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8A40F3D12FAE4BDF005D8A46 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,6 +244,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6227C22B2F7A96D200E964BB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 8A40F3D12FAE4BDF005D8A46 /* Products */;
+					ProjectRef = 8A40F3CE2FAE4BDF005D8A46 /* SkillSpring.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				6227C2292F7A96D200E964BB /* SkillSpring */,

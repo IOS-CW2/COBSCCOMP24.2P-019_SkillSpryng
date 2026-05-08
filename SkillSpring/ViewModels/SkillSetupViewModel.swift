@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import UIKit
+import CoreLocation
 
 // MARK: - SkillSetupViewModel
 // Drives the new-user Skill Setup flow (SkillSetupView).
@@ -15,6 +16,7 @@ class SkillSetupViewModel: ObservableObject {
     @Published var selectedLearnSkills: Set<String> = []
     @Published var experienceLevel: ExperienceLevel = .beginner
     @Published var location: String = ""
+    @Published var selectedLocation: CLLocationCoordinate2D? = nil
     @Published var bio: String = ""
     @Published var isLocationEnabled: Bool = true
     @Published var selectedImage: UIImage? = nil
@@ -65,8 +67,11 @@ class SkillSetupViewModel: ObservableObject {
     
     /// Finalizes the user's skill setup profile and saves it to Firestore.
     /// Also caches the profile locally and seeds starter app data.
-    func saveProfile(fullName: String, phoneNumber: String) {
-        let user = User(
+    func saveProfile(fullName: String, phoneNumber: String, markLoggedIn: Bool = false, isChildMode: Bool = false) async {
+        isLoading = true
+        defer { isLoading = false }
+
+        var user = User(
             fullName: fullName,
             phoneNumber: phoneNumber,
             skillsToTeach: Array(selectedTeachSkills),
@@ -76,27 +81,37 @@ class SkillSetupViewModel: ObservableObject {
             bio: bio,
             profileImageURL: ""
         )
-        
-        isLoading = true
-        
-        Task {
-            // 1. Cache locally for zero-latency profile reads
-            PersistenceService.shared.saveUser(user)
+        user.isChildMode = isChildMode
 
-            // 2. Persist skill profile to Firestore so it appears in Discover / MatchProfiles
-            do {
-                try await FirebaseDataService.shared.saveUser(user)
-            } catch {
-                print("[SkillSetup] Firestore save failed: \(error.localizedDescription)")
+        if isLocationEnabled, let selectedLocation {
+            user.latitude = selectedLocation.latitude
+            user.longitude = selectedLocation.longitude
+        }
+
+        PersistenceService.shared.saveUser(user)
+
+        do {
+            try await FirebaseDataService.shared.saveUser(user)
+
+            if let image = selectedImage {
+                do {
+                    let url = try await FirebaseStorageService.shared.uploadProfileImage(image)
+                    user.profileImageURL = url
+                    PersistenceService.shared.saveUser(user)
+                    try await FirebaseDataService.shared.saveUser(user)
+                } catch {
+                    print("[SkillSetup] profile image upload failed: \(error.localizedDescription)")
+                }
             }
 
-            // 3. Seed all Firestore collections for this user (sessions, courses, etc.)
             await DataSeeder.shared.seedAll()
-
-            // 4. Mark as logged in — RootCoordinatorView switches to MainTabView
-            UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
-            self.isSetupComplete = true
-            self.isLoading = false
+            if markLoggedIn {
+                UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
+                isSetupComplete = true
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+            print("[SkillSetup] Firestore save failed: \(error.localizedDescription)")
         }
     }
 }

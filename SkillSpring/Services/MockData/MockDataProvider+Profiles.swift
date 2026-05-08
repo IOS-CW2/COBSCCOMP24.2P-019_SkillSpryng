@@ -8,6 +8,7 @@ extension MockDataProvider {
     // MARK: Elena — primary featured match
     var elenaProfile: MatchProfile {
         MatchProfile(
+            id: "profile-elena-colombo",
             fullName: "Elena Rodriguez",
             role: "Senior UI/UX Designer & Creative Strategist",
             location: "Colombo, Sri Lanka",
@@ -37,6 +38,107 @@ extension MockDataProvider {
         [
             elenaProfile,
             MatchProfile(
+                id: "profile-priya-colombo",
+                fullName: "Priya Perera",
+                role: "Full Stack Web Developer",
+                location: "Colombo, Sri Lanka",
+                distance: "1.5 miles away",
+                matchPercentage: 87,
+                bio: "Building responsive web applications for 7+ years. Specializing in React, Vue, and modern CSS. Love mentoring junior developers through their first projects.",
+                skillsToTeach: ["React", "Vue.js", "Web Design"],
+                skillsToLearn: ["Machine Learning", "Cloud Architecture"],
+                imageUrl: "instructor1",
+                onlineStatus: true,
+                city: "Colombo",
+                sessionsCount: 92,
+                rating: 4.8,
+                responseTime: "1.5h",
+                availability: ["M", "W", "F"],
+                reviews: [],
+                status: .suggested
+            ),
+            MatchProfile(
+                id: "profile-amara-colombo",
+                fullName: "Amara Dias",
+                role: "Digital Marketing Strategist",
+                location: "Colombo, Sri Lanka",
+                distance: "2.1 miles away",
+                matchPercentage: 84,
+                bio: "Expert in social media marketing and SEO. Help brands grow their online presence. Looking to learn more about video production.",
+                skillsToTeach: ["Social Media Marketing", "SEO", "Content Strategy"],
+                skillsToLearn: ["Video Editing", "Copywriting"],
+                imageUrl: "instructor2",
+                onlineStatus: true,
+                city: "Colombo",
+                sessionsCount: 65,
+                rating: 4.7,
+                responseTime: "2h",
+                availability: ["T", "T", "S"],
+                reviews: [],
+                status: .suggested
+            ),
+            MatchProfile(
+                id: "profile-rohan-colombo",
+                fullName: "Rohan Wijesinghe",
+                role: "Graphic & UI Designer",
+                location: "Colombo, Sri Lanka",
+                distance: "1.2 miles away",
+                matchPercentage: 89,
+                bio: "Creative designer with 8 years of experience in branding and UI design. Passionate about creating beautiful user experiences. Always open to new projects.",
+                skillsToTeach: ["Graphic Design", "Adobe Creative Suite", "UI Design"],
+                skillsToLearn: ["Product Management", "Animation"],
+                imageUrl: "instructor1",
+                onlineStatus: true,
+                city: "Colombo",
+                sessionsCount: 78,
+                rating: 4.9,
+                responseTime: "45m",
+                availability: ["M", "W", "T"],
+                reviews: [],
+                status: .suggested
+            ),
+            MatchProfile(
+                id: "profile-nisala-colombo",
+                fullName: "Nisala Fernando",
+                role: "Certified Yoga & Wellness Coach",
+                location: "Colombo, Sri Lanka",
+                distance: "0.9 miles away",
+                matchPercentage: 76,
+                bio: "Yoga instructor with 10+ years of practice. Teaching various styles from Hatha to Vinyasa. Help people find peace and flexibility in their daily lives.",
+                skillsToTeach: ["Yoga", "Meditation", "Wellness"],
+                skillsToLearn: ["Nutrition", "Dance"],
+                imageUrl: "instructor2",
+                onlineStatus: false,
+                city: "Colombo",
+                sessionsCount: 112,
+                rating: 4.8,
+                responseTime: "3h",
+                availability: ["M", "W", "F", "S"],
+                reviews: [],
+                status: .suggested
+            ),
+            MatchProfile(
+                id: "profile-asha-colombo",
+                fullName: "Asha Kumar",
+                role: "Data Scientist & Analytics Expert",
+                location: "Colombo, Sri Lanka",
+                distance: "1.8 miles away",
+                matchPercentage: 85,
+                bio: "Turning data into actionable insights. 6+ years working with Python, SQL, and BI tools. Excited to help others master data analysis and visualization.",
+                skillsToTeach: ["Python", "Data Analysis", "SQL"],
+                skillsToLearn: ["Public Speaking", "Leadership"],
+                imageUrl: "instructor1",
+                onlineStatus: true,
+                city: "Colombo",
+                sessionsCount: 54,
+                rating: 4.8,
+                responseTime: "1h",
+                availability: ["T", "W", "S"],
+                reviews: [],
+                status: .suggested
+            ),
+            MatchProfile(
+                id: "profile-julian-kandy",
                 fullName: "Julian Rivers",
                 role: "Jazz Pianist & Music Producer",
                 location: "Kandy, Sri Lanka",
@@ -56,6 +158,7 @@ extension MockDataProvider {
                 status: .suggested
             ),
             MatchProfile(
+                id: "profile-sarah-galle",
                 fullName: "Sarah Chen",
                 role: "Software Engineer & Athlete",
                 location: "Galle, Sri Lanka",
@@ -75,6 +178,7 @@ extension MockDataProvider {
                 status: .suggested
             ),
             MatchProfile(
+                id: "profile-marcus-online",
                 fullName: "Marcus Chen",
                 role: "Senior Product Designer",
                 location: "Online",
@@ -94,6 +198,7 @@ extension MockDataProvider {
                 status: .requestIncoming
             ),
             MatchProfile(
+                id: "profile-sarah-jenkins-online",
                 fullName: "Sarah Jenkins",
                 role: "Growth Marketing Lead",
                 location: "Online",
@@ -113,6 +218,7 @@ extension MockDataProvider {
                 status: .requestSent
             ),
             MatchProfile(
+                id: "profile-david-online",
                 fullName: "David Miller",
                 role: "Fullstack Engineer",
                 location: "Online",

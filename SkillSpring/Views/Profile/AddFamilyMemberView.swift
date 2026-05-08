@@ -7,10 +7,26 @@ import FirebaseFirestore
 // to be used for emergency contact and safety management.
 struct AddFamilyMemberView: View {
     @Environment(\.presentationMode) var presentationMode
-    @State private var fullName = ""
-    @State private var phoneNumber = ""
+    @ObservedObject var viewModel: SkillSetupViewModel
+    @State private var fullName: String
+    @State private var phoneNumber: String
     @State private var email = ""
     @State private var toast: ToastMessage? = nil
+    @State private var navigateToProfile = false
+    var isChildMode: Bool = false
+
+    init(viewModel: SkillSetupViewModel, fullName: String, phoneNumber: String, isChildMode: Bool = false) {
+        self.viewModel = viewModel
+        self._fullName = State(initialValue: fullName)
+        self._phoneNumber = State(initialValue: phoneNumber)
+        self.isChildMode = isChildMode
+    }
+
+    init(fullName: String = "", phoneNumber: String = "") {
+        self.viewModel = SkillSetupViewModel()
+        self._fullName = State(initialValue: fullName)
+        self._phoneNumber = State(initialValue: phoneNumber)
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -19,7 +35,7 @@ struct AddFamilyMemberView: View {
                 title: "Add Family Member",
                 backAction: { presentationMode.wrappedValue.dismiss() },
                 actionText: "Skip",
-                action: { UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn") }
+                action: { navigateToProfile = true }
             )
             .padding(.top, 10)
             
@@ -158,14 +174,14 @@ struct AddFamilyMemberView: View {
                                 // Navigate to home after brief delay so toast is visible
                                 try? await Task.sleep(nanoseconds: 1_800_000_000)
                                 await MainActor.run {
-                                    UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
+                                    navigateToProfile = true
                                 }
                             }
                         })
 
                         Button(action: {
                             HapticManager.light()
-                            UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
+                            navigateToProfile = true
                         }) {
                             Text("Skip for Now")
                                 .font(.headline)
@@ -185,6 +201,9 @@ struct AddFamilyMemberView: View {
             }
         }
         .navigationBarHidden(true)
+        NavigationLink(destination: ProfileSetupView(viewModel: viewModel, fullName: fullName, phoneNumber: phoneNumber, isChildMode: isChildMode), isActive: $navigateToProfile) {
+            EmptyView()
+        }
         .toast($toast)
     }
 }

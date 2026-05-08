@@ -68,11 +68,19 @@ final class SessionsViewModel: ObservableObject {
     /// Cancels a session by updating its Firestore status.
     func cancelSession(_ session: Session) {
         Task {
-            await FirebaseDataService.shared.cancelSession(session.id)
+            await FirebaseDataService.shared.cancelSession(
+                session.id,
+                sessionTitle: session.title,
+                instructorName: session.instructorName
+            )
         }
     }
 
     // MARK: - Derived Views
+
+    private var sortedUpcomingSessions: [Session] {
+        upcomingSessions.sorted { $0.scheduledAt < $1.scheduledAt }
+    }
 
     var upcomingSessions: [Session] {
         sessions.filter { $0.status == .upcoming }
@@ -87,11 +95,11 @@ final class SessionsViewModel: ObservableObject {
     }
 
     var todaySession: Session? {
-        sessions.first { $0.status == .upcoming && $0.type == .online }
+        sortedUpcomingSessions.first { Calendar.current.isDateInToday($0.scheduledAt) }
     }
 
     var tomorrowSession: Session? {
-        upcomingSessions.dropFirst().first
+        sortedUpcomingSessions.first { Calendar.current.isDateInTomorrow($0.scheduledAt) }
     }
 
     var historySessions: [Session] {

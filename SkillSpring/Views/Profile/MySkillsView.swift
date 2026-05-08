@@ -16,7 +16,7 @@ struct MySkillsView: View {
             AppHeader(title: "My Skills", backAction: { dismiss() })
             
             // Tab Switcher
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 ForEach(tabs, id: \.self) { tab in
                     Button(action: { selectedTab = tab }) {
                         Text(tab)
@@ -24,17 +24,20 @@ struct MySkillsView: View {
                             .foregroundColor(selectedTab == tab ? .white : .gray)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 10)
-                            .background(selectedTab == tab ? AppTheme.Colors.primary : Color(.systemGray6))
+                            .background(
+                                Capsule()
+                                    .fill(selectedTab == tab ? AppTheme.Colors.primary : Color(.systemGray6))
+                            )
                     }
                     .accessibilityAddTraits(selectedTab == tab ? .isSelected : [])
                 }
             }
-            Spacer()
-        }
-        .padding()
-        
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 24) {
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom, 4)
+            
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 24) {
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(selectedTab == "Teaching" ? "Your Expertise" : "Interests")
@@ -127,13 +130,14 @@ struct MySkillsView: View {
                 Spacer().frame(height: 100)
             }
         }
-        
+        .padding(.top, 8)
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarHidden(true)
         .background(
             NavigationLink(destination: SkillMatchesView(), isActive: $navigateToMatches) { EmptyView() }
         )
     }
+}
 }
 
 

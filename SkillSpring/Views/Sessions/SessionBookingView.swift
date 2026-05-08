@@ -309,9 +309,12 @@ struct SessionBookingView: View {
                 sessionDate: viewModel.selectedDate,
                 time: viewModel.selectedTime,
                 isOnline: viewModel.isOnline,
-                duration: viewModel.selectedDuration
+                duration: viewModel.selectedDuration,
+                venueName: viewModel.selectedVenueName.isEmpty ? nil : viewModel.selectedVenueName
             )
         }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
     
     // MARK: - Availability Checking

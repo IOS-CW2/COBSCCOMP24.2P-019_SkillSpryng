@@ -257,6 +257,8 @@ struct WalletView: View {
                 .animation(.spring(response: 0.4), value: toast)
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
 
     struct CreditOptionsSheet: View {

@@ -139,6 +139,51 @@ class NotificationManager: ObservableObject {
         }
     }
 
+    func scheduleMatchAccepted(requesterName: String) {
+        guard isAuthorized else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Match Accepted ✅"
+        content.body  = "You accepted the request from \(requesterName)."
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: "match.accepted.\(UUID().uuidString)", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error { print("Failed to schedule match accepted notification: \(error)") }
+        }
+    }
+
+    func scheduleMatchDeclined(requesterName: String) {
+        guard isAuthorized else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Match Declined"
+        content.body  = "You declined the request from \(requesterName)."
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: "match.declined.\(UUID().uuidString)", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error { print("Failed to schedule match declined notification: \(error)") }
+        }
+    }
+
+    func scheduleMatchCancelled(recipientName: String) {
+        guard isAuthorized else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Match Request Cancelled"
+        content.body  = "Your request to \(recipientName) has been cancelled."
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: "match.cancelled.\(UUID().uuidString)", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error { print("Failed to schedule match cancelled notification: \(error)") }
+        }
+    }
+
     // MARK: - Booking Request Sent
 
     /// Fires immediately when a session request is sent to an instructor.
@@ -157,16 +202,46 @@ class NotificationManager: ObservableObject {
         }
     }
 
+    /// Fires immediately when a session is cancelled by the user or instructor.
+    func scheduleSessionCancelled(
+        sessionId: String,
+        sessionTitle: String? = nil,
+        instructorName: String? = nil
+    ) {
+        guard isAuthorized else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Session Cancelled"
+        if let title = sessionTitle, let instructor = instructorName {
+            content.body = "Your session '\(title)' with \(instructor) has been cancelled."
+        } else if let title = sessionTitle {
+            content.body = "Your session '\(title)' has been cancelled."
+        } else {
+            content.body = "Your session has been cancelled."
+        }
+        content.sound = .default
+        content.badge = 1
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: "session.cancelled.\(sessionId)", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error { print("Failed to schedule cancellation notification: \(error)") }
+        }
+    }
+
     // MARK: - Welcome Notification
 
     /// Fires 3 seconds after the user first logs in — a warm welcome message.
+    /// The notification is only scheduled once, but the one-time key is stored
+    /// even if notification permission is not currently granted.
     func scheduleWelcomeNotification(userName: String) {
-        guard isAuthorized else { return }
-
-        // Only send once, ever
         let key = "skillspryng.welcomeNotificationSent"
         guard !UserDefaults.standard.bool(forKey: key) else { return }
+
         UserDefaults.standard.set(true, forKey: key)
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["welcome"])
+
+        guard isAuthorized else { return }
 
         let content = UNMutableNotificationContent()
         content.title = "Welcome to SkillSpryng 🌱"
@@ -205,6 +280,29 @@ class NotificationManager: ObservableObject {
         )
         UNUserNotificationCenter.current().add(request) { error in
             if let error { print("[NotificationManager] Safety alert error: \(error)") }
+        }
+    }
+
+    /// MARK: - Emergency Alerts
+
+    /// Fires immediately when the user confirms that family and authorities should be notified.
+    func scheduleEmergencyContactAlert(sessionTitle: String? = nil) {
+        guard isAuthorized else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Emergency Alert Sent 🚨"
+        if let sessionTitle = sessionTitle {
+            content.body = "Your emergency contacts and local authorities have been notified for '\(sessionTitle)'."
+        } else {
+            content.body = "Your emergency contacts and local authorities have been notified."
+        }
+        content.sound = .defaultCritical
+        content.badge = 1
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let request = UNNotificationRequest(identifier: "emergency.alert.\(UUID().uuidString)", content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error { print("[NotificationManager] Emergency alert error: \(error)") }
         }
     }
 

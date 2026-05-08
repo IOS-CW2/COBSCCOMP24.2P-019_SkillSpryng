@@ -14,9 +14,7 @@ struct NotificationsView: View {
                     // Standardized AppHeader (No back button for Root Tab)
                     AppHeader(
                         title: "Messages",
-                        showBackButton: false,
-                        actionText: "Matches",
-                        action: { navigateToMatches = true }
+                        showBackButton: false
                     )
                     .padding(.top, 8)
                     
@@ -59,7 +57,12 @@ struct NotificationsView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
                                     ForEach(viewModel.filters, id: \.self) { filter in
-                                        Button(action: { viewModel.selectedFilter = filter }) {
+                                        Button(action: {
+                                            viewModel.selectedFilter = filter
+                                            if filter == "Matches" {
+                                                navigateToMatches = true
+                                            }
+                                        }) {
                                             Text(filter)
                                                 .font(AppTheme.Typography.subheadline)
                                                 .padding(.horizontal, 20)
@@ -180,12 +183,8 @@ struct ConversationCard: View {
     var body: some View {
         HStack(spacing: 16) {
             ZStack(alignment: .bottomTrailing) {
-                Image(conversation.participant.profileImageURL)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 50, height: 50)
-                    .clipShape(Circle())
-                
+                SmartAvatar(imageUrl: conversation.participant.profileImageURL, width: 50, height: 50)
+
                 Circle()
                     .fill(AppTheme.Colors.primary)
                     .frame(width: 16, height: 16)

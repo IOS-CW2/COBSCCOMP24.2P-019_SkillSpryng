@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreLocation
 
 // MARK: - ProfileSetupView
 // Lets users personalize their profile with a photo, bio, and location
@@ -8,12 +9,13 @@ struct ProfileSetupView: View {
     @ObservedObject var viewModel: SkillSetupViewModel
     var fullName: String
     var phoneNumber: String
+    var isChildMode: Bool = false
     @AppStorage("skillspryng.isLoggedIn") private var isLoggedIn = false
 
     @State private var showSourcePicker = false
     @State private var showCamera = false
     @State private var showLibraryPicker = false
-    @State private var navigateToFamily = false
+    @State private var showLocationPicker = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -23,8 +25,14 @@ struct ProfileSetupView: View {
                 Spacer()
                 Button(action: {
                     HapticManager.light()
-                    // Skip profile setup — go directly home
-                    isLoggedIn = true
+                    Task {
+                        await viewModel.saveProfile(fullName: fullName, phoneNumber: phoneNumber, isChildMode: isChildMode)
+                        await MainActor.run {
+                            isLoggedIn = true
+                            BiometricAuthService.shared.isBiometricLoginEnabled = true
+                            UserDefaults.standard.set(FirebaseManager.currentUID, forKey: "biometricUserID")
+                        }
+                    }
                 }) {
                     Text("Skip")
                         .foregroundColor(.gray)
@@ -150,6 +158,38 @@ struct ProfileSetupView: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(16)
                     .padding(.horizontal, 24)
+
+                    if viewModel.isLocationEnabled {
+                        VStack(spacing: 12) {
+                            Button(action: { showLocationPicker = true }) {
+                                HStack {
+                                    Image(systemName: "map")
+                                    Text("Pick Your Location on the Map")
+                                }
+                                .foregroundColor(AppTheme.Colors.primary)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(16)
+                                .shadow(color: Color.black.opacity(0.04), radius: 5, x: 0, y: 2)
+                            }
+
+                            if let coordinate = viewModel.selectedLocation {
+                                Text("Selected coordinates: \(String(format: "%.4f", coordinate.latitude)), \(String(format: "%.4f", coordinate.longitude))")
+                                    .font(AppTheme.Typography.footnote)
+                                    .foregroundColor(.gray)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 24)
+                            } else if !viewModel.location.isEmpty {
+                                Text(viewModel.location)
+                                    .font(AppTheme.Typography.footnote)
+                                    .foregroundColor(.gray)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 24)
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                    }
                 }
                 .padding(.bottom, 120) // Spacing for floating button
             }
@@ -159,13 +199,31 @@ struct ProfileSetupView: View {
             VStack(spacing: 16) {
                 PrimaryButton(title: "Finish Setup →", action: {
                     HapticManager.light()
-                    navigateToFamily = true
+                    Task {
+                        await viewModel.saveProfile(fullName: fullName, phoneNumber: phoneNumber, markLoggedIn: true, isChildMode: isChildMode)
+                        await MainActor.run {
+                            isLoggedIn = true
+                            BiometricAuthService.shared.isBiometricLoginEnabled = true
+                            UserDefaults.standard.set(FirebaseManager.currentUID, forKey: "biometricUserID")
+                        }
+                    }
                 }, isLoading: viewModel.isLoading)
 
-                NavigationLink(
-                    destination: AddFamilyMemberView(),
-                    isActive: $navigateToFamily
-                ) { EmptyView() }
+                Button(action: {
+                    HapticManager.light()
+                    Task {
+                        await viewModel.saveProfile(fullName: fullName, phoneNumber: phoneNumber, isChildMode: isChildMode)
+                        await MainActor.run {
+                            isLoggedIn = true
+                            BiometricAuthService.shared.isBiometricLoginEnabled = true
+                            UserDefaults.standard.set(FirebaseManager.currentUID, forKey: "biometricUserID")
+                        }
+                    }
+                }) {
+                    Text("Skip and Continue")
+                        .font(AppTheme.Typography.subheadline)
+                        .foregroundColor(AppTheme.Colors.primary)
+                }
 
                 Text("You can update these details anytime in Settings.")
                     .font(AppTheme.Typography.footnote)
@@ -189,6 +247,9 @@ struct ProfileSetupView: View {
         .sheet(isPresented: $showLibraryPicker) {
             ImagePicker(image: $viewModel.selectedImage, sourceType: .photoLibrary)
                 .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showLocationPicker) {
+            LocationPickerView(selectedCoordinate: $viewModel.selectedLocation, locationText: $viewModel.location)
         }
     }
 }

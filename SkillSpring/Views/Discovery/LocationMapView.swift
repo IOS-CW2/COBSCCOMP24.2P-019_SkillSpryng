@@ -69,13 +69,15 @@ struct LocationMapView: View {
                             .accessibilityElement(children: .combine)
                             .accessibilityLabel("Search nearby skills")
 
-                            Button(action: {}) {
+                            Button(action: {
+                                Task { await viewModel.loadNearbyUsers() }
+                            }) {
                                 Image(systemName: "slider.horizontal.3")
                                     .foregroundColor(.primary)
                                     .padding(12)
                                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
                             }
-                            .accessibilityLabel("Filter map")
+                            .accessibilityLabel("Refresh nearby learners")
                         }
                         .padding(.horizontal)
                         .padding(.top, 8)
@@ -130,7 +132,13 @@ struct LocationMapView: View {
             }
         }
         .ignoresSafeArea(edges: .bottom)
-        .onAppear { viewModel.requestPermission() }
+        .onAppear {
+            print("[LocationMapView] 🗺️ View appeared")
+            Task { @MainActor in
+                await viewModel.loadNearbyUsers()
+                viewModel.requestPermission()
+            }
+        }
     }
 
     // MARK: - Bottom Sheet
@@ -179,28 +187,61 @@ struct LocationMapView: View {
             .padding(.horizontal)
             .accessibilityLabel("\(viewModel.nearbySkills.count) learners nearby. Swipe up to see full list.")
 
-            // Horizontal scroll of compact user cards
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(viewModel.nearbySkills) { skill in
-                        NearbyUserCard(skill: skill, viewModel: viewModel)
+            // Content Area
+            if viewModel.isLoadingPins {
+                // Loading state
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .tint(AppTheme.Colors.primary)
+                    Text("Discovering nearby learners...")
+                        .font(AppTheme.Typography.subheadline)
+                        .foregroundColor(.gray)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 32)
+            } else if viewModel.nearbySkills.isEmpty {
+                // Empty state
+                VStack(spacing: 12) {
+                    Image(systemName: "mappin.slash")
+                        .font(.system(size: 32))
+                        .foregroundColor(.gray.opacity(0.5))
+                    Text("No learners found nearby")
+                        .font(AppTheme.Typography.subheadline)
+                        .foregroundColor(.gray)
+                    Button(action: {
+                        Task { await viewModel.refreshProfiles() }
+                    }) {
+                        Text("Try again")
+                            .font(AppTheme.Typography.footnote)
+                            .foregroundColor(AppTheme.Colors.primary)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 12)
-            }
-
-            if sheetExpanded {
-                // Vertical list when expanded
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 32)
+            } else {
+                // Horizontal scroll of compact user cards
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
                         ForEach(viewModel.nearbySkills) { skill in
-                            NearbyUserRow(skill: skill, viewModel: viewModel)
-                            Divider().padding(.leading, 72)
+                            NearbyUserCard(skill: skill, viewModel: viewModel)
                         }
                     }
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
                 }
-                .padding(.bottom, 24)
+
+                if sheetExpanded {
+                    // Vertical list when expanded
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 0) {
+                            ForEach(viewModel.nearbySkills) { skill in
+                                NearbyUserRow(skill: skill, viewModel: viewModel)
+                                Divider().padding(.leading, 72)
+                            }
+                        }
+                    }
+                    .padding(.bottom, 24)
+                }
             }
 
             Spacer(minLength: 0)
@@ -286,12 +327,7 @@ struct NearbyUserCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                Image(skill.profile.imageUrl)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 44, height: 44)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(AppTheme.Colors.primary, lineWidth: 2.5))
+                SmartAvatar(imageUrl: skill.profile.imageUrl, width: 44, height: 44)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(skill.name)
@@ -345,12 +381,7 @@ struct NearbyUserRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(skill.profile.imageUrl)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 52, height: 52)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(AppTheme.Colors.primary, lineWidth: 2.5))
+            SmartAvatar(imageUrl: skill.profile.imageUrl, width: 52, height: 52)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(skill.name)
@@ -415,11 +446,7 @@ struct SkillPinView: View {
                             .stroke(AppTheme.Colors.primary, lineWidth: 3)
                     )
 
-                Image(skill.profile.imageUrl)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: isSelected ? 52 : 38, height: isSelected ? 52 : 38)
-                    .clipShape(Circle())
+                SmartAvatar(imageUrl: skill.profile.imageUrl, width: isSelected ? 52 : 38, height: isSelected ? 52 : 38)
             }
 
             // Pin triangle
@@ -443,12 +470,7 @@ struct SelectedSkillCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(skill.profile.imageUrl)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 48, height: 48)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(AppTheme.Colors.primary, lineWidth: 2.5))
+            SmartAvatar(imageUrl: skill.profile.imageUrl, width: 48, height: 48)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(skill.name)

@@ -29,7 +29,10 @@ final class ProfileViewModel: ObservableObject {
     /// If Firestore is unavailable, falls back to locally cached Core Data data.
     func loadProfile() async {
         isLoading = true
-        if let fetched = await FirebaseDataService.shared.fetchCurrentUser() {
+        if var fetched = await FirebaseDataService.shared.fetchCurrentUser() {
+            if let cached = PersistenceService.shared.fetchUser(), fetched.profileImageURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                fetched.profileImageURL = cached.profileImageURL
+            }
             user = fetched
             // Write-through: keep the local Core Data cache fresh so the
             // offline path always has the most recent profile available.
@@ -40,6 +43,14 @@ final class ProfileViewModel: ObservableObject {
             user = cached
         }
         isLoading = false
+    }
+
+    /// Manually refresh the profile from the server.
+    /// Called when user taps the refresh button or when location permissions change.
+    func refreshProfile() async {
+        // Add a small delay to ensure any background tasks have completed
+        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2s
+        await loadProfile()
     }
 
     // MARK: - Save Profile to Firestore
@@ -81,6 +92,8 @@ final class ProfileViewModel: ObservableObject {
         do {
             let url = try await FirebaseStorageService.shared.uploadProfileImage(image)
             user.profileImageURL = url
+            PersistenceService.shared.saveUser(user)
+            try await FirebaseDataService.shared.saveUser(user)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -181,7 +194,7 @@ final class ProfileViewModel: ObservableObject {
 
     /// Signs the user out locally and clears the login flag.
     func signOut() {
-        try? FirebaseManager.shared.signOut()
+        // try? FirebaseManager.shared.signOut()  // Keep Firebase signed in for biometric re-auth
         UserDefaults.standard.set(false, forKey: "skillspryng.isLoggedIn")
     }
 }

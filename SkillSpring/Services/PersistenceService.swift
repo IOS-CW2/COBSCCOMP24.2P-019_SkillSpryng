@@ -36,7 +36,12 @@ class PersistenceService {
             localUser.experienceLevel = user.experienceLevel
             localUser.location = user.location
             localUser.bio = user.bio
-            localUser.profileImageURL = user.profileImageURL
+            let incomingProfileImageURL = user.profileImageURL.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !incomingProfileImageURL.isEmpty {
+                localUser.profileImageURL = user.profileImageURL
+            } else if localUser.profileImageURL == nil || localUser.profileImageURL?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == true {
+                localUser.profileImageURL = user.profileImageURL
+            }
             localUser.role = user.role
             localUser.level = Int16(user.level)
             localUser.karmaPoints = Int32(user.karmaPoints)
@@ -175,6 +180,7 @@ class PersistenceService {
                     title:          title,
                     instructorName: local.instructorName ?? "",
                     instructorRole: local.instructorRole ?? "",
+                    instructorId:   nil,  // TODO: Add to Core Data model
                     date:           local.date ?? "",
                     time:           local.time ?? "",
                     duration:       local.duration ?? "",

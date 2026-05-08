@@ -9,6 +9,7 @@ struct EventsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = "Events"
     @State private var selectedFilter = "All"
+    @State private var selectedEvent: Event? = nil
     let filters = ["All", "Free", "Paid", "Online", "Nearby"]
     @ObservedObject var vm: LearningViewModel = LearningViewModel()
 
@@ -30,13 +31,15 @@ struct EventsView: View {
                 )
                 
                 // Courses/Events Selector (Redundant if called from CoursesView but kept for standalone)
-                HStack(spacing: 0) {
+                HStack(spacing: 8) {
                     Button(action: { dismiss() }) {
                         Text("Courses")
                             .font(AppTheme.Typography.subheadline)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                            .foregroundColor(.gray)
+                            .padding(.vertical, 12)
+                            .background(selectedTab == "Courses" ? AppTheme.Colors.primary : Color.clear)
+                            .foregroundColor(selectedTab == "Courses" ? .white : .gray)
+                            .clipShape(Capsule())
                     }
                     .accessibilityAddTraits(selectedTab == "Courses" ? .isSelected : [])
                     
@@ -44,19 +47,16 @@ struct EventsView: View {
                         Text("Events")
                             .font(AppTheme.Typography.subheadline)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                            .background(AppTheme.Colors.primary.opacity(0.1))
-                            .foregroundColor(AppTheme.Colors.primary)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(AppTheme.Colors.primary, lineWidth: 1)
-                            )
+                            .padding(.vertical, 12)
+                            .background(selectedTab == "Events" ? AppTheme.Colors.primary : Color.clear)
+                            .foregroundColor(selectedTab == "Events" ? .white : .gray)
+                            .clipShape(Capsule())
                     }
                     .accessibilityAddTraits(selectedTab == "Events" ? .isSelected : [])
                 }
-                .padding(4)
+                .padding(6)
                 .background(Color(.systemGray6))
-                .cornerRadius(12)
+                .cornerRadius(28)
                 .padding(.horizontal)
                 .padding(.bottom)
             }
@@ -93,6 +93,10 @@ struct EventsView: View {
                         if let event = vm.happeningSoonEvent {
                             EventHeroCard(event: event)
                                 .padding(.horizontal)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedEvent = event
+                                }
                         }
                     }
                     
@@ -105,7 +109,11 @@ struct EventsView: View {
                         
                         VStack(spacing: 16) {
                             ForEach(vm.upcomingEvents) { event in
-                                UpcomingEventRow(event: event)
+                                Button(action: { selectedEvent = event }) {
+                                    UpcomingEventRow(event: event)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .accessibilityHint("Tap to view details for \(event.title).")
                             }
                         }
                         .padding(.horizontal)
@@ -116,6 +124,95 @@ struct EventsView: View {
             }
         }
         .navigationBarHidden(true)
+        .sheet(item: $selectedEvent) { event in
+            EventDetailSheet(event: event)
+        }
+    }
+}
+
+// MARK: - Event Detail Sheet
+
+struct EventDetailSheet: View {
+    let event: Event
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 24) {
+                    Image(event.imageUrl)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 260)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+                        .cornerRadius(24)
+                        .shadow(color: Color.black.opacity(0.12), radius: 15, x: 0, y: 10)
+
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text(event.title)
+                            .font(AppTheme.Typography.largeTitle)
+                            .lineLimit(3)
+                        Text("Hosted by \(event.instructor)")
+                            .font(AppTheme.Typography.title3)
+                            .foregroundColor(.gray)
+
+                        HStack(spacing: 12) {
+                            Text(event.date)
+                                .font(AppTheme.Typography.subheadline)
+                            Text(event.time)
+                                .font(AppTheme.Typography.subheadline)
+                                .foregroundColor(AppTheme.Colors.primary)
+                        }
+
+                        Text(event.location)
+                            .font(AppTheme.Typography.caption)
+                            .foregroundColor(.secondary)
+
+                        Text("Tap below to join this event and receive a local notification when your spot is requested.")
+                            .font(AppTheme.Typography.body)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.horizontal)
+
+                    VStack(spacing: 14) {
+                        Button(action: {
+                            NotificationManager.shared.scheduleBookingRequestSent(instructorName: event.instructor)
+                            dismiss()
+                        }) {
+                            Text("Request Spot")
+                                .font(AppTheme.Typography.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(AppTheme.Colors.primary)
+                                .foregroundColor(.white)
+                                .cornerRadius(16)
+                        }
+
+                        Button(action: { dismiss() }) {
+                            Text("Close")
+                                .font(AppTheme.Typography.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color(.systemGray5))
+                                .foregroundColor(.primary)
+                                .cornerRadius(16)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.top)
+                .padding(.bottom, 32)
+            }
+            .navigationTitle("Event Preview")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
     }
 }
 
@@ -134,15 +231,12 @@ struct EventHeroCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack(alignment: .topTrailing) {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(.systemGray6))
+                Image(event.imageUrl)
+                    .resizable()
+                    .scaledToFill()
                     .frame(height: 200)
-                    .overlay(
-                        Image(systemName: "desktopcomputer") // Placeholder for 1D image
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray.opacity(0.3))
-                            .accessibilityHidden(true)
-                    )
+                    .clipped()
+                    .cornerRadius(20)
                 
                 if event.isFree {
                     Text("FREE")
@@ -231,6 +325,11 @@ struct EventHeroCard: View {
                             isJoining = false
                             if eventId != nil {
                                 hasJoined = true
+                                NotificationManager.shared.scheduleBookingConfirmation(
+                                    sessionTitle: event.title,
+                                    instructorName: event.instructor,
+                                    time: event.time
+                                )
                                 HapticManager.success()
                             } else {
                                 alertMessage = "Failed to add workshop to your calendar."
@@ -308,26 +407,27 @@ struct UpcomingEventRow: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemGray6))
-                .frame(width: 70, height: 70)
-                .overlay(Image(systemName: "calendar").foregroundColor(.gray))
+            Image(event.imageUrl)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 80, height: 80)
+                .clipped()
+                .cornerRadius(18)
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(event.title)
                     .font(AppTheme.Typography.headline)
-                HStack {
-                    Text("\(event.date) • \(event.time)")
-                    Spacer()
-                }
-                .font(.caption)
-                .foregroundColor(AppTheme.Colors.primary)
+                    .lineLimit(2)
                 
-                HStack {
+                Text("\(event.date) • \(event.time)")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(AppTheme.Colors.primary)
+                
+                HStack(spacing: 6) {
                     Image(systemName: "mappin.circle.fill")
                     Text(event.location)
                 }
-                .font(.caption2)
+                .font(AppTheme.Typography.caption2)
                 .foregroundColor(.gray)
             }
             
@@ -336,6 +436,9 @@ struct UpcomingEventRow: View {
             Image(systemName: "chevron.right")
                 .foregroundColor(.gray)
         }
+        .padding(12)
+        .background(Color(.systemGray6))
+        .cornerRadius(24)
         .accessibilityElement(children: .combine)
     }
 }

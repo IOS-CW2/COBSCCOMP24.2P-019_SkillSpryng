@@ -164,6 +164,33 @@ final class NotificationManagerTests: XCTestCase {
         waitForExpectations(timeout: 2)
     }
 
+    func test_scheduleSessionCancelled_doesNotCrash() {
+        // Act
+        sut.scheduleSessionCancelled(
+            sessionId: "test-session-id",
+            sessionTitle: "UI Review Session",
+            instructorName: "Marcus"
+        )
+
+        // Assert
+        XCTAssertTrue(true, "scheduleSessionCancelled must not throw or crash.")
+    }
+
+    func test_scheduleMatchAccepted_doesNotCrash() {
+        sut.scheduleMatchAccepted(requesterName: "Avery")
+        XCTAssertTrue(true, "scheduleMatchAccepted must not throw or crash.")
+    }
+
+    func test_scheduleMatchDeclined_doesNotCrash() {
+        sut.scheduleMatchDeclined(requesterName: "Avery")
+        XCTAssertTrue(true, "scheduleMatchDeclined must not throw or crash.")
+    }
+
+    func test_scheduleMatchCancelled_doesNotCrash() {
+        sut.scheduleMatchCancelled(recipientName: "Morgan")
+        XCTAssertTrue(true, "scheduleMatchCancelled must not throw or crash.")
+    }
+
     // MARK: - cancelNotification
 
     func test_cancelNotification_removesSpecificPendingRequest() {

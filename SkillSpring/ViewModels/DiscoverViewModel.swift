@@ -42,17 +42,26 @@ final class DiscoverViewModel: ObservableObject {
         isLoading = false
     }
 
+    /// Refreshes the profiles from Firestore.
+    func refreshProfiles() async {
+        profiles = await FirebaseDataService.shared.fetchProfiles()
+    }
+
     // MARK: - Derived
 
     /// Filtered skill recommendations based on selected category and search text.
     var filteredSkills: [RecommendedSkill] {
-        let byCat = selectedCategory == "All Learners"
+        let search = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let filtered = selectedCategory == "All Learners"
             ? recommendedSkills
             : recommendedSkills.filter { $0.category.localizedCaseInsensitiveContains(selectedCategory) }
-        guard !searchText.isEmpty else { return byCat }
-        return byCat.filter {
-            $0.title.localizedCaseInsensitiveContains(searchText) ||
-            $0.instructor.localizedCaseInsensitiveContains(searchText)
+
+        guard !search.isEmpty else { return filtered }
+        return filtered.filter {
+            $0.title.localizedCaseInsensitiveContains(search) ||
+            $0.instructor.localizedCaseInsensitiveContains(search) ||
+            $0.category.localizedCaseInsensitiveContains(search) ||
+            $0.price.localizedCaseInsensitiveContains(search)
         }
     }
 

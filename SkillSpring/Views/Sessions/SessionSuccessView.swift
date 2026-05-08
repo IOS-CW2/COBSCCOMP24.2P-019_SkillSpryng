@@ -19,6 +19,20 @@ struct SessionSuccessView: View {
         return formatter.string(from: viewModel.selectedDate)
     }
 
+    private var sessionLocationLabel: String {
+        viewModel.isOnline ? "MEETING LINK" : "LOCATION"
+    }
+
+    private var sessionLocationValue: String {
+        if viewModel.isOnline {
+            return "google.com/asdf-ghjk"
+        }
+        if !viewModel.selectedVenueName.isEmpty {
+            return viewModel.selectedVenueName
+        }
+        return viewModel.instructor.location.isEmpty ? "Selected Venue" : viewModel.instructor.location
+    }
+
     /// Calculates the session end time by adding selectedDuration minutes to
     /// the parsed selectedTime string. Replaces the previous hardcoded "11:30 AM".
     private var computedEndTime: String {
@@ -85,21 +99,23 @@ struct SessionSuccessView: View {
                 Divider()
                 
                 HStack {
-                    Image(systemName: "video.fill")
+                    Image(systemName: viewModel.isOnline ? "video.fill" : "mappin.circle.fill")
                         .foregroundColor(AppTheme.Colors.primary)
-                    Text("MEETING LINK")
+                    Text(sessionLocationLabel)
                         .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
-                    Text("google.com/asdf-ghjk")
+                    Text(sessionLocationValue)
                         .font(AppTheme.Typography.badge)
-                    Button(action: {
-                        UIPasteboard.general.string = "google.com/asdf-ghjk"
-                        withAnimation { linkCopied = true }
-                    }) {
-                        Text(linkCopied ? "Copied!" : "Copy")
-                            .font(AppTheme.Typography.badge)
-                            .foregroundColor(linkCopied ? .gray : AppTheme.Colors.primary)
+                    if viewModel.isOnline {
+                        Button(action: {
+                            UIPasteboard.general.string = sessionLocationValue
+                            withAnimation { linkCopied = true }
+                        }) {
+                            Text(linkCopied ? "Copied!" : "Copy")
+                                .font(AppTheme.Typography.badge)
+                                .foregroundColor(linkCopied ? .gray : AppTheme.Colors.primary)
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -154,7 +170,7 @@ struct SessionSuccessView: View {
                             startDate: startDate,
                             durationMinutes: viewModel.selectedDuration,
                             format: viewModel.isOnline ? "ONLINE" : "IN-PERSON",
-                            locationName: viewModel.isOnline ? nil : "Agreed Location",
+                            locationName: viewModel.isOnline ? nil : sessionLocationValue,
                             latitude: viewModel.isOnline ? nil : 6.9271,
                             longitude: viewModel.isOnline ? nil : 79.8612,
                             sessionId: UUID().uuidString
