@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - BookingRequestSentView
+// Confirmation screen displayed after a booking request is sent.
+// Shows the session summary, instructor details, and calendar integration.
 struct BookingRequestSentView: View {
     let instructor: MatchProfile
     let sessionDate: Date   // Real date object
@@ -15,6 +18,7 @@ struct BookingRequestSentView: View {
     @State private var alertMessage = ""
     
     // Formatted date string for display
+    // Converts the selected Date object into a friendly label.
     private var formattedDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE, MMM d"

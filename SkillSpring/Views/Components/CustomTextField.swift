@@ -1,3 +1,5 @@
+// MARK: - CustomTextField
+// Custom text field wrapper with floating labels and validation styles.
 import SwiftUI
 
 struct CustomTextField: View {

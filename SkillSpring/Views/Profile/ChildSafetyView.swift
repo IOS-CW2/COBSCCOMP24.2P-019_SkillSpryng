@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - ChildSafetyView
+// Parental / child safety settings screen.
+// Allows a parent to unlock advanced controls or keeps the child experience
+// locked behind a PIN and safe-by-default preferences.
 struct ChildSafetyView: View {
     @StateObject private var profileVM = ProfileViewModel()
     @State private var isAdultMode = false

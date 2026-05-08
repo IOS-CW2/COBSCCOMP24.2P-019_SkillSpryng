@@ -1,6 +1,10 @@
 import SwiftUI
 import StoreKit
 
+// MARK: - PremiumView
+// Subscription purchase screen that presents SkillSpryng Pro plans.
+// Handles plan selection, price display, StoreKit purchases, restores,
+// and success feedback through an overlay toast.
 struct PremiumView: View {
     @StateObject private var storeKit = StoreKitService.shared
     @State private var selectedPlan: PlanType = .monthly
@@ -155,6 +159,8 @@ struct PremiumView: View {
                 .padding(.horizontal)
 
                 // MARK: Price Display
+                // Shows the currently selected plan price and any savings
+                // for choosing the yearly subscription.
                 VStack(spacing: 6) {
                     if selectedPlan == .monthly {
                         Text(storeKit.proMonthly?.displayPrice ?? "$6.99")
@@ -251,6 +257,7 @@ struct PremiumView: View {
                     }
 
                     // Restore Purchases
+                    // Reconnects the app with previous StoreKit subscriptions.
                     Button(action: {
                         Task { await storeKit.restorePurchases() }
                     }) {

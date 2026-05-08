@@ -1,9 +1,10 @@
 import Foundation
 import Combine
 
-// MARK: - MessagesViewModel
-// Drives NotificationsView — conversations loaded from Firestore via FirebaseDataService.
-
+/// Manages the messages inbox and conversation filters for the Notifications tab.
+///
+/// Loads conversation threads, applies search and unread filters, and exposes
+/// today/yesterday sections for the UI.
 @MainActor
 final class MessagesViewModel: ObservableObject {
 
@@ -27,6 +28,7 @@ final class MessagesViewModel: ObservableObject {
 
     // MARK: - Data Loading
 
+    /// Loads conversation threads from Firestore and updates loading state.
     func loadConversations() async {
         isLoading = true
         allConversations = await FirebaseDataService.shared.fetchConversations()

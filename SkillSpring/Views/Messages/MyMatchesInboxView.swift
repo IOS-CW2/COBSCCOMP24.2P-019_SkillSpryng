@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - MyMatchesInboxView
+// Inbox-style match management screen for incoming, active, and archived partnerships.
+// Includes segmented tab navigation and contextual action cards for each match state.
 struct MyMatchesInboxView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var discoverVM = DiscoverViewModel()
@@ -72,6 +75,8 @@ struct MyMatchesInboxView: View {
 }
 
 // MARK: - Requests Tab
+/// Displays incoming and outgoing match requests with action buttons.
+/// Users can accept or decline incoming requests, and cancel sent requests.
 struct RequestsView: View {
     @ObservedObject var discoverVM: DiscoverViewModel
     var body: some View {
@@ -101,6 +106,7 @@ struct RequestsView: View {
 }
 
 // MARK: - Active Tab
+/// Shows current active match relationships and quick access to messaging or booking.
 struct ActiveMatchesView: View {
     @ObservedObject var discoverVM: DiscoverViewModel
     var body: some View {
@@ -113,6 +119,7 @@ struct ActiveMatchesView: View {
 }
 
 // MARK: - Archived Tab
+/// Displays archived matches and provides information about retention timing.
 struct ArchivedMatchesView: View {
     @ObservedObject var discoverVM: DiscoverViewModel
     var body: some View {
@@ -137,10 +144,14 @@ struct ArchivedMatchesView: View {
     }
 }
 
+/// Represents the current lifecycle state for a match card.
 enum InboxCardType {
     case incoming, sent, active, archived
 }
 
+/// Card row used throughout the match inbox.
+/// The actions and decoration adapt to match state: incoming requests, sent invites,
+/// active conversations, and archived history.
 struct InboxMatchCard: View {
     let profile: MatchProfile
     let type: InboxCardType

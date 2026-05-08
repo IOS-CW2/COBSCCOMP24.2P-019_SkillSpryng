@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - PhoneVerificationView
+// OTP verification screen for users who are signing in with phone authentication.
+// Shows the code entry fields, verification button, resend action, and
+// navigation to the success confirmation view when verification completes.
 struct PhoneVerificationView: View {
     @ObservedObject var viewModel: AuthViewModel
     @Environment(\.presentationMode) var presentationMode
@@ -9,6 +13,7 @@ struct PhoneVerificationView: View {
         VStack(spacing: 24) {
             
             // Header
+            // Provides a back button and title for the OTP verification flow.
             AppHeader(title: "Phone Verification", backAction: { presentationMode.wrappedValue.dismiss() })
                 .padding(.top, 10)
             
@@ -29,6 +34,7 @@ struct PhoneVerificationView: View {
                     .multilineTextAlignment(.center)
             }
             
+            // Verification action
             PrimaryButton(title: "Verify", action: {
                 HapticManager.light()
                 viewModel.verifyCode()

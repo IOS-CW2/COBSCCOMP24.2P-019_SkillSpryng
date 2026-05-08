@@ -1,36 +1,15 @@
 // MARK: - AccessibilityHelper.swift
-// SkillSpryng Accessibility Foundation
+// SkillSpryng accessibility helpers
 //
-// WCAG 2.1 AA Compliance — verified colour contrast ratios:
+// This file provides reusable view modifiers and helpers to make the app
+// easier to use with VoiceOver and accessible touch targets.
 //
-//   AppTheme.Colors.primary (#276EF1) on white (#FFFFFF)
-//   Relative luminance: L1 = 0.196 (blue), L2 = 1.0 (white)
-//   Contrast ratio = (1.0 + 0.05) / (0.196 + 0.05)  ≈  4.27:1  ✅ AA (≥ 4.5:1 for normal text)
-//   NOTE: Primary on white is AA for large text (≥ 3:1) and passes for UI components (≥ 3:1).
-//         For body text use AppTheme.Colors.textPrimary (#111111) on white: ratio ≈ 18.1:1 ✅ AAA.
-//
-//   AppTheme.Colors.primary (#276EF1) on dark (#0F2027)
-//   Relative luminance: L1 = 0.196 (blue), L2 = 0.012 (dark)
-//   Contrast ratio = (0.196 + 0.05) / (0.012 + 0.05)  ≈  3.97:1  ✅ AA Large / UI components
-//
-//   Gray text (#8E8E93) on white (#FFFFFF) — secondary labels
-//   Relative luminance: L1 = 0.275, L2 = 1.0
-//   Contrast ratio ≈  3.54:1  ✅ AA Large / UI components
-//
-// WCAG guidelines applied:
-//   1.1.1 Non-text Content — all images have text alternatives
-//   1.3.1 Info and Relationships — form labels programmatically associated
-//   1.4.3 Contrast (Minimum) — text ≥ 4.5:1, large text/UI ≥ 3:1
-//   2.5.5 Target Size — minimum 44×44 pt (52pt in Child Mode)
-//   4.1.2 Name, Role, Value — all interactive elements labelled
-//
-// Provides reusable View modifiers and helpers to ensure WCAG 2.1 AA compliance
-// across the entire app:
-//   • VoiceOver labels, hints, and traits
-//   • Minimum 44×44pt touch targets (52pt in Child Mode)
-//   • Grouped card elements
-//   • Dynamic announcement support
-//   • Permission-denied guidance views (location, notifications, calendar)
+// It includes:
+//   - VoiceOver labels and hints
+//   - Minimum touch target support
+//   - Grouped card accessibility
+//   - Dynamic announcements
+//   - Permission guidance views for denied access
 
 import SwiftUI
 
@@ -123,6 +102,8 @@ extension View {
 
 private struct OptionalHintModifier: ViewModifier {
     let hint: String?
+
+    /// Applies an accessibility hint only when one is provided.
     func body(content: Content) -> some View {
         if let hint = hint {
             content.accessibilityHint(hint)
@@ -134,6 +115,8 @@ private struct OptionalHintModifier: ViewModifier {
 
 private struct OptionalButtonTraitModifier: ViewModifier {
     let isButton: Bool
+
+    /// Adds the button trait if the view should behave like a button.
     func body(content: Content) -> some View {
         if isButton {
             content.accessibilityAddTraits(.isButton)
@@ -217,6 +200,7 @@ struct PermissionDeniedView: View {
     let type: PermissionType
     var onDismiss: (() -> Void)? = nil
 
+    /// Builds the permission denial UI with title, details, and action buttons.
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: type.icon)
@@ -293,9 +277,12 @@ func openAppSettings() {
 ///   colorContrastRatio(foreground: .init(hex: "111111"), background: .white)  // ≈ 18.1
 @discardableResult
 func colorContrastRatio(foreground: UIColor, background: UIColor) -> Double {
+    /// Returns the relative luminance for the given color.
     func luminance(_ color: UIColor) -> Double {
         var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
         color.getRed(&r, green: &g, blue: &b, alpha: nil)
+
+        /// Converts a color channel to linear luminance.
         func lin(_ v: CGFloat) -> Double {
             let d = Double(v)
             return d <= 0.04045 ? d / 12.92 : pow((d + 0.055) / 1.055, 2.4)

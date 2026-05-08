@@ -6,6 +6,10 @@ import Combine
 // All data loaded from Firestore via FirebaseDataService.
 
 @MainActor
+/// Manages reward-related data for the Rewards tab.
+///
+/// Loads leaderboard standings, badges, milestones, missions, mastery progress,
+/// credit packs, and analytics stats from Firestore.
 final class RewardsViewModel: ObservableObject {
 
     // MARK: - Published State
@@ -30,6 +34,7 @@ final class RewardsViewModel: ObservableObject {
     }
 
     func loadData() async {
+        /// Loads all rewards and gamification data in parallel to keep the UI responsive.
         isLoading = true
         
         // Fire parallel requests 

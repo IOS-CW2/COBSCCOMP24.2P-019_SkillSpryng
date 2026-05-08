@@ -1,6 +1,10 @@
 import SwiftUI
 import PhotosUI
 
+// MARK: - ChatDetailView
+// Conversation detail screen for one-to-one messaging.
+// Handles chat history rendering, input controls, image attachment flows,
+// and participant action shortcuts like calling or viewing contact info.
 struct ChatDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let conversation: Conversation
@@ -325,6 +329,9 @@ private struct FlowLayout<Item: Hashable, Content: View>: View {
 
 // MARK: - MessageBubble
 
+/// Renders a single chat message bubble in the conversation thread.
+/// Supports text, image, and attachment styles, with left/right layout
+/// based on the sender.
 struct MessageBubble: View {
     let message: ChatMessage
 

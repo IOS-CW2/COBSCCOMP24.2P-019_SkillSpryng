@@ -1,3 +1,5 @@
+// MARK: - CallControlBar
+// Live session control bar with mute, camera and hangup buttons.
 import SwiftUI
 
 struct CallControlBar: View {

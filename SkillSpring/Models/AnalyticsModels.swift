@@ -1,7 +1,7 @@
 import Foundation
 
-// MARK: - AnalyticsData
-// Top-level container for all data shown on the Learning Pulse (Analytics) dashboard.
+/// Container for all analytics data displayed on the Learning Pulse dashboard.
+/// Includes user streaks, session history, focus time, and skill progress tracking.
 struct AnalyticsData: Codable {
     let streakDays: Int
     let sessionsCount: Int
@@ -12,16 +12,16 @@ struct AnalyticsData: Codable {
     let skillProgress: [SkillProgress]
 }
 
-// MARK: - GrowthPoint
-// A single data point in the Growth Trajectory graph (one per day).
+/// A single data point in the Growth Trajectory graph.
+/// Each point represents one day's activity level or progress.
 struct GrowthPoint: Identifiable, Codable {
     var id: String = UUID().uuidString
     let day: String
     let value: Double
 }
 
-// MARK: - SkillProgress
-// Represents a user's progress in a specific skill (shown as a progress bar).
+/// Tracks a user's progress in a specific skill.
+/// Displayed as progress bars showing how close they are to proficiency in each skill.
 struct SkillProgress: Identifiable, Codable {
     var id: String = UUID().uuidString
     let name: String
@@ -29,7 +29,7 @@ struct SkillProgress: Identifiable, Codable {
     let level: String
 }
 
-// MARK: - MatchRequest
+/// Status of a skill exchange request between two users.
 enum MatchRequestStatus: String, Codable {
     case pending   = "pending"
     case accepted  = "accepted"
@@ -37,6 +37,8 @@ enum MatchRequestStatus: String, Codable {
     case cancelled = "cancelled"
 }
 
+/// Represents a request from one user to exchange skills with another.
+/// Includes scheduling details for the planned session.
 struct MatchRequest: Identifiable, Codable {
     var id: String = UUID().uuidString
     var fromUserId: String
@@ -49,14 +51,14 @@ struct MatchRequest: Identifiable, Codable {
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
     var message: String = ""
-    // Scheduling metadata written by BookingViewModel at request creation
+    /// Session details captured at request creation by BookingViewModel
     var scheduledDate: Date? = nil
     var scheduledTime: String? = nil
     var durationMinutes: Int? = nil
     var isOnline: Bool? = nil
 }
 
-// MARK: - CreditTransaction
+/// Types of transactions in the user's wallet.
 enum TransactionType: String, Codable {
     case sessionPayment  = "session_payment"
     case sessionEarning  = "session_earning"
@@ -65,6 +67,8 @@ enum TransactionType: String, Codable {
     case rewardBonus     = "reward_bonus"
 }
 
+/// Records a credit transaction in the user's wallet history.
+/// Used for audit trail and balance reconciliation.
 struct CreditTransaction: Identifiable, Codable {
     var id: String = UUID().uuidString
     var amount: Int
@@ -75,7 +79,7 @@ struct CreditTransaction: Identifiable, Codable {
     var createdAt: Date = Date()
 }
 
-// MARK: - AppNotification
+/// Types of in-app notifications users can receive.
 enum AppNotificationType: String, Codable {
     case matchRequest      = "match_request"
     case sessionReminder   = "session_reminder"
@@ -86,6 +90,8 @@ enum AppNotificationType: String, Codable {
     case systemAlert       = "system_alert"
 }
 
+/// Notification that gets delivered to the user.
+/// Tracks read status and references related objects.
 struct AppNotification: Identifiable, Codable {
     var id: String = UUID().uuidString
     var type: AppNotificationType

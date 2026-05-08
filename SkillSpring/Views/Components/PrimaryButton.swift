@@ -1,3 +1,5 @@
+// MARK: - PrimaryButton
+// Primary action button used across the app for CTA actions.
 import SwiftUI
 
 /// Primary call-to-action button.

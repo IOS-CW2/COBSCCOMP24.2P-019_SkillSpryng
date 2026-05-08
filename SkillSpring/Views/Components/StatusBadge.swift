@@ -1,3 +1,5 @@
+// MARK: - StatusBadge
+// Compact badge for session, status, and type labels.
 import SwiftUI
 
 struct StatusBadge: View {

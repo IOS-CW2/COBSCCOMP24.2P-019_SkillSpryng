@@ -14,6 +14,10 @@ import Combine
 // 6. Force-quit and relaunch to verify restorePurchases / checkSubscriptionStatus
 
 @MainActor
+/// Manages StoreKit 2 product loading, purchases, restores, and subscription status.
+///
+/// Handles both Pro subscription entitlements and consumable credit packs,
+/// and syncs purchase state to Firebase and local persistence.
 class StoreKitService: ObservableObject {
 
     static let shared = StoreKitService()
@@ -45,6 +49,8 @@ class StoreKitService: ObservableObject {
     }
 
     // MARK: - FUNCTION 1: loadProducts
+    /// Loads available StoreKit products for subscriptions and credit packs.
+    /// Populates `proMonthly`, `proYearly`, and `creditPacks` for the UI.
     func loadProducts() async {
         do {
             let productIds = Set([
@@ -77,6 +83,8 @@ class StoreKitService: ObservableObject {
     }
 
     // MARK: - FUNCTION 2: purchase
+    /// Starts a purchase flow for the selected product and handles the result.
+    /// Returns true only if the purchase completed successfully.
     func purchase(_ product: Product) async -> Bool {
         isPurchasing = true
         purchaseError = nil
@@ -171,6 +179,8 @@ class StoreKitService: ObservableObject {
     }
 
     // MARK: - FUNCTION 6: restorePurchases
+    /// Restores all previously purchased entitlements and credit packs.
+    /// Re-applies any active StoreKit transactions to the app state.
     func restorePurchases() async {
         for await result in Transaction.currentEntitlements {
             if let transaction = try? checkVerified(result) {

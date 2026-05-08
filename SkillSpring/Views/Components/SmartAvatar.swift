@@ -1,3 +1,5 @@
+// MARK: - SmartAvatar
+// Avatar component that chooses placeholder styling based on user state.
 import SwiftUI
 
 // MARK: - SmartAvatar

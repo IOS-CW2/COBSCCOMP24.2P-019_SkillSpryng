@@ -113,7 +113,8 @@ struct MentorSessionRequestView: View {
                             Button(action: {
                                 isAccepting = true
                                 Task {
-                                    // Accept the pending MatchRequest in Firestore + notify learner
+                                    // Accept the pending match request in Firestore.
+                                    // This also triggers notification delivery to the requesting learner.
                                     await FirebaseDataService.shared.acceptIncomingMatch(fromUserId: profile.id)
                                     isAccepting = false
                                     isAccepted = true
@@ -168,7 +169,8 @@ struct MentorSessionRequestView: View {
         }
         .sheet(isPresented: $showDeclineSheet) {
             DeclineReasonSheet {
-                // Decline the pending MatchRequest in Firestore + notify learner
+                // Decline the pending match request and send a polite notification
+                // that the instructor is unavailable for this time.
                 Task {
                     await FirebaseDataService.shared.declineIncomingMatch(fromUserId: profile.id)
                     HapticManager.error()

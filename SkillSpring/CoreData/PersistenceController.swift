@@ -1,11 +1,18 @@
 import CoreData
 import Combine
 
+/// Manages the Core Data stack for the app.
+///
+/// This controller creates a shared persistent container and optionally
+/// supports an in-memory store for previews or tests.
 struct PersistenceController {
     static let shared = PersistenceController()
 
     let container: NSPersistentContainer
 
+    /// Creates the Core Data container and loads the store.
+    ///
+    /// - Parameter inMemory: When true, the store is set up in memory instead of on disk.
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "SkillSpringModel")
         if inMemory {

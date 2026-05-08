@@ -50,6 +50,9 @@ private let mockMeetingSpots: [MeetingSpot] = [
 
 // MARK: - MeetingSpotView
 
+// MARK: - MeetingSpotView
+// Venue selection screen for in-person sessions. Uses local search
+// to suggest safe public venues near the user's current location.
 struct MeetingSpotView: View {
 
     /// Called when the user selects a meeting spot.

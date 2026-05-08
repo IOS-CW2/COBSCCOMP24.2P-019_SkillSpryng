@@ -1,13 +1,19 @@
 import SwiftUI
 
+/// Shows a detailed match profile for a selected instructor or learner.
+///
+/// Displays skills, availability, ratings, reviews, and quick actions to message
+/// or book a session with this match.
 struct MatchDetailView: View {
     let profile: MatchProfile
     @State private var showAllReviews = false
     @State private var showReportSheet = false
     @Environment(\.dismiss) private var dismiss
     
-    /// Build a live Conversation from this MatchProfile.
-    /// In production, MessagesViewModel fetches or creates this in Firestore.
+    /// Build a temporary Conversation object for starting a new chat.
+    ///
+    /// In production, the Messaging layer will replace this with a Firestore-backed
+    /// conversation record when the user opens the chat screen.
     private var conversation: Conversation {
         let participant = User(
             id: profile.id,
@@ -53,6 +59,7 @@ struct MatchDetailView: View {
                 }
                 
                 // Name & Stats Row
+                // Shows the profile headline, role, online presence, and location.
                 VStack(spacing: 8) {
                     Text(profile.fullName)
                         .font(AppTheme.Typography.title)
@@ -78,6 +85,7 @@ struct MatchDetailView: View {
                 .accessibilityLabel("\(profile.fullName). \(profile.role). \(profile.onlineStatus ? "Online" : "Offline"). In \(profile.city).")
                 
                 // Match Badge
+                // Highlights the skill compatibility score for this profile.
                 HStack {
                     Image(systemName: "bolt.fill")
                     Text("\(profile.matchPercentage)% SKILL MATCH")
@@ -92,6 +100,7 @@ struct MatchDetailView: View {
                 .accessibilityElement(children: .combine)
                 
                 // Teach & Learn
+                // Displays what the match can teach and what they want to learn.
                 HStack(alignment: .top, spacing: 20) {
                     VStack(alignment: .leading, spacing: 12) {
                         SectionHeader(title: "CAN TEACH")
@@ -120,6 +129,7 @@ struct MatchDetailView: View {
                 .padding(.horizontal)
                 
                 // About
+                // Shows the match's bio and a personal introduction.
                 VStack(alignment: .leading, spacing: 12) {
                     Text("About \(profile.fullName.split(separator: " ").first ?? "")")
                         .font(.headline)
@@ -133,6 +143,7 @@ struct MatchDetailView: View {
                 .padding(.horizontal)
                 
                 // Availability
+                // Displays daily availability, next open slot, and match history.
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Availability")
                         .font(.headline)
@@ -180,6 +191,7 @@ struct MatchDetailView: View {
                 .padding(.horizontal)
                 
                 // Reviews
+                // Shows the top reviewer feedback and a link to view all reviews.
                 VStack(alignment: .leading, spacing: 16) {
                     SectionHeader(title: "REVIEWS", actionTitle: "See All Reviews", action: { showAllReviews = true })
                     
@@ -232,6 +244,7 @@ struct MatchDetailView: View {
         }
     }
     
+    /// Small stat card used in the profile header for sessions, rating, and response time.
     struct DetailStatCard: View {
         let title: String
         let value: String

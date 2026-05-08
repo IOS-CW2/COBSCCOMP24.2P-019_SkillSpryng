@@ -1,3 +1,5 @@
+// MARK: - BenefitCard
+// Single benefit card used in subscription and onboarding flows.
 import SwiftUI
 
 struct BenefitCard: View {

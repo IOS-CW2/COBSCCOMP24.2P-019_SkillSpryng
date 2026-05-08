@@ -305,6 +305,7 @@ final class DataSeeder: DataSeedingService {
         await seedUserGamification()
     }
 
+/// Seeds public gamification.
     private func seedPublicGamification() async {
         let collections = [
             ("rewardBadges", mock.rewardBadges.map { try? Firestore.Encoder().encode($0) }),
@@ -326,6 +327,7 @@ final class DataSeeder: DataSeedingService {
         try? await batch.commit()
     }
 
+/// Seeds user gamification.
     private func seedUserGamification() async {
         guard let uid else { return }
         let userRef = db.collection("users").document(uid).collection("gamification")

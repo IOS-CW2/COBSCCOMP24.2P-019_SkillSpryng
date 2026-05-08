@@ -1,6 +1,8 @@
 import Foundation
 import CoreData
 
+/// Mock implementation of FirebaseService used for local testing and previews.
+/// Provides deterministic behavior without hitting actual Firebase services.
 final class MockFirebaseService: FirebaseService {
     func sendPhoneNumberOTP(phoneNumber: String) async throws -> String {
         // Return a deterministic verification ID for UI testing.

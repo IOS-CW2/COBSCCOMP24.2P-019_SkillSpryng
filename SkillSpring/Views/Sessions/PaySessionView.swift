@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - PaySessionView
+// Modal payment review screen that shows SKP balance, pricing breakdown,
+// and confirms the booking transaction.
 struct PaySessionView: View {
     @ObservedObject var viewModel: BookingViewModel
     @Environment(\.dismiss) private var dismiss

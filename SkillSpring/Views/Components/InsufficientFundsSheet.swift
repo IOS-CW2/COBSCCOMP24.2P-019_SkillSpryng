@@ -1,3 +1,5 @@
+// MARK: - InsufficientFundsSheet
+// Bottom sheet shown when the user needs to top up their wallet.
 import SwiftUI
 
 struct InsufficientFundsSheet: View {

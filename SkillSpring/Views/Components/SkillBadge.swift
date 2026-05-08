@@ -1,3 +1,5 @@
+// MARK: - SkillBadge
+// Styled badge for skill labels, learning categories, and info tags.
 import SwiftUI
 
 struct SkillBadge: View {

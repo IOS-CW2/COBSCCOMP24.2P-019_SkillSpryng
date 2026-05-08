@@ -1,3 +1,5 @@
+// MARK: - MilestoneRow
+// Row view for showing milestone completion or progress checkpoints.
 import SwiftUI
 
 struct MilestoneRow: View {

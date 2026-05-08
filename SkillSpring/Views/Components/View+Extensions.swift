@@ -1,3 +1,5 @@
+// MARK: - View+Extensions
+// SwiftUI view extensions that add helper modifiers used throughout the app.
 import SwiftUI
 
 extension View {

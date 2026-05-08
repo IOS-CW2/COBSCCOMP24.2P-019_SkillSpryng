@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - MySkillsView
+// Provides a tabbed view of the user's skills, separating what they teach
+// from what they want to learn, with quick actions to add skills and find mentors.
 struct MySkillsView: View {
     @State private var selectedTab = "Teaching"
     @StateObject private var vm = ProfileViewModel()

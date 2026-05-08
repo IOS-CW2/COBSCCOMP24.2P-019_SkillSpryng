@@ -1,5 +1,9 @@
 import SwiftUI
 
+// MARK: - LeaderboardView
+// Leaderboard experience for the Rewards section.
+// Displays weekly and all-time rankings, podium positions,
+// and the user's own progress in the community.
 struct LeaderboardView: View {
     @State private var selectedTab = "Weekly"
     @Environment(\.dismiss) var dismiss
@@ -21,6 +25,7 @@ struct LeaderboardView: View {
             AppHeader(title: "Leaderboard", backAction: { dismiss() })
             
             // Tab Switcher Refinement
+            // Lets the user filter between weekly standings and all-time rankings.
             HStack(spacing: 0) {
                 ForEach(["Weekly", "All Time"], id: \.self) { tab in
                     Button(action: { selectedTab = tab }) {

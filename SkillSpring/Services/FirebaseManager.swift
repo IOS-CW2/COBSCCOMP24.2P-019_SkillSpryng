@@ -32,6 +32,10 @@ class PhoneAuthUIDelegate: NSObject, AuthUIDelegate {
 }
 
 @MainActor
+/// Handles Firebase authentication and Firestore user persistence.
+///
+/// Implements the shared FirebaseService protocol so the app can swap
+/// between real Firebase and mock services during testing.
 class FirebaseManager: FirebaseService {
     static let shared = FirebaseManager()
     
@@ -100,6 +104,8 @@ class FirebaseManager: FirebaseService {
     
     // MARK: - Core Data Persistence
     
+    /// Caches the authenticated user locally in Core Data.
+    /// This is used to support offline access and faster app startup.
     private func saveUserLocally(_ user: User) {
         let context = PersistenceController.shared.container.viewContext
         
@@ -127,6 +133,7 @@ class FirebaseManager: FirebaseService {
         }
     }
     
+    /// Returns the locally cached user profile from Core Data, if available.
     func fetchLocalUser() -> LocalUser? {
         let context = PersistenceController.shared.container.viewContext
         let fetchRequest: NSFetchRequest<LocalUser> = NSFetchRequest<LocalUser>(entityName: "LocalUser")

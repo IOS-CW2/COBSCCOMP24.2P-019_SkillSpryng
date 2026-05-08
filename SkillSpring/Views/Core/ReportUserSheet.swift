@@ -2,15 +2,21 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
 
+/// A bottom-sheet reporting form used when a user flags another profile.
+///
+/// This view collects the report reason, optional details, and an optional
+/// block toggle. It then writes the report to Firestore and dismisses itself.
 struct ReportUserSheet: View {
     let reportedUserId: String
     let reportedUserName: String
     
+    // MARK: - Local state for the reporting form
     @State private var selectedReason: String? = "Harassment or hate speech" // Default per mockup
     @State private var details: String = ""
     @State private var blockUser: Bool = true // Default per mockup
     @Environment(\.dismiss) var dismiss
     
+    // MARK: - Supported report reasons shown as selectable options
     let reasons = [
         "Spam or misleading",
         "Harassment or hate speech",
@@ -30,6 +36,7 @@ struct ReportUserSheet: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
                     
+                    // Header block explaining why this report screen exists.
                     VStack(spacing: 8) {
                         Text("Report User")
                             .font(AppTheme.Typography.title3)
@@ -63,6 +70,8 @@ struct ReportUserSheet: View {
                     .accessibilityElement(children: .combine)
                     
                     // Select Reason
+                    // The user chooses one reason that best describes the issue.
+                    // This selection is required to help moderation triage the report.
                     VStack(alignment: .leading, spacing: 16) {
                         Text("SELECT A REASON")
                             .font(AppTheme.Typography.badge)
@@ -110,6 +119,7 @@ struct ReportUserSheet: View {
                     }
                     
                     // Additional Details
+                    // Optional free-form text that lets the reporter explain the incident.
                     VStack(alignment: .leading, spacing: 12) {
                         Text("ADDITIONAL DETAILS")
                             .font(AppTheme.Typography.badge)
@@ -134,6 +144,8 @@ struct ReportUserSheet: View {
                     }
                     
                     // Block Toggle Card
+                    // Allows the reporter to immediately block the reported user.
+                    // This is separate from the moderation report itself.
                     HStack(spacing: 16) {
                         ZStack {
                             Circle()
@@ -165,6 +177,7 @@ struct ReportUserSheet: View {
                     .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.gray.opacity(0.1), lineWidth: 1))
                     
                     // Action Buttons
+                    // These two buttons either submit the report or close the sheet.
                     VStack(spacing: 12) {
                         Button(action: { submitReport() }) {
                             Text("Submit Report")
@@ -194,6 +207,11 @@ struct ReportUserSheet: View {
         .background(Color(.systemBackground))
     }
     
+    /// Saves the report to Firestore and then dismisses the sheet.
+    ///
+    /// This method captures the selected reason, any additional details,
+    /// the block preference, and the reporting user's UID.
+    /// If Firestore returns an error, it prints it to the console.
     private func submitReport() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()

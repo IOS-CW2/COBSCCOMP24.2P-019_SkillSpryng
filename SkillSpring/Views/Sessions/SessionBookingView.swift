@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - SessionBookingView
+// Booking flow screen where the learner chooses format, date, time,
+// venue (if in-person), and confirms payment or request submission.
 struct SessionBookingView: View {
     let instructor: MatchProfile
     @StateObject private var viewModel: BookingViewModel
@@ -299,6 +302,7 @@ struct SessionBookingView: View {
         .fullScreenCover(isPresented: $viewModel.showSuccess) {
             SessionSuccessView(viewModel: viewModel)
         }
+        // Show the request confirmation screen after successful booking.
         .fullScreenCover(isPresented: $viewModel.showRequestSent) {
             BookingRequestSentView(
                 instructor: instructor,

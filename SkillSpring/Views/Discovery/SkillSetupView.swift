@@ -1,5 +1,8 @@
 import SwiftUI
 
+/// Onboarding screen where new users select skills they can teach and learn.
+///
+/// Captures the user's growth path and creates a personalized profile setup flow.
 struct SkillSetupView: View {
     @StateObject private var viewModel = SkillSetupViewModel()
     
@@ -34,6 +37,7 @@ struct SkillSetupView: View {
                         .padding(.bottom, 10)
                     
                     VStack(alignment: .leading, spacing: 12) {
+                        // Teaching skills selection section.
                         HStack {
                             Text("Skills to Teach")
                                 .font(.headline)
@@ -66,6 +70,7 @@ struct SkillSetupView: View {
                     Divider()
                     
                     VStack(alignment: .leading, spacing: 12) {
+                        // Learning goals selection section.
                         HStack {
                             Text("Skills to Learn")
                                 .font(.headline)
@@ -98,6 +103,7 @@ struct SkillSetupView: View {
                     Divider()
                     
                     VStack(alignment: .leading, spacing: 12) {
+                        // Experience level selection controls.
                         Text("OVERALL EXPERIENCE LEVEL")
                             .font(.caption)
                             .foregroundColor(.gray)
@@ -124,6 +130,7 @@ struct SkillSetupView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {
+                        // Location input section for local or remote matching context.
                         HStack {
                             Text("Location")
                                 .font(.caption)
@@ -169,6 +176,8 @@ struct SkillSetupView: View {
         }
     }
     
+    /// A tappable chip used to select skills in the onboarding flow.
+    /// Selected chips display an "×" for easy deselection.
     struct SkillChip: View {
         var title: String
         var isSelected: Bool

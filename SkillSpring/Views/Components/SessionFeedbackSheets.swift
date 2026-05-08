@@ -1,3 +1,5 @@
+// MARK: - SessionFeedbackSheets
+// Rating and cancellation sheets for session feedback flows.
 import SwiftUI
 
 struct RateSessionSheet: View {

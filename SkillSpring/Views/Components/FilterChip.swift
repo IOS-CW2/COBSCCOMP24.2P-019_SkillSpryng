@@ -1,3 +1,5 @@
+// MARK: - FilterChip
+// Filter button chip for inline selection controls.
 import SwiftUI
 
 struct FilterChip: View {

@@ -1,3 +1,5 @@
+// MARK: - BadgeIcon
+// Compact badge icon used for lightweight status labels.
 import SwiftUI
 
 struct BadgeIcon: View {

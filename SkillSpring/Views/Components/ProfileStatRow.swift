@@ -1,3 +1,5 @@
+// MARK: - ProfileStatRow
+// Profile statistics row for user metrics like points and sessions.
 import SwiftUI
 
 struct ProfileStatRow: View {

@@ -1,6 +1,8 @@
 import SwiftUI
 import Combine
 
+/// Defines one onboarding card, including the hero image,
+/// headline, and supporting description text.
 struct OnboardingStep: Identifiable {
     let id = UUID()
     let image: String
@@ -8,6 +10,10 @@ struct OnboardingStep: Identifiable {
     let description: String
 }
 
+// MARK: - OnboardingView
+// Walks new users through a simple onboarding carousel.
+// Includes skip/next logic, auto-advance, page indicators, and
+// a final Get Started action that routes to sign in.
 struct OnboardingView: View {
     @State private var currentPage = 0
     @State private var navigateToSignIn = false
@@ -44,6 +50,8 @@ struct OnboardingView: View {
                     .padding(.top, 10)
                     
                     // Carousel
+                    // Auto-scrolls through onboarding steps on a timer,
+                    // but respects Reduce Motion accessibility settings.
                     TabView(selection: $currentPage) {
                         ForEach(0..<steps.count, id: \.self) { index in
                             OnboardingPage(step: steps[index])
@@ -67,6 +75,8 @@ struct OnboardingView: View {
                     .animation(reduceMotion ? nil : .easeInOut, value: currentPage)
                     
                     // Page Indicator & Footer
+                    // Shows the current onboarding progress and provides
+                    // a primary button that either advances or finishes onboarding.
                     VStack(spacing: 32) {
                         // Custom Pill Indicators
                         HStack(spacing: 8) {
@@ -108,6 +118,7 @@ struct OnboardingView: View {
     }
 }
 
+/// A single onboarding card showing the illustration, title, and supporting text.
 struct OnboardingPage: View {
     let step: OnboardingStep
     

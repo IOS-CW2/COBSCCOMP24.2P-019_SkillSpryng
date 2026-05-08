@@ -1,6 +1,10 @@
 import SwiftUI
 import Charts
 
+// MARK: - LearningAnalyticsView
+// Analytics dashboard for reward-focused learning data.
+// Shows streaks, growth trajectory charts, skill progress, and
+// focus metrics to help learners understand their performance.
 struct LearningAnalyticsView: View {
     @ObservedObject var vm: RewardsViewModel
     @Environment(\.dismiss) var dismiss
@@ -209,6 +213,8 @@ struct LearningAnalyticsView: View {
                     .padding(.horizontal)
                     
                     // Skill Progression Grid — driven by vm.analyticsData.skillProgress
+                    // Presents the user's current levels across top skills,
+                    // helping them see where their energy is paying off.
                     if !vm.analyticsData.skillProgress.isEmpty {
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Skill Progression")
@@ -272,6 +278,8 @@ struct LearningAnalyticsView: View {
     }
 
     // MARK: - Helpers
+    // Utility functions used only by the analytics screen to
+    // keep the visual components simple and focused.
 
     /// Derives a rank label from the user's karma position.
     /// Full leaderboard ranking requires the leaderboard array; for analytics

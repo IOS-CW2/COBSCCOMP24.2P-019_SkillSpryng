@@ -1,3 +1,5 @@
+// MARK: - ImagePicker
+// UIKit image picker wrapper used where SwiftUI image selection is needed.
 import SwiftUI
 import UIKit
 

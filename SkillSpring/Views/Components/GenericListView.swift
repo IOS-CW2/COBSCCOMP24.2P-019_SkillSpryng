@@ -1,3 +1,5 @@
+// MARK: - GenericListView
+// Generic list component used to display reusable cards with a title.
 import SwiftUI
 
 struct GenericListView: View {

@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - NotificationsView
+// Root Messages tab view that combines conversation previews, search/filter controls,
+// quick navigation to matches, calendar access, and notification-style cards.
 struct NotificationsView: View {
     @StateObject private var viewModel = MessagesViewModel()
     @State private var selectedConversation: Conversation?
@@ -168,6 +171,9 @@ struct NotificationsView: View {
     }
 }
 
+// MARK: - ConversationCard
+/// Displays a conversation preview row for the Messages feed.
+/// Includes avatar, recent message text, timestamp, and unread badge state.
 struct ConversationCard: View {
     let conversation: Conversation
     
@@ -227,6 +233,9 @@ struct ConversationCard: View {
     }
 }
 
+// MARK: - NotificationItemCard
+/// A stylized notification card used for match and session updates.
+/// Combines an icon/avatar, title, subtitle, and timestamp for quick scanning.
 struct NotificationItemCard: View {
     let title: String
     let subtitle: String

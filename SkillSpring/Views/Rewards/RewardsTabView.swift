@@ -1,5 +1,8 @@
 import SwiftUI
 
+// MARK: - RewardsTabView
+// Root screen for the Rewards tab. Combines achievement badges,
+// milestone summaries, leader previews, and navigation into analytics.
 struct RewardsTabView: View {
         @StateObject private var vm = RewardsViewModel()
     @State private var showLeaderboard = false
@@ -39,6 +42,7 @@ struct RewardsTabView: View {
                 .padding(.horizontal)
                 
                 // Mastery Hero Card Refinement
+                // Quick visual summary of mastery progress and high-level reward status.
                 MasteryHeroCard(data: vm.masteryData)
                     .padding(.horizontal)
                 

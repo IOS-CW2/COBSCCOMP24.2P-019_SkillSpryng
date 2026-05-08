@@ -39,6 +39,8 @@ class SkillSetupViewModel: ObservableObject {
         var id: String { self.rawValue }
     }
     
+    /// Adds or removes a teaching skill selection.
+    /// Uses `Set` semantics to avoid duplicate skill entries.
     func toggleTeachSkill(_ skill: String) {
         var copy = selectedTeachSkills
         if copy.contains(skill) {
@@ -49,6 +51,8 @@ class SkillSetupViewModel: ObservableObject {
         selectedTeachSkills = copy
     }
     
+    /// Adds or removes a learning skill selection.
+    /// The selected skill list is stored as a Set for uniqueness.
     func toggleLearnSkill(_ skill: String) {
         var copy = selectedLearnSkills
         if copy.contains(skill) {
@@ -59,6 +63,8 @@ class SkillSetupViewModel: ObservableObject {
         selectedLearnSkills = copy
     }
     
+    /// Finalizes the user's skill setup profile and saves it to Firestore.
+    /// Also caches the profile locally and seeds starter app data.
     func saveProfile(fullName: String, phoneNumber: String) {
         let user = User(
             fullName: fullName,

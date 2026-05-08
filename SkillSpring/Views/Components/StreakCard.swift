@@ -1,3 +1,5 @@
+// MARK: - StreakCard
+// Visual card for displaying learning streaks and momentum.
 import SwiftUI
 
 struct StreakCard: View {

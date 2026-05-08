@@ -1,5 +1,10 @@
 import SwiftUI
 
+// MARK: - LaunchView
+// Entry splash screen shown at app launch.
+// Displays the SkillSpryng logo, animated page indicator dots, and
+// transitions into onboarding after a short delay unless the user
+// has Reduce Motion enabled.
 struct LaunchView: View {
     @State private var isActive: Bool = false
     @State private var activeDotIndex: Int = 0

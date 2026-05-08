@@ -1,3 +1,5 @@
+// MARK: - PodiumMember
+// Podium row component to show ranked leaderboard members.
 import SwiftUI
 
 struct PodiumMember: View {

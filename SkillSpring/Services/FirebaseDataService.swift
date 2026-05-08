@@ -60,18 +60,21 @@ final class FirebaseDataService: DataService {
         return nil
     }
 
+/// Saves user.
     func saveUser(_ user: User) async throws {
         guard let uid else { throw NSError(domain: "FDS", code: -1) }
         var u = user; u.id = uid
         try db.collection("users").document(uid).setData(from: u, merge: true)
     }
 
+/// Updates wallet balance.
     func updateWalletBalance(_ newBalance: Int) async {
         guard let uid else { return }
         try? await db.collection("users").document(uid)
             .updateData(["walletBalance": newBalance])
     }
 
+/// Updates user location.
     func updateUserLocation(lat: Double, lon: Double) async {
         guard let uid else { return }
         try? await db.collection("users").document(uid)
@@ -151,6 +154,7 @@ final class FirebaseDataService: DataService {
             }
     }
 
+/// Stops listening for sessions.
     func stopListeningToSessions() {
         sessionListener?.remove()
         sessionListener = nil
@@ -225,6 +229,7 @@ final class FirebaseDataService: DataService {
         ))
     }
 
+/// Listens for incoming matches.
     func listenToIncomingMatches(onChange: @escaping ([MatchRequest]) -> Void) {
         guard let uid else {
             onChange([])
@@ -245,11 +250,13 @@ final class FirebaseDataService: DataService {
             }
     }
 
+/// Updates match status.
     func updateMatchStatus(_ matchId: String, status: MatchRequestStatus) async {
         try? await db.collection("matches").document(matchId)
             .updateData(["status": status.rawValue, "updatedAt": FieldValue.serverTimestamp()])
     }
 
+/// Fetches matches.
     func fetchMatches() async -> [MatchRequest] {
         guard let uid else { return [] }
         do {
@@ -271,6 +278,7 @@ final class FirebaseDataService: DataService {
             .setData(from: transaction)
     }
 
+/// Fetches transactions.
     func fetchTransactions() async -> [CreditTransaction] {
         guard let uid else { return [] }
         do {
@@ -304,11 +312,13 @@ final class FirebaseDataService: DataService {
             }
     }
 
+/// Stops listening for messages.
     func stopListeningToMessages(conversationId: String) {
         chatListeners[conversationId]?.remove()
         chatListeners.removeValue(forKey: conversationId)
     }
 
+/// Sends message.
     func sendMessage(_ message: ChatMessage, to conversationId: String) async {
         guard let uid else { return }
         // Write message to sub-collection
@@ -326,18 +336,21 @@ final class FirebaseDataService: DataService {
         ])
     }
 
+/// Creates conversation.
     func createConversation(_ conversation: Conversation, currentUserId: String) async {
         var data = (try? Firestore.Encoder().encode(conversation)) ?? [:]
         data["participantIds"] = [currentUserId, conversation.participant.id ?? UUID().uuidString]
         try? await db.collection("conversations").document(conversation.id).setData(data)
     }
 
+/// Performs mark message read.
     func markMessageRead(_ messageId: String, conversationId: String) async {
         try? await db.collection("conversations").document(conversationId)
             .collection("messages").document(messageId)
             .updateData(["isRead": true])
     }
 
+/// Deletes message.
     func deleteMessage(_ messageId: String, conversationId: String) async {
         // Soft delete
         try? await db.collection("conversations").document(conversationId)
@@ -345,6 +358,7 @@ final class FirebaseDataService: DataService {
             .updateData(["isDeleted": true, "text": "This message was deleted."])
     }
 
+/// Fetches conversations.
     func fetchConversations() async -> [Conversation] {
         guard let uid else { return MockDataProvider.shared.mockConversations }
         do {
@@ -376,6 +390,7 @@ final class FirebaseDataService: DataService {
         }
     }
 
+/// Seeds conversations.
     private func seedConversations(uid: String) async {
         let batch = db.batch()
         for conv in MockDataProvider.shared.mockConversations {
@@ -403,6 +418,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.allProfiles }
     }
 
+/// Seeds profiles.
     private func seedProfiles() async {
         let batch = db.batch()
         for profile in MockDataProvider.shared.allProfiles {
@@ -427,6 +443,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.recommendedSkills }
     }
 
+/// Fetches featured courses.
     func fetchFeaturedCourses() async -> [Course] {
         do {
             let snap = try await db.collection("courses")
@@ -436,6 +453,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.featuredCourses }
     }
 
+/// Fetches popular courses.
     func fetchPopularCourses() async -> [Course] {
         do {
             let snap = try await db.collection("courses")
@@ -445,6 +463,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.popularCourses }
     }
 
+/// Fetches learning path.
     func fetchLearningPath() async -> [Course] {
         guard let uid else { return MockDataProvider.shared.learningPath }
         do {
@@ -474,6 +493,7 @@ final class FirebaseDataService: DataService {
             .updateData(["progress": clamped, "updatedAt": FieldValue.serverTimestamp()])
     }
 
+/// Fetches upcoming events.
     func fetchUpcomingEvents() async -> [Event] {
         do {
             let snap = try await db.collection("events").getDocuments()
@@ -482,6 +502,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.upcomingEvents }
     }
 
+/// Seeds skills.
     private func seedSkills() async {
         let batch = db.batch()
         for skill in MockDataProvider.shared.recommendedSkills {
@@ -493,6 +514,7 @@ final class FirebaseDataService: DataService {
         try? await batch.commit()
     }
 
+/// Seeds courses.
     private func seedCourses() async {
         let batch = db.batch()
         for course in MockDataProvider.shared.featuredCourses {
@@ -508,6 +530,7 @@ final class FirebaseDataService: DataService {
         try? await batch.commit()
     }
 
+/// Seeds events.
     private func seedEvents() async {
         let batch = db.batch()
         for event in MockDataProvider.shared.upcomingEvents {
@@ -531,6 +554,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.leaderboardWeekly }
     }
 
+/// Seeds leaderboard.
     private func seedLeaderboard() async {
         let batch = db.batch()
         for entry in MockDataProvider.shared.leaderboardWeekly {
@@ -541,6 +565,7 @@ final class FirebaseDataService: DataService {
         try? await batch.commit()
     }
 
+/// Fetches reward badges.
     func fetchRewardBadges() async -> [RewardBadge] {
         do {
             let snap = try await db.collection("rewardBadges").getDocuments()
@@ -549,6 +574,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.rewardBadges }
     }
 
+/// Fetches milestones.
     func fetchMilestones() async -> [Milestone] {
         do {
             let snap = try await db.collection("milestones").getDocuments()
@@ -557,6 +583,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.milestones }
     }
 
+/// Fetches skill missions.
     func fetchSkillMissions() async -> [SkillMission] {
         do {
             let snap = try await db.collection("skillMissions").getDocuments()
@@ -565,6 +592,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.skillMissions }
     }
 
+/// Fetches credit packs.
     func fetchCreditPacks() async -> [CreditPack] {
         do {
             let snap = try await db.collection("creditPacks").getDocuments()
@@ -573,6 +601,7 @@ final class FirebaseDataService: DataService {
         } catch { return MockDataProvider.shared.creditPacks }
     }
 
+/// Fetches mastery data.
     func fetchMasteryData() async -> MasteryPoints {
         guard let uid else { return MockDataProvider.shared.masteryData }
         do {
@@ -583,6 +612,7 @@ final class FirebaseDataService: DataService {
         return MockDataProvider.shared.masteryData
     }
 
+/// Fetches analytics data.
     func fetchAnalyticsData() async -> AnalyticsData {
         guard let uid else { return MockDataProvider.shared.analyticsData }
         do {
@@ -601,6 +631,7 @@ final class FirebaseDataService: DataService {
     private let sessionCompletionPoints = 150
     private let teachingBonusPoints    = 50
 
+/// Performs award session completion points.
     func awardSessionCompletionPoints(sessionId: String) async {
         guard let uid else { return }
         let gamRef = db.collection("users").document(uid)
@@ -666,6 +697,7 @@ final class FirebaseDataService: DataService {
             .setData(from: notification)
     }
 
+/// Fetches notifications.
     func fetchNotifications() async -> [AppNotification] {
         guard let uid else { return [] }
         do {
@@ -678,6 +710,7 @@ final class FirebaseDataService: DataService {
         } catch { return [] }
     }
 
+/// Performs mark notification read.
     func markNotificationRead(_ notifId: String) async {
         guard let uid else { return }
         try? await db.collection("users").document(uid)

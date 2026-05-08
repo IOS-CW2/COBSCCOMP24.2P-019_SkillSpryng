@@ -1,3 +1,5 @@
+// MARK: - LeaderboardRow
+// Single row component for leaderboard placement and score display.
 import SwiftUI
 
 struct LeaderboardRow: View {

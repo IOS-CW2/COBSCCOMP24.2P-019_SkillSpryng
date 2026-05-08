@@ -1,9 +1,9 @@
 import Foundation
 import Combine
 
-// MARK: - LearningViewModel
-// Drives CoursesView and EventsView — data loaded from Firestore via FirebaseDataService.
-
+/// Drives the Learning tab by loading course and event content from Firestore.
+///
+/// Manages featured courses, popular classes, personal learning path, and upcoming events.
 @MainActor
 final class LearningViewModel: ObservableObject {
 
@@ -27,6 +27,7 @@ final class LearningViewModel: ObservableObject {
 
     // MARK: - Data Loading
 
+    /// Loads all learning content concurrently for the Home Learning screen.
     func loadData() async {
         isLoading = true
         async let courses   = FirebaseDataService.shared.fetchFeaturedCourses()
@@ -42,6 +43,7 @@ final class LearningViewModel: ObservableObject {
 
     var happeningSoonEvent: Event? { upcomingEvents.first }
 
+    /// Returns featured courses filtered by category selection.
     var filteredFeatured: [Course] {
         selectedCategory == "All"
             ? featuredCourses

@@ -1,6 +1,10 @@
 import SwiftUI
 import FirebaseFirestore
 
+// MARK: - AddFamilyMemberView
+// Allows the user to add a trusted family member or guardian.
+// This screen collects contact details and sends an invitation request
+// to be used for emergency contact and safety management.
 struct AddFamilyMemberView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var fullName = ""
@@ -120,6 +124,8 @@ struct AddFamilyMemberView: View {
                         .padding(.vertical, 10)
                     
                     // Bottom Buttons
+                    // Primary invitation action and a fallback skip option
+                    // so users can continue onboarding immediately.
                     VStack(spacing: 16) {
                         PrimaryButton(title: "Send Invitation", action: {
                             guard !fullName.isEmpty else { return }

@@ -4,10 +4,10 @@ import Combine
 import FirebaseFirestore
 import FirebaseAuth
 
-// MARK: - ChatViewModel
-// Manages a live message thread backed by a Firestore snapshot listener.
-// Architecture: ChatDetailView → ChatViewModel → FirebaseDataService → Firestore
-
+/// Manages a live chat conversation for SkillSpryng.
+///
+/// Attaches a Firestore listener for incoming messages, performs optimistic
+/// UI updates on send, and handles read / delete actions.
 @MainActor
 final class ChatViewModel: ObservableObject {
 
@@ -35,6 +35,8 @@ final class ChatViewModel: ObservableObject {
 
     // MARK: - Real-Time Listener
 
+    /// Subscribes to Firestore updates for the current conversation.
+    /// Live messages are mirrored immediately into the `messages` array.
     private func attachListener() {
         FirebaseDataService.shared.listenToMessages(
             conversationId: conversation.id
@@ -47,6 +49,8 @@ final class ChatViewModel: ObservableObject {
 
     // MARK: - Send Message
 
+    /// Sends a new chat message.
+    /// Performs an optimistic UI append before persisting to Firestore.
     func send(text: String) {
         let trimmed = text.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
@@ -74,6 +78,8 @@ final class ChatViewModel: ObservableObject {
 
     // MARK: - Delete Message (soft delete)
 
+    /// Marks a chat message as deleted in Firestore.
+    /// The UI can show a placeholder text for deleted entries.
     func deleteMessage(_ message: ChatMessage) {
         Task {
             await FirebaseDataService.shared.deleteMessage(message.id, conversationId: conversation.id)
@@ -82,6 +88,8 @@ final class ChatViewModel: ObservableObject {
 
     // MARK: - Mark Read
 
+    /// Marks a received message as read in Firestore.
+    /// Avoids updating messages the current user sent themself.
     func markRead(_ message: ChatMessage) {
         guard !message.isFromMe else { return }
         Task {
@@ -91,6 +99,8 @@ final class ChatViewModel: ObservableObject {
 
     // MARK: - Private Helpers
 
+    /// Shows a temporary typing indicator for 1.5 seconds.
+    /// This makes outgoing sends feel more responsive and alive.
     private func showTypingIndicator() {
         withAnimation(.easeInOut(duration: 0.3)) { isTyping = true }
         Task {

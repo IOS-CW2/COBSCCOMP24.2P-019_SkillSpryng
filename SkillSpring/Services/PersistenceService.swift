@@ -12,6 +12,10 @@ class PersistenceService {
     }
 
     /// Saves or updates the local user cache with the provided User data.
+    ///
+    /// The method fetches the existing LocalUser record if it exists, then maps
+    /// fields from the User struct into the Core Data entity.
+    /// Array values are stored as comma-separated strings for simplicity.
     func saveUser(_ user: User) {
         let fetchRequest: NSFetchRequest<LocalUser> = NSFetchRequest<LocalUser>(entityName: "LocalUser")
         fetchRequest.fetchLimit = 1
