@@ -22,6 +22,22 @@ class AuthViewModel: ObservableObject {
     @Published var navigateToSuccess: Bool = false
     @Published var navigateToSkillSetup: Bool = false
 
+    // MARK: - Validation
+
+    /// `true` when `phoneNumber` matches E.164 format: + followed by 7–15 digits.
+    /// Used by `SignInView` to disable the Send OTP button for malformed numbers.
+    var isPhoneNumberValid: Bool {
+        let e164Regex = #"^\+[1-9]\d{6,14}$"#
+        return phoneNumber.range(of: e164Regex, options: .regularExpression) != nil
+    }
+
+    /// Auto-formats a raw digit string with the leading + for display convenience.
+    /// Call this from `onChange` on the phone field if you want auto-prefixing.
+    func formatPhoneNumber(_ raw: String) {
+        let digits = raw.filter { $0.isNumber || $0 == "+" }
+        phoneNumber = digits.hasPrefix("+") ? digits : "+" + digits
+    }
+
     private let firebaseService: FirebaseService
     private let seederService: DataSeedingService
     private let dataService: DataService

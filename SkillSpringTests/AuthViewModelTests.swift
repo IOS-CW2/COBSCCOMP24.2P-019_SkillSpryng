@@ -39,6 +39,38 @@ final class AuthViewModelTests: XCTestCase {
         try await super.tearDown()
     }
 
+    // MARK: - isPhoneNumberValid
+
+    func test_isPhoneNumberValid_withValidE164_returnsTrue() {
+        sut.phoneNumber = "+94771234567"
+        XCTAssertTrue(sut.isPhoneNumberValid,
+                      "A valid E.164 Sri Lankan number must return true.")
+    }
+
+    func test_isPhoneNumberValid_withMissingPlus_returnsFalse() {
+        sut.phoneNumber = "94771234567"
+        XCTAssertFalse(sut.isPhoneNumberValid,
+                       "A number without leading + must fail E.164 validation.")
+    }
+
+    func test_isPhoneNumberValid_withEmptyString_returnsFalse() {
+        sut.phoneNumber = ""
+        XCTAssertFalse(sut.isPhoneNumberValid,
+                       "An empty string must fail E.164 validation.")
+    }
+
+    func test_isPhoneNumberValid_withTooShortNumber_returnsFalse() {
+        sut.phoneNumber = "+94123"   // Only 5 digits — below 7-digit minimum
+        XCTAssertFalse(sut.isPhoneNumberValid,
+                       "A number with fewer than 7 digits after country code must fail.")
+    }
+
+    func test_formatPhoneNumber_prependsPlusIfMissing() {
+        sut.formatPhoneNumber("94771234567")
+        XCTAssertTrue(sut.phoneNumber.hasPrefix("+"),
+                      "formatPhoneNumber must prepend + if the raw input lacks it.")
+    }
+
     // MARK: - sendOTP
 
     func test_sendOTP_withEmptyPhone_setsErrorMessage() {

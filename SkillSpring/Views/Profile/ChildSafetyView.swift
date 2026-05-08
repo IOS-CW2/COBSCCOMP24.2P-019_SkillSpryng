@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ChildSafetyView: View {
+    @StateObject private var profileVM = ProfileViewModel()
     @State private var isAdultMode = false
     @Environment(\.dismiss) var dismiss
     
@@ -157,11 +158,12 @@ struct ChildSafetyView: View {
                         }
                         
                         // Switch to Child View Toggle
-                        Button("Lock & Switch to Protected Child View") { 
+                        Button("Lock & Switch to Protected Child View") {
                             if savedPin.isEmpty {
                                 showingSetupPinAlert = true
                             } else {
-                                isAdultMode = false 
+                                isAdultMode = false
+                                Task { await profileVM.updateChildMode(enabled: true) }  // Firestore: child mode active
                             }
                         }
                         .font(AppTheme.Typography.headline)
@@ -196,6 +198,7 @@ struct ChildSafetyView: View {
             Button("Unlock", action: {
                 if enteredPin == savedPin {
                     isAdultMode = true
+                    Task { await profileVM.updateChildMode(enabled: false) }  // Firestore: parent is active
                 }
                 enteredPin = ""
             })

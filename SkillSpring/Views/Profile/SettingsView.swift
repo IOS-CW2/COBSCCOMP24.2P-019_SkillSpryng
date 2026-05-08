@@ -1,6 +1,4 @@
 import SwiftUI
-import FirebaseAuth
-import FirebaseFirestore
 
 struct SettingsView: View {
     @StateObject private var vm = ProfileViewModel()
@@ -193,14 +191,7 @@ struct SettingsView: View {
                                     ForEach(["Public", "Private", "Mutuals"], id: \.self) { option in
                                         Button(action: {
                                             profileVisibility = option
-                                            Task {
-                                                let currentUser = await FirebaseDataService.shared.fetchCurrentUser()
-                                                if let uid = currentUser?.id {
-                                                    try? await FirebaseDataService.shared.db
-                                                        .collection("users").document(uid)
-                                                        .updateData(["visibility": option.lowercased()])
-                                                }
-                                            }
+                                            Task { await vm.updateProfileVisibility(option) }
                                         }) {
                                             Text(option)
                                                 .padding(.horizontal, 12).padding(.vertical, 6)
@@ -296,6 +287,7 @@ struct SettingsView: View {
                 biometricService.errorMessage = nil
                 try? FirebaseManager.shared.signOut()
                 PersistenceService.shared.clearCache()
+                PersistenceService.shared.clearSessionCache()
                 NotificationManager.shared.cancelAllPendingNotifications()
                 isLoggedIn = false
             }
@@ -309,18 +301,9 @@ struct SettingsView: View {
                 HapticManager.error()
                 isDeletingAccount = true
                 Task {
-                    if let uid = Auth.auth().currentUser?.uid {
-                        try? await FirebaseDataService.shared.db
-                            .collection("users").document(uid).delete()
-                    }
-                    if let currentUser = Auth.auth().currentUser {
-                        try? await currentUser.delete()
-                    }
-                    await MainActor.run {
-                        isDeletingAccount = false
-                        PersistenceService.shared.clearCache()
-                        isLoggedIn = false
-                    }
+                    await vm.deleteAccount()
+                    isDeletingAccount = false
+                    isLoggedIn = false
                 }
             }
             Button("Cancel", role: .cancel) { }
