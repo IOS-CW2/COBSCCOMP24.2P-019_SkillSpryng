@@ -1,9 +1,12 @@
+// MARK: - OTPInputField
+// One-time password input component with separate digit fields.
 import SwiftUI
 
 struct OTPInputField: View {
     @Binding var verificationCode: String
     var numberOfDigits: Int = 6
     @FocusState private var isFocused: Bool
+    var accessibilityIdentifier: String? = nil
     
     var body: some View {
         ZStack {
@@ -17,11 +20,12 @@ struct OTPInputField: View {
                             .frame(width: 45, height: 55)
                         
                         Text(getDigit(at: index))
-                            .font(.system(size: 24, weight: .bold))
+                            .font(AppTheme.Typography.title2)
                             .foregroundColor(.black)
                     }
                 }
             }
+            .accessibilityHidden(true)
             
             // Hidden text field on top to capture all taps
             TextField("", text: $verificationCode)
@@ -31,6 +35,10 @@ struct OTPInputField: View {
                 .accentColor(.clear)
                 .foregroundColor(.clear)
                 .background(Color.clear)
+                .accessibilityLabel("Verification Code")
+                .accessibilityValue(verificationCode.isEmpty ? "Empty" : verificationCode.map { String($0) }.joined(separator: " "))
+                .accessibilityHint("Enter your \(numberOfDigits)-digit code")
+                .accessibilityIdentifier(accessibilityIdentifier ?? "")
                 .onChange(of: verificationCode) { newValue in
                     // Only allow digits
                     let filtered = newValue.filter { "0123456789".contains($0) }
@@ -59,10 +67,10 @@ struct OTPInputField: View {
     
     private func borderColor(at index: Int) -> Color {
         if index == verificationCode.count && isFocused {
-            return .green
+            return AppTheme.Colors.primary
         }
         if index < verificationCode.count {
-            return .green.opacity(0.5)
+            return AppTheme.Colors.primary.opacity(0.5)
         }
         return .gray.opacity(0.3)
     }

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<gpx>
+  <wpt lat="37.7891" lon="-122.3963">
+    <name>1 - Session Venue (Inside fence)</name>
+  </wpt>
+  <wpt lat="37.7895" lon="-122.3963">
+    <name>2 - Still inside (~40m)</name>
+  </wpt>
+  <wpt lat="37.7898" lon="-122.3963">
+    <name>3 - Near boundary (~80m)</name>
+  </wpt>
+  <wpt lat="37.7902" lon="-122.3963">
+    <name>4 - OUTSIDE fence (~120m) - EXIT fires here</name>
+  </wpt>
+  <wpt lat="37.7909" lon="-122.3963">
+    <name>5 - Far outside (~200m)</name>
+  </wpt>
+  <wpt lat="37.7898" lon="-122.3963">
+    <name>6 - Returning (~80m)</name>
+  </wpt>
+  <wpt lat="37.7891" lon="-122.3963">
+    <name>7 - Back at venue - RETURN fires here</name>
+  </wpt>
+</gpx>

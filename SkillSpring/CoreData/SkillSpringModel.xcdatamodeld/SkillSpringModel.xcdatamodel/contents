@@ -8,8 +8,38 @@
         <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="bio" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="profileImageURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="role" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="level" optional="YES" attributeType="Integer 16" defaultValueString="1" syncable="YES"/>
+        <attribute name="karmaPoints" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="sessionsCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="rating" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="awardsCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="walletBalance" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="isPro" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isChildMode" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="profileCompleteness" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="skillsToTeach" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="skillsToLearn" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="LocalSession" representedClassName="LocalSession" syncable="YES" codeGenerationType="class">
+        <attribute name="id"             optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="title"          optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="instructorName" optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="instructorRole" optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="date"           optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="time"           optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="duration"       optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="location"       optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="status"         optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="sessionType"    optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="category"       optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="notes"          optional="YES" attributeType="String"      syncable="YES"/>
+        <attribute name="scheduledAt"    optional="YES" attributeType="Date"        syncable="YES"/>
+        <attribute name="createdAt"      optional="YES" attributeType="Date"        syncable="YES"/>
+        <attribute name="calendarEventId" optional="YES" attributeType="String"     syncable="YES"/>
     </entity>
     <elements>
-        <element name="LocalUser" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="LocalUser"    positionX="-63" positionY="-18"  width="128" height="120"/>
+        <element name="LocalSession" positionX="120" positionY="-18"  width="128" height="120"/>
     </elements>
 </model>

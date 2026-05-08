@@ -76,6 +76,13 @@
             ReferencedContainer = "container:SkillSpring.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <LocationScenarioReference
+         identifier = "../../SkillSpring/SupportingFiles/colombo_geofence_test.gpx"
+         referenceType = "0">
+      </LocationScenarioReference>
+      <StoreKitConfigurationFileReference
+         identifier = "../LocalStore.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
