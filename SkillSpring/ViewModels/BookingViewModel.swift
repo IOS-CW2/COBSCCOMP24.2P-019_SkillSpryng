@@ -17,6 +17,13 @@ class BookingViewModel: ObservableObject {
     @Published var topicsAndGoals: String = ""
     @Published var selectedVenueName: String = ""
 
+    /// Uses the chosen venue when booking an in-person session.
+    var bookingLocation: String? {
+        guard !isOnline else { return nil }
+        if !selectedVenueName.isEmpty { return selectedVenueName }
+        return instructor.location.isEmpty ? nil : instructor.location
+    }
+
     // Payment State
     @Published var showPaymentSheet: Bool = false
     @Published var showInsufficientFunds: Bool = false
@@ -123,10 +130,11 @@ class BookingViewModel: ObservableObject {
                     title: "\(instructor.role) Session",
                     instructorName: instructor.fullName,
                     instructorRole: instructor.role,
+                    instructorId: instructor.id,  // Added instructor ID for reviews
                     date: formatter.string(from: sessionDate),
                     time: selectedTime,
                     duration: "\(selectedDuration) min",
-                    location: isOnline ? nil : instructor.location,
+                    location: bookingLocation,
                     distance: nil,
                     timeRemaining: "Upcoming",
                     status: .upcoming,
@@ -233,6 +241,33 @@ class BookingViewModel: ObservableObject {
                     isOnline: isOnline
                 )
                 try? await dataService.createMatch(match)
+
+                // Create a pending session record so the booking shows in My Sessions
+                let sessionDate = buildSessionDate(day: selectedDate, timeString: selectedTime)
+                let session = Session(
+                    title: "\(instructor.role) Session",
+                    instructorName: instructor.fullName,
+                    instructorRole: instructor.role,
+                    date: DateFormatter.localizedString(from: sessionDate, dateStyle: .medium, timeStyle: .none),
+                    time: selectedTime,
+                    duration: "\(selectedDuration) min",
+                    location: bookingLocation,
+                    distance: nil,
+                    timeRemaining: "Upcoming",
+                    status: .upcoming,
+                    type: isOnline ? .online : .inPerson,
+                    category: instructor.skillsToTeach.first ?? "Session",
+                    rating: nil,
+                    notes: topicsAndGoals.isEmpty ? nil : topicsAndGoals,
+                    matchPercentage: instructor.matchPercentage,
+                    scheduledAt: sessionDate
+                )
+                do {
+                    try await dataService.createSession(session)
+                    PersistenceService.shared.saveSession(session)
+                } catch {
+                    print("[Booking] free-request createSession error: \(error)")
+                }
 
                 // Write in-app notification
                 await dataService.createNotification(AppNotification(

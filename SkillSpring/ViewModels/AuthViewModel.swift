@@ -20,7 +20,6 @@ class AuthViewModel: ObservableObject {
 
     @Published var navigateToOTP: Bool = false
     @Published var navigateToSuccess: Bool = false
-    @Published var navigateToSkillSetup: Bool = false
 
     // MARK: - Validation
 
@@ -104,12 +103,11 @@ class AuthViewModel: ObservableObject {
                 if isNewUser {
                     // Create user profile in Firestore for the first time
                     await createUserProfile(uid: uid)
-                    self.navigateToSkillSetup = true
+                    self.navigateToSuccess = true
                 } else {
                     // Existing user — seed their data and go home
                     await seederService.seedAll()
                     UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
-                    self.navigateToSuccess = true
                 }
 
                 HapticManager.success()
@@ -146,7 +144,6 @@ class AuthViewModel: ObservableObject {
             )
             // Seed all collections for new user
             await seederService.seedAll()
-            UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
         } catch {
             print("[AuthViewModel] createUserProfile error: \(error.localizedDescription)")
         }
@@ -168,6 +165,11 @@ class AuthViewModel: ObservableObject {
                 // This mirrors the OTP login path and ensures sessions always appear
                 // even if the user previously authenticated only via biometrics.
                 await seederService.seedAll()
+                // Set simulator user ID for testing
+                if let storedUID = UserDefaults.standard.string(forKey: "biometricUserID") {
+                    FirebaseManager.shared.setSimulatorUserID(storedUID)
+                }
+                // Mark user as logged in to navigate to the main app
                 UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
             } else {
                 HapticManager.error()

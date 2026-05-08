@@ -8,8 +8,9 @@ struct SkillSetupView: View {
     
     var fullName: String
     var phoneNumber: String
+    var isChildOnboarding: Bool = false
     
-    @State private var navigateToProfileSetup = false
+    @State private var navigateToFamily = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -19,8 +20,10 @@ struct SkillSetupView: View {
                     HStack {
                         Spacer()
                         Button(action: {
-                            // Skip setup — mark as logged in, RootCoordinatorView switches to MainTabView
-                            UserDefaults.standard.set(true, forKey: "skillspryng.isLoggedIn")
+                            Task {
+                                await viewModel.saveProfile(fullName: fullName, phoneNumber: phoneNumber, isChildMode: isChildOnboarding)
+                                navigateToFamily = true
+                            }
                         }) {
                             Text("Skip")
                                 .foregroundColor(.gray)
@@ -161,12 +164,15 @@ struct SkillSetupView: View {
                         .font(.caption)
                         .multilineTextAlignment(.center)
                 }
-                
+
                 PrimaryButton(title: "Continue →", action: {
-                    navigateToProfileSetup = true
+                    Task {
+                        await viewModel.saveProfile(fullName: fullName, phoneNumber: phoneNumber, isChildMode: isChildOnboarding)
+                        navigateToFamily = true
+                    }
                 }, isLoading: viewModel.isLoading)
-                
-                NavigationLink(destination: ProfileSetupView(viewModel: viewModel, fullName: fullName, phoneNumber: phoneNumber), isActive: $navigateToProfileSetup) {
+
+                NavigationLink(destination: AddFamilyMemberView(viewModel: viewModel, fullName: fullName, phoneNumber: phoneNumber, isChildMode: isChildOnboarding), isActive: $navigateToFamily) {
                     EmptyView()
                 }
             }

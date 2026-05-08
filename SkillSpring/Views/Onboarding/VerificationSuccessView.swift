@@ -67,7 +67,7 @@ struct VerificationSuccessView: View {
             }
             .padding(.bottom, AppTheme.Spacing.xxl)
 
-            NavigationLink(destination: AgeVerificationView(), isActive: $navigateToAge) {
+            NavigationLink(destination: AgeVerificationView(fullName: viewModel.fullName, phoneNumber: viewModel.phoneNumber), isActive: $navigateToAge) {
                 EmptyView()
             }
         }

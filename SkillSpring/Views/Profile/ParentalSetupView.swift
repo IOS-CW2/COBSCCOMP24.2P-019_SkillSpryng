@@ -7,6 +7,8 @@ import FirebaseAuth
 // Writes approval requests to Firestore and then continues onboarding.
 struct ParentalSetupView: View {
     @Environment(\.presentationMode) var presentationMode
+    var fullName: String
+    var phoneNumber: String
     @State private var parentName = ""
     @State private var parentEmail = ""
     @State private var navigateToSkillSetup = false
@@ -131,7 +133,7 @@ struct ParentalSetupView: View {
                             .padding(.horizontal, 24)
 
                             NavigationLink(
-                                destination: SkillSetupView(fullName: "", phoneNumber: ""),
+                                destination: SkillSetupView(fullName: fullName, phoneNumber: phoneNumber, isChildOnboarding: true),
                                 isActive: $navigateToSkillSetup
                             ) { EmptyView() }
                             

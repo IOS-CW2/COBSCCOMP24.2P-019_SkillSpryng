@@ -11,6 +11,7 @@ struct SessionDetailView: View {
     @State private var showCancel = false
     @State private var showRemoveAlert = false
     @State private var showOptions = false
+    @State private var showReportSheet = false
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -215,7 +216,7 @@ struct SessionDetailView: View {
         }
         .confirmationDialog("Session Options", isPresented: $showOptions, titleVisibility: .visible) {
             Button("Report User", role: .destructive) {
-                // Placeholder
+                showReportSheet = true
             }
             if session.status == .upcoming {
                 Button("Cancel Session", role: .destructive) {
@@ -227,6 +228,14 @@ struct SessionDetailView: View {
             }
             Button("Cancel", role: .cancel) { }
         }
+        .sheet(isPresented: $showReportSheet) {
+            ReportUserSheet(
+                reportedUserId: session.instructorName,
+                reportedUserName: session.instructorName
+            )
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
 }
 

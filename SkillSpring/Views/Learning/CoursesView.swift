@@ -9,6 +9,7 @@ struct CoursesView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = "Courses" // Toggled with "Events"
     @State private var selectedCategory = "All"
+    @State private var selectedCourse: Course? = nil
     let categories = ["All", "Design", "Coding", "Music", "Languages", "Business"]
 
     @MainActor
@@ -26,7 +27,7 @@ struct CoursesView: View {
             // Header with Back Button and Search
             // This top bar is the fixed entry point for the learning section.
             AppHeader(
-                title: "Courses",
+                title: selectedTab,
                 backAction: { dismiss() },
                 actionIcon: "magnifyingglass",
                 action: { /* Search */ }
@@ -39,13 +40,10 @@ struct CoursesView: View {
                     Text("Courses")
                         .font(AppTheme.Typography.subheadline)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(selectedTab == "Courses" ? AppTheme.Colors.primary.opacity(0.1) : Color.clear)
+                        .padding(.vertical, 12)
+                        .background(selectedTab == "Courses" ? AppTheme.Colors.primary.opacity(0.18) : Color.clear)
                         .foregroundColor(selectedTab == "Courses" ? AppTheme.Colors.primary : .gray)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(selectedTab == "Courses" ? AppTheme.Colors.primary : Color.clear, lineWidth: 1)
-                        )
+                        .clipShape(Capsule())
                 }
                 .accessibilityAddTraits(selectedTab == "Courses" ? .isSelected : [])
                 
@@ -53,19 +51,16 @@ struct CoursesView: View {
                     Text("Events")
                         .font(AppTheme.Typography.subheadline)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(selectedTab == "Events" ? AppTheme.Colors.primary.opacity(0.1) : Color.clear)
+                        .padding(.vertical, 12)
+                        .background(selectedTab == "Events" ? AppTheme.Colors.primary.opacity(0.18) : Color.clear)
                         .foregroundColor(selectedTab == "Events" ? AppTheme.Colors.primary : .gray)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(selectedTab == "Events" ? AppTheme.Colors.primary : Color.clear, lineWidth: 1)
-                        )
+                        .clipShape(Capsule())
                 }
                 .accessibilityAddTraits(selectedTab == "Events" ? .isSelected : [])
             }
-            .padding(4)
+            .padding(6)
             .background(Color(.systemGray6))
-            .cornerRadius(12)
+            .cornerRadius(24)
             .padding(.horizontal)
             .padding(.bottom)
             
@@ -106,7 +101,11 @@ struct CoursesView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
                                     ForEach(vm.featuredCourses) { course in
-                                        FeaturedCourseCard(course: course)
+                                        Button(action: { selectedCourse = course }) {
+                                            FeaturedCourseCard(course: course)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        .accessibilityHint("Tap to view details for \(course.title).")
                                     }
                                 }
                                 .padding(.horizontal)
@@ -127,7 +126,11 @@ struct CoursesView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
                                     ForEach(vm.popularCourses) { course in
-                                        PopularCourseCard(course: course)
+                                        Button(action: { selectedCourse = course }) {
+                                            PopularCourseCard(course: course)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        .accessibilityHint("Tap to view details for \(course.title).")
                                     }
                                 }
                                 .padding(.horizontal)
@@ -147,7 +150,11 @@ struct CoursesView: View {
                             
                             VStack(spacing: 16) {
                                 ForEach(vm.learningPath) { course in
-                                    LearningPathCard(course: course)
+                                    Button(action: { selectedCourse = course }) {
+                                        LearningPathCard(course: course)
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    .accessibilityHint("Tap to view details for \(course.title).")
                                 }
                             }
                             .padding(.horizontal)
@@ -161,6 +168,96 @@ struct CoursesView: View {
             }
         }
         .navigationBarHidden(true)
+        .sheet(item: $selectedCourse) { course in
+            CourseDetailSheet(course: course)
+        }
+    }
+}
+
+// MARK: - Course Detail Sheet
+
+struct CourseDetailSheet: View {
+    let course: Course
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 24) {
+                    Image(course.imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 260)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+                        .cornerRadius(24)
+                        .shadow(color: Color.black.opacity(0.12), radius: 15, x: 0, y: 10)
+
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text(course.title)
+                            .font(AppTheme.Typography.largeTitle)
+                            .lineLimit(3)
+                        Text("By \(course.instructor)")
+                            .font(AppTheme.Typography.title3)
+                            .foregroundColor(.gray)
+
+                        HStack(spacing: 12) {
+                            Label("★ \(String(format: "%.1f", course.rating))", systemImage: "star.fill")
+                                .font(AppTheme.Typography.subheadline)
+                                .foregroundColor(.orange)
+                            Text(course.price)
+                                .font(AppTheme.Typography.subheadline)
+                                .foregroundColor(AppTheme.Colors.primary)
+                        }
+
+                        Text("Category: \(course.category)")
+                            .font(AppTheme.Typography.caption)
+                            .foregroundColor(.gray)
+
+                        Text("Tap below to request a session with this instructor and receive a confirmation notification.")
+                            .font(AppTheme.Typography.body)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.horizontal)
+
+                    VStack(spacing: 14) {
+                        Button(action: {
+                            NotificationManager.shared.scheduleBookingRequestSent(instructorName: course.instructor)
+                            dismiss()
+                        }) {
+                            Text("Request Session")
+                                .font(AppTheme.Typography.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(AppTheme.Colors.primary)
+                                .foregroundColor(.white)
+                                .cornerRadius(16)
+                        }
+
+                        Button(action: { dismiss() }) {
+                            Text("Close")
+                                .font(AppTheme.Typography.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color(.systemGray5))
+                                .foregroundColor(.primary)
+                                .cornerRadius(16)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.top)
+                .padding(.bottom, 32)
+            }
+            .navigationTitle("Course Preview")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
     }
 }
 
@@ -174,9 +271,12 @@ struct FeaturedCourseCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(.systemGray6))
+                Image(course.imageName)
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: 300, height: 180)
+                    .clipped()
+                    .cornerRadius(20)
                 
                 Text(course.category)
                     .font(AppTheme.Typography.badge)
@@ -237,9 +337,12 @@ struct PopularCourseCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.systemGray6))
+                Image(course.imageName)
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: 160, height: 100)
+                    .clipped()
+                    .cornerRadius(16)
                 
                 Text(course.category)
                     .font(AppTheme.Typography.badge)
@@ -282,27 +385,28 @@ struct LearningPathCard: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemGray6))
-                .frame(width: 100, height: 80)
-                .overlay(
-                    VStack {
-                        Spacer()
-                        if let progress = course.progress {
-                            ZStack(alignment: .leading) {
-                                Rectangle().fill(Color.white.opacity(0.3)).frame(height: 6)
-                                Rectangle().fill(Color.orange).frame(width: 100 * CGFloat(progress), height: 6)
-                            }
-                            .overlay(
-                                Text("\(Int(progress * 100))% DONE")
-                                    .font(AppTheme.Typography.badge)
-                                    .foregroundColor(.white)
-                                    .padding(.bottom, 8)
-                            )
-                        }
+            ZStack(alignment: .bottomLeading) {
+                Image(course.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 100, height: 80)
+                    .clipped()
+                    .cornerRadius(12)
+                
+                if let progress = course.progress {
+                    ZStack(alignment: .leading) {
+                        Rectangle().fill(Color.white.opacity(0.3)).frame(height: 6)
+                        Rectangle().fill(Color.orange).frame(width: 100 * CGFloat(progress), height: 6)
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                )
+                    .overlay(
+                        Text("\(Int(progress * 100))% DONE")
+                            .font(AppTheme.Typography.badge)
+                            .foregroundColor(.white)
+                            .padding(.bottom, 8)
+                    )
+                    .padding(4)
+                }
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(course.title)

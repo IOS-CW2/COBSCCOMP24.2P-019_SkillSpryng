@@ -33,7 +33,7 @@ final class FirebaseDataService: DataService {
 
     static let shared = FirebaseDataService()
     let db = Firestore.firestore()
-    var uid: String? { Auth.auth().currentUser?.uid }
+    var uid: String? { FirebaseManager.currentUID }
 
     // Active Firestore snapshot listeners (stored to cancel on deinit)
     private var sessionListener: ListenerRegistration?
@@ -169,8 +169,10 @@ final class FirebaseDataService: DataService {
     }
 
     /// WRITE — saves star rating and written feedback onto the session document.
-    func rateSession(sessionId: String, rating: Int, feedback: String) async {
+    func rateSession(sessionId: String, rating: Int, feedback: String, instructorId: String? = nil) async {
         guard let uid else { return }
+        
+        // 1. Update session with rating
         try? await db.collection("users").document(uid)
             .collection("sessions").document(sessionId)
             .updateData([
@@ -178,6 +180,30 @@ final class FirebaseDataService: DataService {
                 "reviewFeedback": feedback,
                 "ratedAt": FieldValue.serverTimestamp()
             ])
+        
+        // 2. Add review to instructor's profile if instructorId provided
+        if let instructorId = instructorId {
+            // Get current user info for reviewer details
+            if let currentUser = await fetchCurrentUser() {
+                let review = UserReview(
+                    reviewerName: currentUser.fullName,
+                    rating: rating,
+                    comment: feedback,
+                    reviewerImageUrl: currentUser.profileImageURL ?? "defaultUser"
+                )
+                
+                // Add to instructor's reviews array
+                let profileRef = db.collection("matchProfiles").document(instructorId)
+                try? await profileRef.updateData([
+                    "reviews": FieldValue.arrayUnion([[
+                        "reviewerName": review.reviewerName,
+                        "rating": review.rating,
+                        "comment": review.comment,
+                        "reviewerImageUrl": review.reviewerImageUrl
+                    ]])
+                ])
+            }
+        }
     }
 
     /// UPDATE session status (e.g. upcoming → completed).
@@ -197,20 +223,30 @@ final class FirebaseDataService: DataService {
     }
 
     /// DELETE (cancel) a session.
-    func cancelSession(_ sessionId: String) async {
+    func cancelSession(_ sessionId: String, sessionTitle: String? = nil, instructorName: String? = nil) async {
         guard let uid else { return }
         // Soft delete — update status only
         try? await db.collection("users").document(uid)
             .collection("sessions").document(sessionId)
             .updateData(["status": SessionStatus.cancelled.rawValue])
 
-        // Create cancellation notification
+        // Create cancellation notification inside the app.
         await createNotification(AppNotification(
             type: .sessionCancelled,
             title: "Session Cancelled",
             body: "Your session has been cancelled.",
             referenceId: sessionId
         ))
+
+        // Cancel any pending reminder for the cancelled session.
+        NotificationManager.shared.cancelNotification(identifier: "reminder-\(sessionId)")
+
+        // Schedule a local push-style notification for the cancellation event.
+        NotificationManager.shared.scheduleSessionCancelled(
+            sessionId: sessionId,
+            sessionTitle: sessionTitle,
+            instructorName: instructorName
+        )
     }
 
     // MARK: - ─────────────────────────────────────────────
@@ -410,15 +446,17 @@ final class FirebaseDataService: DataService {
     func fetchProfiles() async -> [MatchProfile] {
         do {
             let snap = try await db.collection("matchProfiles").getDocuments()
-            if snap.documents.isEmpty {
-                await seedProfiles()
+            // Always refresh if we have fewer profiles than in mock data (new profiles added)
+            if snap.documents.isEmpty || snap.documents.count < MockDataProvider.shared.allProfiles.count {
+                print("[FDS] 🔄 Profile count mismatch or empty - refreshing from mock data...")
+                await clearAndReseedProfiles()
                 return MockDataProvider.shared.allProfiles
             }
             return snap.documents.compactMap { try? $0.data(as: MatchProfile.self) }
         } catch { return MockDataProvider.shared.allProfiles }
     }
 
-/// Seeds profiles.
+    /// Seeds profiles.
     private func seedProfiles() async {
         let batch = db.batch()
         for profile in MockDataProvider.shared.allProfiles {
@@ -428,6 +466,31 @@ final class FirebaseDataService: DataService {
             }
         }
         try? await batch.commit()
+        print("[FDS] ✅ Seeded \(MockDataProvider.shared.allProfiles.count) profiles")
+    }
+
+    /// Clears all old profiles and re-seeds with latest mock data
+    private func clearAndReseedProfiles() async {
+        print("[FDS] 🗑️ Clearing old profiles...")
+        let batch = db.batch()
+        
+        // Delete all existing profiles
+        if let snap = try? await db.collection("matchProfiles").getDocuments() {
+            for doc in snap.documents {
+                batch.deleteDocument(doc.reference)
+            }
+        }
+        
+        // Add new profiles
+        for profile in MockDataProvider.shared.allProfiles {
+            let ref = db.collection("matchProfiles").document(profile.id)
+            if let data = try? Firestore.Encoder().encode(profile) {
+                batch.setData(data, forDocument: ref)
+            }
+        }
+        
+        try? await batch.commit()
+        print("[FDS] ✅ Cleared and re-seeded \(MockDataProvider.shared.allProfiles.count) profiles")
     }
 
     // MARK: - ─────────────────────────────────────────────
@@ -697,6 +760,13 @@ final class FirebaseDataService: DataService {
             .setData(from: notification)
     }
 
+    func createNotification(_ notification: AppNotification, forUserId userId: String?) async {
+        guard let targetUid = userId ?? uid else { return }
+        try? db.collection("users").document(targetUid)
+            .collection("notifications").document(notification.id)
+            .setData(from: notification)
+    }
+
 /// Fetches notifications.
     func fetchNotifications() async -> [AppNotification] {
         guard let uid else { return [] }
@@ -789,13 +859,15 @@ final class FirebaseDataService: DataService {
                 return
             }
             let matchId = doc.documentID
+            let match = try? doc.data(as: MatchRequest.self)
             await updateMatchStatus(matchId, status: .accepted)
             await createNotification(AppNotification(
                 type: .sessionConfirmed,
                 title: "Session Accepted ✅",
                 body: "The instructor has accepted your session request.",
                 referenceId: matchId
-            ))
+            ), forUserId: fromUserId)
+            NotificationManager.shared.scheduleMatchAccepted(requesterName: match?.fromUserName ?? "Learner")
             print("[FDS] acceptIncomingMatch: ✅ match \(matchId) accepted")
         } catch {
             print("[FDS] acceptIncomingMatch: ❌ \(error.localizedDescription)")
@@ -814,7 +886,15 @@ final class FirebaseDataService: DataService {
                 .limit(to: 1)
                 .getDocuments()
             guard let doc = snap.documents.first else { return }
+            let match = try? doc.data(as: MatchRequest.self)
             try? await db.collection("matches").document(doc.documentID).delete()
+            await createNotification(AppNotification(
+                type: .systemAlert,
+                title: "Match Request Cancelled",
+                body: "\(match?.fromUserName ?? "A learner") cancelled their request.",
+                referenceId: doc.documentID
+            ), forUserId: toUserId)
+            NotificationManager.shared.scheduleMatchCancelled(recipientName: match?.toUserName ?? "Mentor")
             print("[FDS] cancelSentMatch: ✅ match \(doc.documentID) deleted")
         } catch {
             print("[FDS] cancelSentMatch: ❌ \(error.localizedDescription)")
@@ -832,13 +912,15 @@ final class FirebaseDataService: DataService {
                 .whereField("status", isEqualTo: MatchRequestStatus.pending.rawValue)
                 .getDocuments()
             guard let doc = snap.documents.first else { return }
+            let match = try? doc.data(as: MatchRequest.self)
             await updateMatchStatus(doc.documentID, status: .declined)
             await createNotification(AppNotification(
                 type: .systemAlert,
                 title: "Session Declined",
                 body: "The instructor is not available for this request. Try booking with another mentor.",
                 referenceId: doc.documentID
-            ))
+            ), forUserId: fromUserId)
+            NotificationManager.shared.scheduleMatchDeclined(requesterName: match?.fromUserName ?? "Learner")
         } catch {
             print("[FDS] declineIncomingMatch: ❌ \(error.localizedDescription)")
         }

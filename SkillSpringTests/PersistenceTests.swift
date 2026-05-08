@@ -75,6 +75,27 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(fetched?.fullName, "Updated Name")
     }
 
+    func testSaveUserDoesNotOverwriteExistingProfileImageURLWithBlankValue() {
+        let initialUser = User(
+            id: "test-uid-123",
+            fullName: "Test User",
+            phoneNumber: "+1555000111",
+            profileImageURL: "existing-image-url"
+        )
+        service.saveUser(initialUser)
+
+        let updateUser = User(
+            id: "test-uid-123",
+            fullName: "Test User",
+            phoneNumber: "+1555000111",
+            profileImageURL: ""
+        )
+        service.saveUser(updateUser)
+
+        let fetched = service.fetchUser()
+        XCTAssertEqual(fetched?.profileImageURL, "existing-image-url", "Blank profileImageURL should not overwrite an existing cached value.")
+    }
+
     // MARK: - Session Cache Tests
 
     func testSaveAndFetchSession() {

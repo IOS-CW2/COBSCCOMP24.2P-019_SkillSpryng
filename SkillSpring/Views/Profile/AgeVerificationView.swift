@@ -6,6 +6,8 @@ import SwiftUI
 // then routes to parental setup or skill setup accordingly.
 struct AgeVerificationView: View {
     @Environment(\.presentationMode) var presentationMode
+    var fullName: String
+    var phoneNumber: String
     @State private var birthDate = Date()
     @State private var navigateToParental = false
     @State private var navigateToSkillSetup = false
@@ -119,10 +121,10 @@ struct AgeVerificationView: View {
 
             // Continue button — pinned at the bottom, always visible
             VStack(spacing: 0) {
-                NavigationLink(destination: ParentalSetupView(), isActive: $navigateToParental) {
+                NavigationLink(destination: ParentalSetupView(fullName: fullName, phoneNumber: phoneNumber), isActive: $navigateToParental) {
                     EmptyView()
                 }
-                NavigationLink(destination: SkillSetupView(fullName: "", phoneNumber: ""), isActive: $navigateToSkillSetup) {
+                NavigationLink(destination: SkillSetupView(fullName: fullName, phoneNumber: phoneNumber), isActive: $navigateToSkillSetup) {
                     EmptyView()
                 }
 

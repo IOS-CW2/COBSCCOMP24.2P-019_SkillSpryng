@@ -8,6 +8,7 @@ struct AppHeader: View {
     var backAction: (() -> Void)? = nil
     var actionIcon: String? = nil
     var actionText: String? = nil
+    var actionColor: Color = AppTheme.Colors.primary
     var action: (() -> Void)? = nil
     
     var body: some View {
@@ -33,7 +34,7 @@ struct AppHeader: View {
                 if let actionIcon = actionIcon {
                     Button(action: { action?() }) {
                         Image(systemName: actionIcon)
-                            .foregroundColor(AppTheme.Colors.primary)
+                            .foregroundColor(actionColor)
                             .padding(8)
                             .background(Circle().fill(Color.white).shadow(color: .black.opacity(0.05), radius: 5))
                     }
@@ -41,7 +42,7 @@ struct AppHeader: View {
                     Button(action: { action?() }) {
                         Text(actionText)
                             .font(AppTheme.Typography.subheadline)
-                            .foregroundColor(AppTheme.Colors.primary)
+                            .foregroundColor(actionColor)
                             .padding(8)
                     }
                 }

@@ -105,7 +105,8 @@ struct RateSessionSheet: View {
                         await FirebaseDataService.shared.rateSession(
                             sessionId: session.id,
                             rating: rating,
-                            feedback: feedback
+                            feedback: feedback,
+                            instructorId: session.instructorId
                         )
                         HapticManager.success()
                         isSubmitting = false
@@ -275,7 +276,11 @@ struct CancelSessionSheet: View {
                     isCancelling = true
                     Task {
                         // 1. Cancel in Firestore (soft-delete: sets status → .cancelled, fires in-app notification)
-                        await FirebaseDataService.shared.cancelSession(session.id)
+                        await FirebaseDataService.shared.cancelSession(
+                            session.id,
+                            sessionTitle: session.title,
+                            instructorName: session.instructorName
+                        )
 
                         // 2. Attempt to delete calendar event if one was created at booking time
                         if let eventId = session.calendarEventId {

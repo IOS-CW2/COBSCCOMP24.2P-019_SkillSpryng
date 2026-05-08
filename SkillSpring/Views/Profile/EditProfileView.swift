@@ -34,15 +34,8 @@ struct EditProfileView: View {
                                 if let picked = pickedImage {
                                     Image(uiImage: picked)
                                         .resizable().scaledToFill()
-                                } else if !vm.user.profileImageURL.isEmpty,
-                                          vm.user.profileImageURL.hasPrefix("http") {
-                                    AsyncImage(url: URL(string: vm.user.profileImageURL)) { img in
-                                        img.resizable().scaledToFill()
-                                    } placeholder: {
-                                        avatarPlaceholder
-                                    }
                                 } else {
-                                    avatarPlaceholder
+                                    SmartAvatar(imageUrl: vm.user.profileImageURL, width: 120, height: 120)
                                 }
                             }
                             .frame(width: 120, height: 120)
@@ -207,7 +200,12 @@ struct EditProfileView: View {
         do {
             let url = try await FirebaseStorageService.shared.uploadProfileImage(image)
             vm.user.profileImageURL = url
-            print("[EditProfileView] ✅ Image uploaded → \(url)")
+            
+            if url.contains("file://") {
+                print("[EditProfileView] ⚠️ Image saved locally (Firebase unavailable) → \(url)")
+            } else {
+                print("[EditProfileView] ✅ Image uploaded → \(url)")
+            }
         } catch {
             uploadError = "Upload failed: \(error.localizedDescription)"
             print("[EditProfileView] ❌ Upload error: \(error)")

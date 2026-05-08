@@ -158,8 +158,6 @@ struct MapSelectionView: View {
                     }
 
                     // ── Simulator Testing Buttons (DEBUG only) ──────────────
-                    // Commented out — use GPX file via Debug → Simulate Location instead
-                    /*
                     #if DEBUG
                     VStack(spacing: 8) {
                         Divider()
@@ -208,7 +206,6 @@ struct MapSelectionView: View {
                     }
                     .padding(.top, 4)
                     #endif
-                    */
 
                 } else {
                     // Start monitoring button
@@ -248,7 +245,9 @@ struct MapSelectionView: View {
         // I Need Help emergency alert
         .alert("Emergency Alert", isPresented: $showNeedHelpAlert) {
             Button("Confirm — Send Alert", role: .destructive) {
+                NotificationManager.shared.scheduleEmergencyContactAlert(sessionTitle: session?.title)
                 HapticManager.error()
+                showNeedHelpAlert = false
             }
             Button("Cancel", role: .cancel) { }
         } message: {

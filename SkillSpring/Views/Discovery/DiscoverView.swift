@@ -7,6 +7,8 @@ import SwiftUI
 /// to other screens such as map view, skill matches, and courses.
 struct DiscoverView: View {
     @StateObject private var viewModel = DiscoverViewModel()
+    @State private var navigateToAnalytics = false
+    @State private var selectedSkill: RecommendedSkill? = nil
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -83,8 +85,10 @@ struct DiscoverView: View {
                     .onTapGesture { viewModel.navigateToSkillMatches = true }
                 
                 // Streak Card
-                StreakCard(streakCount: 7, subheadline: "1,240 Karma • Top 5%")
-                    .padding(.horizontal)
+                StreakCard(streakCount: 7, subheadline: "1,240 Karma • Top 5%") {
+                    navigateToAnalytics = true
+                }
+                .padding(.horizontal)
                 
                 // Nearby Skills Map Banner
                 NearbyMapBannerCard(action: { viewModel.navigateToMap = true })
@@ -101,7 +105,7 @@ struct DiscoverView: View {
                     )
                 } else {
                     // Most Popular Skills
-                    SkillSection(title: "Most Popular Skills", items: viewModel.filteredSkills, onSeeAll: { viewModel.navigateToSkillMatches = true })
+                    SkillSection(title: "Most Popular Skills", items: viewModel.filteredSkills, onSeeAll: { viewModel.navigateToSkillMatches = true }, onTap: { selectedSkill = $0 })
                     
                     // Recommended for you
                     VStack(alignment: .leading, spacing: 16) {
@@ -115,12 +119,21 @@ struct DiscoverView: View {
                         }
                         .padding(.horizontal)
                         
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(minimum: 150, maximum: .infinity)),
+                            GridItem(.flexible(minimum: 150, maximum: .infinity))
+                        ], spacing: 16) {
                             ForEach(viewModel.filteredSkills.prefix(2)) { skill in
-                                RecommendedSkillCard(skill: skill)
+                                Button(action: { selectedSkill = skill }) {
+                                    RecommendedSkillCard(skill: skill)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .accessibilityHint("Tap to view details for \(skill.title).")
                             }
                         }
                         .padding(.horizontal)
+                        .padding(.bottom, 8)
                     }
                 }
                 
@@ -141,8 +154,106 @@ struct DiscoverView: View {
             NavigationLink(destination: LocationMapView(), isActive: $viewModel.navigateToMap) {
                 EmptyView()
             }
+            NavigationLink(destination: LearningAnalyticsView(), isActive: $navigateToAnalytics) {
+                EmptyView()
+            }
         }
         .navigationBarHidden(true)
+        .sheet(item: $selectedSkill) { skill in
+            SkillDetailSheet(skill: skill)
+        }
+    }
+}
+
+// MARK: - Skill Detail Sheet
+
+struct SkillDetailSheet: View {
+    let skill: RecommendedSkill
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 24) {
+                    Image(skill.imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 260)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+                        .cornerRadius(24)
+                        .shadow(color: Color.black.opacity(0.12), radius: 15, x: 0, y: 10)
+
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(skill.title)
+                                    .font(AppTheme.Typography.largeTitle)
+                                    .lineLimit(2)
+                                Text("With \(skill.instructor)")
+                                    .font(AppTheme.Typography.title3)
+                                    .foregroundColor(.gray)
+                            }
+                            Spacer()
+                        }
+
+                        HStack(spacing: 12) {
+                            Label("\(String(format: "%.1f", skill.rating)) ★", systemImage: "star.fill")
+                                .font(AppTheme.Typography.subheadline)
+                                .foregroundColor(.orange)
+                            Text(skill.price)
+                                .font(AppTheme.Typography.subheadline)
+                                .foregroundColor(AppTheme.Colors.primary)
+                        }
+
+                        Text("Category: \(skill.category)")
+                            .font(AppTheme.Typography.caption)
+                            .foregroundColor(.gray)
+
+                        Text("This skill is a great match if you’re ready to learn from an experienced instructor. Tap below to start a request or explore the full session details.")
+                            .font(AppTheme.Typography.body)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(.horizontal)
+
+                    VStack(spacing: 14) {
+                        Button(action: {
+                            NotificationManager.shared.scheduleBookingRequestSent(instructorName: skill.instructor)
+                            dismiss()
+                        }) {
+                            Text("Request Session")
+                                .font(AppTheme.Typography.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(AppTheme.Colors.primary)
+                                .foregroundColor(.white)
+                                .cornerRadius(16)
+                        }
+
+                        Button(action: { dismiss() }) {
+                            Text("Close")
+                                .font(AppTheme.Typography.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color(.systemGray5))
+                                .foregroundColor(.primary)
+                                .cornerRadius(16)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.top)
+                .padding(.bottom, 32)
+            }
+            .navigationTitle("Skill Preview")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
     }
 }
 
@@ -234,6 +345,7 @@ struct SkillSection: View {
     let title: String
     let items: [RecommendedSkill]
     var onSeeAll: () -> Void = {}
+    var onTap: ((RecommendedSkill) -> Void)? = nil
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -250,7 +362,15 @@ struct SkillSection: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(items) { skill in
-                        LargeSkillCard(skill: skill)
+                        if let onTap = onTap {
+                            Button(action: { onTap(skill) }) {
+                                LargeSkillCard(skill: skill)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .accessibilityHint("Tap to view details for \(skill.title).")
+                        } else {
+                            LargeSkillCard(skill: skill)
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -267,9 +387,12 @@ struct LargeSkillCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.systemGray6))
+                Image(skill.imageName)
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: 260, height: 160)
+                    .clipped()
+                    .cornerRadius(16)
                 
                 if skill.isTopRated {
                     Text("TOP RATED")
@@ -323,19 +446,61 @@ struct RecommendedSkillCard: View {
     let skill: RecommendedSkill
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemGray6))
-                .aspectRatio(1.2, contentMode: .fit)
+        VStack(alignment: .leading, spacing: 12) {
+            ZStack(alignment: .topLeading) {
+                Image(skill.imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 160)
+                    .clipped()
+                    .cornerRadius(16)
+                
+                if skill.isTopRated {
+                    Text("TOP RATED")
+                        .font(AppTheme.Typography.badge)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.orange)
+                        .cornerRadius(4)
+                        .padding(12)
+                }
+            }
             
-            Text(skill.title)
-                .font(AppTheme.Typography.subheadline)
-                .lineLimit(1)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(skill.title)
+                    .font(AppTheme.Typography.headline)
+                    .lineLimit(1)
+                Text("With \(skill.instructor) • " + String(format: "%.1f", skill.rating) + " ★")
+                    .font(AppTheme.Typography.caption)
+                    .foregroundColor(.gray)
+                    .lineLimit(1)
+            }
             
-            Text("\(skill.instructor)")
-                .font(.caption2)
-                .foregroundColor(.gray)
+            HStack {
+                Label("Expert", systemImage: "star.fill")
+                    .font(AppTheme.Typography.caption2)
+                Label("Materials Included", systemImage: "briefcase.fill")
+                    .font(AppTheme.Typography.caption2)
+            }
+            .foregroundColor(.gray)
+            .lineLimit(1)
+            
+            Spacer()
+            
+            Text(skill.price)
+                .font(AppTheme.Typography.badge)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(AppTheme.Colors.primary.opacity(0.1))
+                .foregroundColor(AppTheme.Colors.primary)
+                .cornerRadius(4)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(skill.title). With \(skill.instructor). \(String(format: "%.1f", skill.rating)) stars. \(skill.price). \(skill.isTopRated ? "Top Rated. " : "")Expert. Materials Included.")
+        .accessibilityAddTraits(.isButton)
     }
 }
 

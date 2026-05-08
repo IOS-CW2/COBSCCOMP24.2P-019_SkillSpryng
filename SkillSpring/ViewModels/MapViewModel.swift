@@ -21,6 +21,7 @@ struct SkillLocation: Identifiable {
 ///
 /// Tracks current region, location permissions, reverse geocoded city name,
 /// and geocodes instructor profiles into map annotations.
+@MainActor
 class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     // MARK: - Published State
@@ -49,14 +50,27 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     private let geocoder = CLGeocoder()
 
+    private func coordinateKey(for coordinate: CLLocationCoordinate2D) -> String {
+        "\(coordinate.latitude),\(coordinate.longitude)"
+    }
+
+    private func jitteredCoordinate(_ coordinate: CLLocationCoordinate2D, duplicateCount: Int) -> CLLocationCoordinate2D {
+        guard duplicateCount > 0 else { return coordinate }
+
+        let offset = 0.00018
+        let angle = Double(duplicateCount) * .pi * 0.8
+        return CLLocationCoordinate2D(
+            latitude: coordinate.latitude + cos(angle) * offset,
+            longitude: coordinate.longitude + sin(angle) * offset
+        )
+    }
+
     // MARK: - Init
 
     override init() {
         super.init()
         locationManager.delegate = self
         permissionStatus = locationManager.authorizationStatus
-        // Geocode profiles immediately using default region until GPS fix
-        Task { await geocodeProfiles() }
     }
 
     // MARK: - Location Permission & GPS
@@ -64,38 +78,57 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     /// Requests foreground location permission and begins updating location.
     /// Used by the map screen to center on the user's current region.
     func requestPermission() {
+        print("[MapViewModel] 📍 Location permission requested")
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    /// Manually refresh profiles without changing location
+    func refreshProfiles() async {
+        print("[MapViewModel] 🔄 Manual refresh requested")
+        await geocodeProfiles()
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.first else { return }
-        DispatchQueue.main.async {
+        Task { @MainActor in
             self.region = MKCoordinateRegion(
                 center: location.coordinate,
                 span: MKCoordinateSpan(latitudeDelta: 0.08, longitudeDelta: 0.08)
             )
             self.fetchCityName(for: location)
             self.locationManager.stopUpdatingLocation()
+            // Reload profiles now that we have actual GPS location
+            await self.geocodeProfiles()
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("[MapViewModel] Location error: \(error.localizedDescription)")
     }
 
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        DispatchQueue.main.async {
-            self.permissionStatus = manager.authorizationStatus
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        Task { @MainActor in
+            let newStatus = manager.authorizationStatus
+            self.permissionStatus = newStatus
+            
+            // When permissions are granted, start requesting location
+            // and automatically reload profiles with real GPS coordinates
+            if newStatus == .authorizedWhenInUse || newStatus == .authorizedAlways {
+                print("[MapViewModel] Location permission granted - starting GPS updates")
+                manager.startUpdatingLocation()
+                await self.geocodeProfiles()
+            } else if newStatus == .denied {
+                print("[MapViewModel] Location permission denied - using cached data")
+            }
         }
     }
 
     // MARK: - Reverse Geocode (city name from GPS)
 
     /// Updates the city label for the map using the current GPS location.
-    @MainActor
     private func fetchCityName(for location: CLLocation) {
-        Task {
+        Task { @MainActor in
             do {
                 let placemarks = try await geocoder.reverseGeocodeLocation(location)
                 if let placemark = placemarks.first {
@@ -110,7 +143,6 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     // MARK: - Forward Geocode (location string → real coordinates)
 
     /// Refreshes the nearby skill pins by loading profiles and geocoding their locations.
-    @MainActor
     func loadNearbyUsers() async {
         self.currentUser = await FirebaseDataService.shared.fetchCurrentUser()
         await geocodeProfiles()
@@ -118,33 +150,54 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     /// Converts profile address strings into map annotations.
     /// Uses a small delay between requests to avoid CLGeocoder throttling.
-    @MainActor
     func geocodeProfiles() async {
         isLoadingPins = true
         nearbySkills = []
 
         let profiles = await FirebaseDataService.shared.fetchProfiles()
+        print("[MapViewModel] 🔄 Fetched \(profiles.count) total profiles from Firebase")
+
+        var successCount = 0
+        var skippedCount = 0
+        var failedCount = 0
+        var duplicateCoordinateCounter: [String: Int] = [:]
 
         for profile in profiles {
             // Skip "Online" profiles — they have no physical location
             guard profile.location.lowercased() != "online",
-                  !profile.location.isEmpty else { continue }
+                  !profile.location.isEmpty else {
+                skippedCount += 1
+                continue
+            }
 
             do {
                 let placemarks = try await geocoder.geocodeAddressString(profile.location)
                 if let coordinate = placemarks.first?.location?.coordinate {
-                    let pin = SkillLocation(profile: profile, coordinate: coordinate)
+                    let key = coordinateKey(for: coordinate)
+                    let duplicateCount = duplicateCoordinateCounter[key, default: 0]
+                    let displayCoordinate = jitteredCoordinate(coordinate, duplicateCount: duplicateCount)
+                    duplicateCoordinateCounter[key] = duplicateCount + 1
+
+                    let pin = SkillLocation(profile: profile, coordinate: displayCoordinate)
                     self.nearbySkills.append(pin)
+                    successCount += 1
+                    print("[MapViewModel] ✅ Geocoded '\(profile.location)' → \(profile.fullName) [dupIndex=\(duplicateCount)]")
+                } else {
+                    failedCount += 1
+                    print("[MapViewModel] ⚠️ No coordinates found for '\(profile.location)'")
                 }
             } catch {
                 // CLGeocoder can rate-limit — log and skip gracefully
-                print("[MapViewModel] Geocode failed for '\(profile.location)': \(error.localizedDescription)")
+                failedCount += 1
+                print("[MapViewModel] ❌ Geocode failed for '\(profile.location)': \(error.localizedDescription)")
             }
 
             // Apple recommends a small delay between geocoding requests to avoid throttling
             try? await Task.sleep(nanoseconds: 300_000_000) // 0.3s
         }
 
+        print("[MapViewModel] 📍 Geocoding complete: \(successCount) success, \(skippedCount) skipped, \(failedCount) failed")
+        print("[MapViewModel] 📌 Final nearbySkills count: \(self.nearbySkills.count)")
         isLoadingPins = false
     }
 

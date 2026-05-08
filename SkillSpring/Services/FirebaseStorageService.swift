@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 // MARK: - FirebaseStorageService
 // Uploads and manages files in Firebase Cloud Storage using the
@@ -53,19 +54,34 @@ final class FirebaseStorageService {
     // MARK: - FUNCTION 1: uploadProfileImage
     /// Compresses the image to JPEG and uploads it to Firebase Storage via REST.
     /// On success, persists the download URL to Firestore.
+    /// If authentication fails, falls back to local image storage.
     ///
     /// - Parameter image: UIImage from AVFoundation camera or photo library.
-    /// - Returns: HTTPS download URL string for use in Firestore + AsyncImage.
-    /// - Throws: `StorageError.notAuthenticated`, `.invalidImageData`,
-    ///           `.uploadFailed(statusCode:)`, `.invalidResponse`
+    /// - Returns: HTTPS download URL string OR local file URL for use in Firestore + AsyncImage.
+    /// - Throws: `StorageError.invalidImageData`
     func uploadProfileImage(_ image: UIImage) async throws -> String {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            throw StorageError.notAuthenticated
-        }
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw StorageError.invalidImageData
         }
 
+        // Try Firebase upload first
+        if let uid = Auth.auth().currentUser?.uid {
+            do {
+                return try await uploadToFirebase(imageData: imageData, uid: uid)
+            } catch {
+                print("[FirebaseStorage] ⚠️ Firebase upload failed, falling back to local storage: \(error)")
+                // Fall through to local storage
+            }
+        } else {
+            print("[FirebaseStorage] ⚠️ User not authenticated, using local image storage")
+        }
+
+        // Fallback: Save image locally
+        return try saveImageLocally(imageData: imageData)
+    }
+
+    // MARK: - FUNCTION 1B: uploadToFirebase (Helper)
+    private func uploadToFirebase(imageData: Data, uid: String) async throws -> String {
         let token        = try await getIDToken()
         let objectName   = "profile_images/\(uid).jpg"
         let encodedName  = objectName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? objectName
@@ -107,13 +123,35 @@ final class FirebaseStorageService {
 
         print("[FirebaseStorage] ✅ Upload complete → \(downloadURL.prefix(80))…")
 
-        // Persist the URL back to the Firestore user document
-        if var user = await FirebaseDataService.shared.fetchCurrentUser() {
-            user.profileImageURL = downloadURL
-            try? await FirebaseDataService.shared.saveUser(user)
-        }
+        // Persist the URL back to the Firestore user document.
+        // Let failures propagate so callers can handle persistence errors explicitly.
+        try await FirebaseDataService.shared.db
+            .collection("users").document(uid)
+            .updateData(["profileImageURL": downloadURL])
 
         return downloadURL
+    }
+
+    // MARK: - FUNCTION 1C: saveImageLocally (Fallback)
+    /// Saves image data locally when Firebase authentication is unavailable.
+    /// Returns a local file URL for temporary local storage.
+    private func saveImageLocally(imageData: Data) throws -> String {
+        let fileManager = FileManager.default
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            throw StorageError.invalidResponse
+        }
+
+        let imageDirectory = documentsDirectory.appendingPathComponent("profile_images", isDirectory: true)
+        try fileManager.createDirectory(at: imageDirectory, withIntermediateDirectories: true)
+
+        let fileName = "profile_\(UUID().uuidString).jpg"
+        let fileURL = imageDirectory.appendingPathComponent(fileName)
+
+        try imageData.write(to: fileURL)
+        print("[FirebaseStorage] 💾 Image saved locally → \(fileURL.lastPathComponent)")
+
+        // Return file URL as string (will be converted to data URL when needed)
+        return fileURL.absoluteString
     }
 
     // MARK: - FUNCTION 2: fetchProfileImageURL

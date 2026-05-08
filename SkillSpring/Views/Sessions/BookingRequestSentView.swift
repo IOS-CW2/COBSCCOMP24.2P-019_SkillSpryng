@@ -9,6 +9,7 @@ struct BookingRequestSentView: View {
     let time: String
     let isOnline: Bool
     let duration: Int       // minutes
+    let venueName: String?
     @Environment(\.dismiss) private var dismiss
     
     // Calendar State
@@ -23,6 +24,14 @@ struct BookingRequestSentView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE, MMM d"
         return formatter.string(from: sessionDate)
+    }
+
+    private var computedEndTime: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        guard let start = formatter.date(from: time) else { return time }
+        let end = Calendar.current.date(byAdding: .minute, value: duration, to: start) ?? start
+        return formatter.string(from: end)
     }
     
     var body: some View {
@@ -58,8 +67,28 @@ struct BookingRequestSentView: View {
                         .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
-                    Text("Online • Jitsi Meet")
+                    Text(isOnline ? "Online • Jitsi Meet" : "In-Person • \(venueName ?? "Public Venue")")
                         .font(AppTheme.Typography.badge)
+                }
+                
+                if isOnline {
+                    HStack {
+                        Text("MEETING LINK")
+                            .font(AppTheme.Typography.badge)
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text("Jitsi Meet")
+                            .font(AppTheme.Typography.badge)
+                    }
+                } else {
+                    HStack {
+                        Text("LOCATION")
+                            .font(AppTheme.Typography.badge)
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text(venueName ?? "Selected Venue")
+                            .font(AppTheme.Typography.badge)
+                    }
                 }
                 
                 HStack {
@@ -92,7 +121,7 @@ struct BookingRequestSentView: View {
                         .font(AppTheme.Typography.badge)
                         .foregroundColor(.gray)
                     Spacer()
-                    Text("\(time) - 11:30 AM")
+                    Text("\(time) - \(computedEndTime)")
                         .font(AppTheme.Typography.badge)
                 }
                 

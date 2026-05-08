@@ -82,6 +82,24 @@ struct User: Identifiable, Codable {
         get { isPremium }
         set { isPremium = newValue }
     }
+    
+    /// Dynamically calculate profile completeness based on filled fields.
+    var calculatedCompleteness: Int {
+        var filledFields = 0
+        let totalFields = 9
+        
+        if !fullName.trimmingCharacters(in: .whitespaces).isEmpty { filledFields += 1 }
+        if !email.trimmingCharacters(in: .whitespaces).isEmpty { filledFields += 1 }
+        if !phoneNumber.trimmingCharacters(in: .whitespaces).isEmpty { filledFields += 1 }
+        if !location.trimmingCharacters(in: .whitespaces).isEmpty { filledFields += 1 }
+        if !bio.trimmingCharacters(in: .whitespaces).isEmpty { filledFields += 1 }
+        if !profileImageURL.trimmingCharacters(in: .whitespaces).isEmpty { filledFields += 1 }
+        if !skillsToTeach.isEmpty { filledFields += 1 }
+        if !skillsToLearn.isEmpty { filledFields += 1 }
+        if !experienceLevel.trimmingCharacters(in: .whitespaces).isEmpty { filledFields += 1 }
+        
+        return (filledFields * 100) / totalFields
+    }
 
     // MARK: - Codable (exclude computed aliases)
     enum CodingKeys: String, CodingKey {
